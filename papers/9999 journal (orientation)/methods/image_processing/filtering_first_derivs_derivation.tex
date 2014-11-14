@@ -1,0 +1,33 @@
+\label{s:filtering_first_derivs_derivation}
+%
+Defining $\G_{(1)}(\theta)$ as the first-order derivative filter at angle $\theta$,
+%
+\begin{align}
+G_{(1)}(\theta)
+	&= 	\frac{\partial G}{\partial r} \\
+	&= 	\frac{\partial G}{\partial x}\frac{\partial x}{\partial r} +
+			\frac{\partial G}{\partial y}\frac{\partial y}{\partial r} \\
+	&= 	\Gx \cos(\theta) + \Gy \sin(\theta)
+\label{e:dG}
+\end{align}
+
+\noindent where $\Gx = G_{(1)}(0^\circ)$ and $\Gy = G_{(1)}(90^\circ)$. The response to this filter is
+%
+\begin{align}
+R_{(1)}(\theta)
+	&= 	\G_{(1)}(\theta) \ast I \\
+	&=	(\Gx \cos(\theta) + \Gy \sin(\theta)) \ast I \\
+	&=	(\Gx \ast I) \cos(\theta) + (\Gy \ast I) \sin(\theta) \\
+	&=	\Ix \cos(\theta) + \Iy \sin(\theta)
+\label{e:R1}
+\end{align}
+
+\noindent where $\Ix$ and $\Iy$ are the responses to $\Gx$ and $\Gy$, respectively. That the response at any $\theta$ is a linear sum of the response at two orientations is the property of \emph{steerability} that makes computing the response at any angle efficient. Differentiating and equating to zero gives
+%
+\begin{align}
+\frac{d}{d\theta}R_{(1)}
+	&= -\Ix \sin(\theta) + \Iy \cos(\theta) = 0 \\
+\Rightarrow \tan(\theta)
+	&= \frac{\Iy}{\Ix}.
+\label{e:t1}
+\end{align}

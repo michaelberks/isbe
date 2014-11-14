@@ -1,0 +1,848 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46"
+   sodipodi:docname="icons.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <inkscape:perspective
+       id="perspective2469"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3373"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       sodipodi:type="inkscape:persp3d" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     gridtolerance="10000"
+     guidetolerance="10"
+     objecttolerance="10"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.74974188"
+     inkscape:cx="307.78271"
+     inkscape:cy="535.86928"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:window-width="1680"
+     inkscape:window-height="994"
+     inkscape:window-x="-4"
+     inkscape:window-y="-4"
+     inkscape:snap-global="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2383" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:5.99998283;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2385"
+       width="212.08434"
+       height="213.11255"
+       x="18.230625"
+       y="24.803127"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\fit_width.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:#50007d;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 35.433078,131.10235 L 70.866158,95.669276 L 70.866158,166.53543 L 35.433078,131.10235 z"
+       id="path3159"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\fit_width.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:#50007d;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 212.59845,131.10234 L 177.16537,95.669266 L 177.16537,166.53542 L 212.59845,131.10234 z"
+       id="path3161"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\fit_width.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3163"
+       width="212.59842"
+       height="212.59842"
+       x="248.53151"
+       y="25.303135"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\fit_height.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:#50007d;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 354.33072,219.68503 L 389.76379,184.25195 L 318.89764,184.25195 L 354.33072,219.68503 z"
+       id="path3167"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\fit_height.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:#50007d;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 354.33072,42.519666 L 389.76379,77.952736 L 318.89764,77.952736 L 354.33072,42.519666 z"
+       id="path3169"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\fit_height.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3171"
+       width="212.59842"
+       height="212.59842"
+       x="478.84647"
+       y="25.303127"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\fit_both.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:#50007d;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 496.06298,131.10233 L 531.49606,95.669252 L 531.49606,166.53541 L 496.06298,131.10233 z"
+       id="path3173"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\fit_both.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:#50007d;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 673.22835,131.10234 L 637.79527,95.669261 L 637.79527,166.53542 L 673.22835,131.10234 z"
+       id="path3175"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\fit_both.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:#50007d;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 584.64567,219.68502 L 620.07874,184.25194 L 549.21259,184.25194 L 584.64567,219.68502 z"
+       id="path3177"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\fit_both.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:#50007d;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 584.64567,42.51966 L 620.07874,77.952734 L 549.21259,77.952734 L 584.64567,42.51966 z"
+       id="path3179"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\fit_both.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:#f0f0f0;fill-opacity:1;stroke:none;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path3187"
+       sodipodi:cx="478.34647"
+       sodipodi:cy="405.70865"
+       sodipodi:rx="0"
+       sodipodi:ry="79.724419"
+       d="M 478.34647,405.70865 A 0,79.724419 0 0 1 478.34647,405.70865 L 478.34647,405.70865 z"
+       sodipodi:start="0"
+       sodipodi:end="3.1415927" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:5.99998283;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3183"
+       width="212.08434"
+       height="213.11255"
+       x="17.716536"
+       y="255.11809" />
+    <rect
+       style="fill:#5f3500;fill-opacity:1;stroke:#000000;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3203"
+       width="53.149605"
+       height="177.16536"
+       x="-195.96289"
+       y="291.36246"
+       ry="26.574802"
+       transform="matrix(0.7071068,-0.7071068,0.7071068,0.7071068,0,0)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path3181"
+       sodipodi:cx="141.73228"
+       sodipodi:cy="361.4173"
+       sodipodi:rx="70.866142"
+       sodipodi:ry="70.866142"
+       d="M 212.59843,361.4173 A 70.866142,70.866142 0 1 1 70.866142,361.4173 A 70.866142,70.866142 0 1 1 212.59843,361.4173 z"
+       transform="matrix(1.246471,0,0,1.2464213,-70.36597,-106.52384)" />
+    <path
+       style="fill:#f0f0f0;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 35.433071,343.70077 C 35.433071,272.83463 106.29921,272.83463 106.29921,272.83463 C 85.039371,272.83463 35.433071,322.44093 35.433071,343.70077 z"
+       id="path3199"
+       sodipodi:nodetypes="csc" />
+    <path
+       style="fill:#e1e8ff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 177.16535,343.70077 C 177.16535,414.56691 106.29921,414.56691 106.29921,414.56691 C 127.55905,414.56691 177.16535,364.96061 177.16535,343.70077 z"
+       id="path3201"
+       sodipodi:nodetypes="csc" />
+    <rect
+       style="fill:#5f3500;fill-opacity:1;stroke:#000000;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3216"
+       width="53.149605"
+       height="177.16536"
+       x="-33.105621"
+       y="456.00034"
+       ry="26.574802"
+       transform="matrix(0.7071068,-0.7071068,0.7071068,0.7071068,0,0)"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\zoom_in.png"
+       inkscape:export-xdpi="10.397112"
+       inkscape:export-ydpi="10.397112" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path3218"
+       sodipodi:cx="141.73228"
+       sodipodi:cy="361.4173"
+       sodipodi:rx="70.866142"
+       sodipodi:ry="70.866142"
+       d="M 212.59843,361.4173 A 70.866142,70.866142 0 1 1 70.866142,361.4173 A 70.866142,70.866142 0 1 1 212.59843,361.4173 z"
+       transform="matrix(1.246471,0,0,1.2464213,161.20807,-105.26477)"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\zoom_in.png"
+       inkscape:export-xdpi="10.397112"
+       inkscape:export-ydpi="10.397112" />
+    <path
+       style="fill:#dcdcdc;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 267.00711,344.95984 C 267.00711,274.0937 337.87325,274.0937 337.87325,274.0937 C 316.61341,274.0937 267.00711,323.7 267.00711,344.95984 z"
+       id="path3220"
+       sodipodi:nodetypes="csc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\zoom_in.png"
+       inkscape:export-xdpi="10.397112"
+       inkscape:export-ydpi="10.397112" />
+    <path
+       style="fill:#b9caff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 408.73939,344.95984 C 408.73939,415.82598 337.87325,415.82598 337.87325,415.82598 C 359.13309,415.82598 408.73939,366.21968 408.73939,344.95984 z"
+       id="path3222"
+       sodipodi:nodetypes="csc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\zoom_in.png"
+       inkscape:export-xdpi="10.397112"
+       inkscape:export-ydpi="10.397112" />
+    <rect
+       style="fill:#5f3500;fill-opacity:1;stroke:#000000;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3228"
+       width="53.149605"
+       height="177.16536"
+       x="129.75165"
+       y="618.8576"
+       ry="26.574802"
+       transform="matrix(0.7071068,-0.7071068,0.7071068,0.7071068,0,0)"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\zoom_out.png"
+       inkscape:export-xdpi="10.397112"
+       inkscape:export-ydpi="10.397112" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path3230"
+       sodipodi:cx="141.73228"
+       sodipodi:cy="361.4173"
+       sodipodi:rx="70.866142"
+       sodipodi:ry="70.866142"
+       d="M 212.59843,361.4173 A 70.866142,70.866142 0 1 1 70.866142,361.4173 A 70.866142,70.866142 0 1 1 212.59843,361.4173 z"
+       transform="matrix(1.246471,0,0,1.2464213,391.52303,-105.26477)"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\zoom_out.png"
+       inkscape:export-xdpi="10.397112"
+       inkscape:export-ydpi="10.397112" />
+    <path
+       style="fill:#dcdcdc;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 497.32207,344.95984 C 497.32207,274.0937 568.18821,274.0937 568.18821,274.0937 C 546.92837,274.0937 497.32207,323.7 497.32207,344.95984 z"
+       id="path3232"
+       sodipodi:nodetypes="csc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\zoom_out.png"
+       inkscape:export-xdpi="10.397112"
+       inkscape:export-ydpi="10.397112" />
+    <path
+       style="fill:#b9caff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 639.05435,344.95984 C 639.05435,415.82598 568.18821,415.82598 568.18821,415.82598 C 589.44805,415.82598 639.05435,366.21968 639.05435,344.95984 z"
+       id="path3234"
+       sodipodi:nodetypes="csc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\zoom_out.png"
+       inkscape:export-xdpi="10.397112"
+       inkscape:export-ydpi="10.397112" />
+    <path
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 329.02137,290.55116 L 329.02137,336.10797 L 283.46456,336.10797 L 283.46456,351.29356 L 329.02137,351.29356 L 329.02137,396.85037 L 344.20697,396.85037 L 344.20697,351.29356 L 389.76378,351.29356 L 389.76378,336.10797 L 344.20697,336.10797 L 344.20697,290.55116 L 329.02137,290.55116 z"
+       id="path3244"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\zoom_in.png"
+       inkscape:export-xdpi="10.397112"
+       inkscape:export-ydpi="10.397112" />
+    <rect
+       style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3248"
+       width="124.01575"
+       height="124.01575"
+       x="496.06299"
+       y="290.55115"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\zoom_out.png"
+       inkscape:export-xdpi="10.397112"
+       inkscape:export-ydpi="10.397112" />
+    <rect
+       y="290.55115"
+       x="513.77954"
+       height="106.29922"
+       width="106.2992"
+       id="rect3250"
+       style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\zoom_out.png"
+       inkscape:export-xdpi="10.397112"
+       inkscape:export-ydpi="10.397112" />
+    <path
+       id="path3252"
+       d="M 513.77953,336.10797 L 513.77953,351.29357 L 620.07873,351.29357 L 620.07873,336.10797 L 513.77953,336.10797 z"
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\zoom_out.png"
+       inkscape:export-xdpi="10.397112"
+       inkscape:export-ydpi="10.397112" />
+    <path
+       style="fill:#dcdcdc;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 35.433071,130.32093 C 35.433071,42.519665 35.433069,42.519663 123.23434,42.519663 C 52.993322,42.519663 35.433071,60.079918 35.433071,130.32093 z"
+       id="path3271"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\fit_width.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:#dcdcdc;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 265.74803,131.10234 C 265.74803,43.30107 265.74803,43.30107 353.5493,43.30107 C 283.30828,43.30107 265.74803,60.86133 265.74803,131.10234 z"
+       id="path3273"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\fit_height.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:#dcdcdc;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 496.06299,131.10234 C 496.06299,43.30108 496.06299,43.301078 583.86426,43.301078 C 513.62324,43.301078 496.06299,60.861333 496.06299,131.10234 z"
+       id="path3275"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\fit_both.png" />
+    <rect
+       style="opacity:1;fill:#2d2dff;fill-opacity:1;stroke:#000000;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3277"
+       width="212.59842"
+       height="212.59842"
+       x="17.716536"
+       y="485.43304"
+       ry="17.3393" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3279"
+       width="177.16536"
+       height="124.01575"
+       x="35.433071"
+       y="485.43304"
+       ry="17.3393" />
+    <rect
+       style="opacity:1;fill:#d71818;fill-opacity:1;stroke:none;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3281"
+       width="177.16536"
+       height="35.433071"
+       x="35.433071"
+       y="485.43304"
+       ry="0" />
+    <path
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 53.149606,538.58266 L 194.88189,538.58266"
+       id="path3285" />
+    <path
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 53.14961,556.29919 L 194.88189,556.29919"
+       id="path3287" />
+    <path
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 53.149606,574.01573 L 194.8819,574.01573"
+       id="path3289" />
+    <path
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 53.14961,591.73226 L 194.88189,591.73226"
+       id="path3291" />
+    <rect
+       style="opacity:1;fill:#c8c8c8;fill-opacity:1;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3293"
+       width="106.29921"
+       height="70.866142"
+       x="70.866142"
+       y="627.16534" />
+    <rect
+       style="opacity:1;fill:#2d2dff;fill-opacity:1;stroke:none;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3295"
+       width="35.433067"
+       height="53.149597"
+       x="80.58268"
+       y="636.8819"
+       ry="0" />
+    <rect
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3297"
+       width="212.59842"
+       height="212.59842"
+       x="17.716536"
+       y="485.43304"
+       ry="17.3393" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:5.99998283;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3323"
+       width="212.08434"
+       height="213.11255"
+       x="18.230625"
+       y="715.74799"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\favicon.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#9f0101;stroke-width:26.41196632000000100;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 53.149606,910.6299 C 106.70712,854.72709 50.638039,769.82069 124.55961,770.87285 C 195.78358,771.78622 178.11712,854.72709 160.26461,910.6299"
+       id="path3321"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\favicon.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <g
+       id="g3331"
+       style="stroke:#23811e;stroke-opacity:1;stroke-width:8;stroke-miterlimit:4;stroke-dasharray:none"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\favicon.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001">
+      <path
+         id="path3325"
+         d="M 106.29921,733.46454 L 141.73228,733.46454"
+         style="fill:none;fill-rule:evenodd;stroke:#23811e;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+      <path
+         id="path3327"
+         d="M 124.01575,733.46454 L 124.01575,804.33069"
+         style="fill:none;fill-rule:evenodd;stroke:#23811e;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+      <path
+         id="path3329"
+         d="M 106.29921,804.33069 L 141.73228,804.33069"
+         style="fill:none;fill-rule:evenodd;stroke:#23811e;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+    </g>
+    <g
+       id="g3224"
+       transform="translate(-70.866134,2.6959276e-6)"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\progress.png"
+       inkscape:export-xdpi="13.287964"
+       inkscape:export-ydpi="13.287964">
+      <path
+         sodipodi:nodetypes="ccccccc"
+         id="path2438"
+         d="M -283.46457,24.80312 L -230.31496,130.96329 L -283.46457,237.2625 L -159.44882,237.2625 L -106.29922,130.96329 L -159.44882,24.66407 L -283.46457,24.80312 z"
+         style="fill:#fff291;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="cccccc"
+         id="path3212"
+         d="M -460.62992,24.803127 L -460.62992,237.40155 L -301.18111,237.40155 L -248.0315,131.10234 L -301.18111,24.80312 L -460.62992,24.803127 z"
+         style="fill:#fff291;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="cccccc"
+         id="path3214"
+         d="M -141.73229,24.80312 L -88.58268,130.96329 L -141.73229,237.2625 L 53.149606,237.40155 L 53.149606,24.803127 L -141.73229,24.80312 z"
+         style="fill:#fff291;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:5.99998283000000040;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect2477"
+       width="212.08434"
+       height="213.11255"
+       x="248.54559"
+       y="715.74799"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\vessel_path.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:48;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 283.46457,910.62991 C 337.02208,854.7271 280.953,769.8207 354.87457,770.87286 C 426.09854,771.78623 408.43208,854.7271 390.57957,910.62991"
+       id="path2479"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\vessel_path.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:5.99998283000000040;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3259"
+       width="212.08434"
+       height="213.11255"
+       x="478.04477"
+       y="715.74799"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\vessel_apex.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:48;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 512.96374,910.6299 C 566.52125,854.72709 510.45217,769.82069 584.37374,770.87285 C 655.59771,771.78622 637.93125,854.72709 620.07874,910.6299"
+       id="path3261"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\vessel_apex.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <g
+       id="g3263"
+       style="stroke:#38d030;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\vessel_apex.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001"
+       transform="matrix(0.870312,0.4925007,-0.4925007,0.870312,880.8467,47.234191)">
+      <path
+         id="path3265"
+         d="M 106.29921,733.46454 L 141.73228,733.46454"
+         style="fill:none;fill-rule:evenodd;stroke:#38d030;stroke-width:12;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3267"
+         d="M 124.01575,733.46454 L 124.01575,804.33069"
+         style="fill:none;fill-rule:evenodd;stroke:#38d030;stroke-width:12;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3269"
+         d="M 106.29921,804.33069 L 141.73228,804.33069"
+         style="fill:none;fill-rule:evenodd;stroke:#38d030;stroke-width:12;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:6;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3271"
+       width="212.08434"
+       height="213.11255"
+       x="-212.59842"
+       y="715.74799"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\tag_vessel.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:48;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M -177.67944,910.62996 C -124.12193,854.72715 -180.19101,769.82075 -106.26944,770.87291 C -35.045472,771.78628 -52.711932,854.72715 -70.564442,910.62996"
+       id="path3274"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\tag_vessel.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:5.99998283000000040;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3284"
+       width="212.08434"
+       height="213.11255"
+       x="-443.21509"
+       y="715.74792"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\vessel_size.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#efff00;stroke-width:12;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 282.92071,910.65467 C 336.47822,854.75186 280.40914,769.84546 354.33071,770.89762 C 425.55468,771.81099 407.88822,854.75186 390.03571,910.65467"
+       id="path3296"
+       sodipodi:nodetypes="ccc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\vessel_path.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#ff0000;stroke-width:24;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path3298"
+       sodipodi:cx="-106.29921"
+       sodipodi:cy="786.61414"
+       sodipodi:rx="53.149605"
+       sodipodi:ry="53.149605"
+       d="M -53.149605,786.61414 A 53.149605,53.149605 0 1 1 -159.44881,786.61414 A 53.149605,53.149605 0 1 1 -53.149605,786.61414 z"
+       transform="matrix(1.1666667,0,0,1.1666667,17.716535,-122.2441)"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\tag_vessel.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:12;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M -407.48031,910.6299 C -406.14652,734.56931 -336.61417,751.18108 -336.61417,751.18108"
+       id="path3308"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\vessel_size.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:48;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="M -318.89764,910.6299 C -317.56385,734.56931 -248.0315,751.18108 -248.0315,751.18108"
+       id="path3310"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\vessel_size.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:5.99998283000000040;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3312"
+       width="212.08434"
+       height="213.11255"
+       x="-673.53003"
+       y="715.74792"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\vessel_shape.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:24;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M -620.07874,910.6299 C -620.07874,910.6299 -620.07874,733.46454 -620.07874,733.46454"
+       id="path3314"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\vessel_shape.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:24;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M -531.49606,910.6299 C -637.79527,804.33069 -425.19684,839.76376 -531.49606,733.46454"
+       id="path3316"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\vessel_shape.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001" />
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:6;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3318"
+       width="212.08434"
+       height="213.11255"
+       x="690.94489"
+       y="733.46454"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\tag_haemorrhage.png"
+       inkscape:export-xdpi="10.18"
+       inkscape:export-ydpi="10.18" />
+    <path
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.91157442px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 748.10555,768.91659 C 704.88897,782.46241 700.26902,802.32713 700.26902,834.34453 C 700.26902,847.36323 722.54605,857.19643 732.16005,867.05851 C 745.35335,880.59227 732.10733,906.15658 764.05108,916.12946 C 792.01928,924.86119 835.32753,934.61877 859.72416,916.12946 C 885.50714,896.58951 891.61522,847.72587 891.61522,817.98755 C 891.61594,793.46709 863.48839,801.63056 827.83312,801.63056 C 779.99658,801.63056 782.00509,758.29109 748.10555,768.91659 z"
+       id="path3326"
+       sodipodi:nodetypes="ccscscsc"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\tag_haemorrhage.png"
+       inkscape:export-xdpi="10.18"
+       inkscape:export-ydpi="10.18" />
+    <path
+       sodipodi:type="arc"
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#ff0000;stroke-width:24;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path3322"
+       sodipodi:cx="-106.29921"
+       sodipodi:cy="786.61414"
+       sodipodi:rx="53.149605"
+       sodipodi:ry="53.149605"
+       d="M -53.149605,786.61414 A 53.149605,53.149605 0 1 1 -159.44881,786.61414 A 53.149605,53.149605 0 1 1 -53.149605,786.61414 z"
+       transform="matrix(1.1666667,0,0,1.1666667,921.25986,-104.52751)"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\tag_haemorrhage.png"
+       inkscape:export-xdpi="10.18"
+       inkscape:export-ydpi="10.18" />
+    <g
+       id="g3360"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\grade_image.png"
+       inkscape:export-xdpi="10.184627"
+       inkscape:export-ydpi="10.184627">
+      <rect
+         inkscape:export-ydpi="10.18"
+         inkscape:export-xdpi="10.18"
+         inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\tag_haemorrhage.png"
+         y="733.46454"
+         x="920.48328"
+         height="213.11255"
+         width="212.08434"
+         id="rect3328"
+         style="fill:none;fill-opacity:1;stroke:none;stroke-width:6;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <path
+         inkscape:export-ydpi="10.18"
+         inkscape:export-xdpi="10.18"
+         inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\tag_haemorrhage.png"
+         sodipodi:nodetypes="ccscscsc"
+         id="path3330"
+         d="M 955.90538,751.00523 C 934.97071,756.32088 932.73275,764.11618 932.73275,776.68044 C 932.73275,781.78923 943.52402,785.64797 948.18117,789.51805 C 954.57218,794.82896 948.15564,804.8609 963.62959,808.77445 C 977.17775,812.20096 998.15685,816.03002 1009.9748,808.77445 C 1022.4645,801.10659 1025.4233,781.93154 1025.4233,770.26164 C 1025.4236,760.63933 1011.7982,763.84284 994.52647,763.84284 C 971.3538,763.84284 972.32675,746.83558 955.90538,751.00523 z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.39744344px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:export-ydpi="10.18"
+         inkscape:export-xdpi="10.18"
+         inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\tag_haemorrhage.png"
+         sodipodi:nodetypes="ccscscsc"
+         id="path3334"
+         d="M 1062.9921,804.33069 C 1055.1969,797.73057 1050.8545,799.24704 1044.7538,803.11006 C 1042.2733,804.68082 1043.0875,810.11189 1042.3683,813.13361 C 1041.3814,817.28036 1034.9122,817.8409 1036.8661,825.13071 C 1038.5769,831.51331 1041.943,840.94253 1048.4095,843.36027 C 1055.2434,845.9154 1065.2908,841.18363 1070.9572,837.5956 C 1075.6294,834.63723 1070.6802,830.26275 1066.3783,823.46904 C 1060.6066,814.35426 1069.1069,809.50789 1062.9921,804.33069 z"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.20558529px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         inkscape:export-ydpi="9.8800001"
+         inkscape:export-xdpi="9.8800001"
+         inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\tag_vessel.png"
+         sodipodi:nodetypes="ccc"
+         id="path3336"
+         d="M 956.69291,932.34643 C 982.64897,895.58316 955.47571,839.74629 991.301,840.43821 C 1025.8189,841.03887 1017.257,895.58316 1008.6051,932.34643"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:27.09822845;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    </g>
+    <rect
+       style="fill:none;fill-opacity:1;stroke:none;stroke-width:5.99998283;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect3381"
+       width="212.08434"
+       height="213.11255"
+       x="248.03149"
+       y="485.43304"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\pan.png"
+       inkscape:export-xdpi="10.184627"
+       inkscape:export-ydpi="10.184627" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:12;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 331.34182,676.3518 C 331.34182,676.3518 251.48236,624.18122 270.87467,600.80088 C 290.45719,577.19121 321.26397,619.6886 321.26397,619.6886 C 321.26397,619.6886 273.81024,539.8961 301.65118,525.0968 C 329.49211,510.29751 340.47955,584.26351 340.47955,584.26351 C 340.47955,584.26351 318.89764,503.14958 354.33071,503.14958 C 389.76378,503.14958 374.00367,581.91313 374.00367,581.91313 C 374.00367,581.91313 380.62608,513.41808 407.48031,520.86612 C 434.33454,528.31416 401.88684,591.357 401.88684,591.357 C 401.88684,591.357 415.72534,549.32968 438.23142,563.96555 C 460.73749,578.60143 401.88684,676.3518 401.88684,676.3518"
+       id="path3379"
+       sodipodi:nodetypes="czczczczczz"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\pan.png"
+       inkscape:export-xdpi="10.184627"
+       inkscape:export-ydpi="10.184627" />
+    <g
+       id="g3253"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\grid.png"
+       inkscape:export-xdpi="10.18"
+       inkscape:export-ydpi="10.18">
+      <rect
+         inkscape:export-ydpi="9.8800001"
+         inkscape:export-xdpi="9.8800001"
+         inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\favicon.png"
+         y="485.43304"
+         x="478.86053"
+         height="213.11255"
+         width="212.08434"
+         id="rect2462"
+         style="fill:none;fill-opacity:1;stroke:none;stroke-width:5.99998283000000040;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <path
+         id="path2464"
+         d="M 531.49606,503.14958 L 531.49606,680.31494"
+         style="fill:none;fill-rule:evenodd;stroke:#1fff01;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+      <path
+         id="path2466"
+         d="M 620.07874,503.14958 L 620.07874,680.31494"
+         style="fill:none;fill-rule:evenodd;stroke:#1fff01;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+      <path
+         id="path2468"
+         d="M 496.06299,627.16533 L 673.22835,627.16533"
+         style="fill:none;fill-rule:evenodd;stroke:#1fff01;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+      <path
+         id="path2470"
+         d="M 496.06299,538.58266 L 673.22835,538.58266"
+         style="fill:none;fill-rule:evenodd;stroke:#1fff01;stroke-width:8;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+    </g>
+    <g
+       id="g3328"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\brightness_contrast.png"
+       inkscape:export-xdpi="9.8800001"
+       inkscape:export-ydpi="9.8800001">
+      <rect
+         inkscape:export-ydpi="9.8800001"
+         inkscape:export-xdpi="9.8800001"
+         inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\favicon.png"
+         y="485.43304"
+         x="708.66144"
+         height="213.11255"
+         width="212.08434"
+         id="rect2468"
+         style="fill:none;fill-opacity:1;stroke:none;stroke-width:5.99998283000000040;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="cc"
+         id="path3243"
+         d="M 708.66142,591.73226 L 921.25984,591.73226"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="cc"
+         id="path3245"
+         d="M 814.96063,698.03147 L 814.96063,485.43305"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3247"
+         d="M 885.82677,662.5984 L 744.09449,520.86612"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <path
+         id="path3249"
+         d="M 744.09449,662.5984 L 885.82677,520.86612"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      <g
+         transform="translate(-35.433077,265.74815)"
+         id="g3264">
+        <path
+           transform="matrix(1.1428572,0,0,1.1428569,-91.113667,-360.4049)"
+           d="M 885.82678,600.59052 A 62.007874,62.007874 0 1 1 761.81104,600.59052 A 62.007874,62.007874 0 1 1 885.82678,600.59052 z"
+           sodipodi:ry="62.007874"
+           sodipodi:rx="62.007874"
+           sodipodi:cy="600.59052"
+           sodipodi:cx="823.81891"
+           id="path3259"
+           style="opacity:1;fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:8.00012589;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           sodipodi:type="arc" />
+        <path
+           transform="matrix(0,0.4615389,-0.5000003,0,960.23627,-111.47838)"
+           sodipodi:end="3.1415927"
+           sodipodi:start="0"
+           d="M 1062.9921,219.68501 A 115.15748,106.29921 0 1 1 832.67718,219.68501 L 947.83466,219.68501 z"
+           sodipodi:ry="106.29921"
+           sodipodi:rx="115.15748"
+           sodipodi:cy="219.68501"
+           sodipodi:cx="947.83466"
+           id="path3262"
+           style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:9.14299965;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+           sodipodi:type="arc" />
+      </g>
+    </g>
+    <g
+       id="g3343"
+       inkscape:export-filename="S:\uman-src\isbe\isbe_apps\nailfold\qtools\ncm_qmarkup\images\zoom.png"
+       inkscape:export-xdpi="10.18"
+       inkscape:export-ydpi="10.18">
+      <rect
+         y="254.86447"
+         x="708.41132"
+         height="213.11255"
+         width="212.08434"
+         id="rect3302"
+         style="fill:none;fill-opacity:1;stroke:none;stroke-width:5.99998283000000040;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <rect
+         transform="matrix(0.7071068,-0.7071068,0.7071068,0.7071068,0,0)"
+         ry="26.574802"
+         y="779.57812"
+         x="292.61142"
+         height="177.16536"
+         width="53.149605"
+         id="rect3304"
+         style="fill:#5f3500;fill-opacity:1;stroke:#000000;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <path
+         transform="matrix(1.246471,0,0,1.2464213,620.32883,-106.77745)"
+         d="M 212.59843,361.4173 A 70.866142,70.866142 0 1 1 70.866142,361.4173 A 70.866142,70.866142 0 1 1 212.59843,361.4173 z"
+         sodipodi:ry="70.866142"
+         sodipodi:rx="70.866142"
+         sodipodi:cy="361.4173"
+         sodipodi:cx="141.73228"
+         id="path3306"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:4;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         sodipodi:type="arc" />
+      <path
+         sodipodi:nodetypes="csc"
+         id="path3309"
+         d="M 726.12786,343.44716 C 726.12786,272.58102 796.994,272.58102 796.994,272.58102 C 775.73416,272.58102 726.12786,322.18732 726.12786,343.44716 z"
+         style="fill:#f0f0f0;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         sodipodi:nodetypes="csc"
+         id="path3311"
+         d="M 867.86014,343.44716 C 867.86014,414.3133 796.994,414.3133 796.994,414.3133 C 818.25384,414.3133 867.86014,364.707 867.86014,343.44716 z"
+         style="fill:#e1e8ff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,21 @@
+\label{s:filtering_firstderivs}
+%
+\input{methods/image_processing/fig_filtering_firstderivs}%
+%
+Horizontal and vertical first-order derivatives of a Gaussian kernel, $\Gx$ and $\Gy$ (\fref{f:filters}a), give a smoothed estimate of the image gradient in $x$ and $y$, and are used in many edge detectors (\eg~Canny~\cite{Canny_TPAMI86}). These filters are separable, such that the filter convolution is highly efficient, and they also form a basis pair for a steerable filter such that the response to the filter at an arbitrary angle, $\theta$, is given by
+%
+\begin{equation}
+R(\theta) = \Ix \cos(\theta) + \Iy \sin(\theta)
+\label{e:firstderivs_response}
+\end{equation}
+%
+\noindent where $\Ix=\Gx\ast I$ and $\Iy=\Gy\ast I$ are the image responses to $\Gx$ and $\Gy$, respectively. This response function has two stationary points in the range $[0,2\pi)$, occuring at
+%
+\begin{equation}
+\theta = \tan^{-1}(\Iy/\Ix),
+\label{e:firstderivs_orientation}
+\end{equation}
+%
+\noindent that correspond to the equal and opposite directions of maximum absolute gradient.
+
+Though these filters are effective for estimating orientation at an edge, there is an instability when both $\Ix$ and $\Iy$ are close or equal to zero. Unfortunately, this occurs at the centre of a symmetric image feature, such as a bar or ridge, whose orientation we may wish to estimate.

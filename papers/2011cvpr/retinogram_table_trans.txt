@@ -1,0 +1,22 @@
+$1^{st}$ deriv.	& $\begin{array}{c}   34.7 \\ (42.1)  \end{array}$ %Analytic
+			& $\begin{array}{cc} ?    & ?    \\ (?)   & (?)   \end{array}$ %LinReg
+			& $\begin{array}{cc} ?    &  8.3 \\ (?)   & (?)   \end{array}$ %BoostedReg
+			& $\begin{array}{cc} 13.2 & 6.7  \\ (22.7)& (7.5) \end{array}$ \\ %Forest
+
+
+$2^{nd}$ deriv.	& $\begin{array}{c} 7.6  \\ (8.7)  \end{array}$ %Analytic
+			& $\begin{array}{cc} ?   &  7.9 \\ (?)  & (8.1) \end{array}$ %LinReg
+			& $\begin{array}{cc} ?   &  8.3 \\ (?)  & (9.1) \end{array}$ %BoostedReg
+			& $\begin{array}{cc} 7.0 &  6.0 \\ (7.5)& (6.9) \end{array}$ \\ %Forest
+
+
+Mono.			& $\begin{array}{c} 16.4 \\ (29.0) \end{array}$ %Analytic
+			& $\begin{array}{cc} ?    &  11.9 \\ (?)    & (10.1) \end{array}$ %LinReg
+			& $\begin{array}{cc} ?    &   8.9 \\ (?)    & (10.1) \end{array}$ %BoostedReg
+			& $\begin{array}{cc} 13.3 &   8.4 \\ (23.5) & (9.9)  \end{array}$ \\ %Forest		
+
+\dtcwt 		& - 
+			& $\begin{array}{cc} ? & 7.6   \\ (?)   & (8.3) \end{array}$ %LinReg
+			& $\begin{array}{cc} ? & 7.1   \\ (?)   & (8.0) \end{array}$ %BoostedReg
+			& $\begin{array}{cc} 5.8 & 5.5 \\ (6.5) & (6.1) \end{array}$ \\ %Forest
+			

@@ -1,0 +1,31 @@
+\comment{
+There is no 3D analogue of the \dtcwt{}. Therefore, we should avoid 3D datasets and related work as much as possible - this paper is solely about the analysis of 2D image structures. This includes aerial photography, retinal images, fingerprints and palmprints, surface inspection, and possibly fibre analysis.
+}
+
+Because previous attempts at detecting and measuring curvilinear structures have been surveyed elsewhere, from the general~\cite{Papari_Petkov_IVC11} to the application-specific~\cite{Kirbas_Quek_ACMCS04,Lesage_etal_MIA09}, here we briefly review only a few papers in applications areas of specific interest. We will also discount the very basic detection methods that simply threshold an image~\cite{Jiang_Mojon_TPAMI03} and very complex methods that use techniques such as phase fields~\cite{Peng_etal_IJCV09}, leaving us free to focus on the most popular approaches that apply a bank of filters to the image before interpreting the responses in a way that accentuates the `lineness' at every pixel.
+
+Early examples modelled a curvilinear structure as an image `ridge', typically defined using second order derivatives and formulated either as a Hessian problem~\cite{Frangi_etal_MICCAI98,Sato_etal_MIA98} or as responses to a derivative filter~\cite{Staal_etal_TMI04,Aylward_Bullitt_TMI02,Steger_TPAMI98,Koenderink_vanDoorn_TPAMI92}. Interpreting the responses to these filters used hand-crafted equations based on the differential geometry of the image `surface'~\cite{Frangi_etal_MICCAI98,Sato_etal_MIA98}.
+
+With the maturing of machine learning, it was recognized that hand-crafting could be replaced by flexible statistical models whose parameters were optimized to agree with input-output training example pairs; Gaussian mixture models~\cite{Soares_etal_TMI06}, %
+artificial neural networks~\cite{Marin_etal_TMI11,Minh_Hinton_ECCV10}, %
+support vector machines~\cite{Ricci_Perfetti_TMI07,Gonzalez_etal_CVPR09}, and %
+$k$-nearest neighbour classifiers~\cite{Staal_etal_TMI04} were all popular choices. Not only are these methods well-established and understood within machine learning, but a learnt statistical model can also accommodate different sensing modalities (with different noise properties) and other `stuff' that is hard to hand-craft, making the resulting algorithms more easily transferrable.
+
+In addition, learnt statistical models can be applied to \emph{any} vector of image features to predict the quantity of interest, and are not tied to a particular feature type with specific theoretical properties. Furthermore, flexible statistical models permit the option to include hand-crafted, application-specific features where beneficial~\cite{Staal_etal_TMI04}. As a result, subsequent studies were free to use alternative filter banks and features based on %
+matched filters or templates~\cite{Chaudhuri_etal_TMI89,Pechaud_etal_CVPR09,Dixon_Taylor_IPC79,Hoover_etal_TMI00,Ricci_Perfetti_TMI07}; %
+derivatives of a first~\cite{Cai_Chung_MICCAI06} or higher than second~\cite{Gonzalez_etal_CVPR09} order; %
+Gabor filters~\cite{Soares_etal_TMI06,Dabbah_etal_MIA11}; %
+moments~\cite{Marin_etal_TMI11}; %
+principal component analysis~\cite{Minh_Hinton_ECCV10}; %
+wavelet transforms; %
+and the monogenic signal. %
+Some of these filter banks have been evaluated previously in a brief comparison~\cite{Ayres_Rangayyan_JEI07}, though the authors admit that not all filters were compared exactly on a like-for-like basis; our work builds on this comparison.
+
+As well as permitting flexibility in the choice of input feature vector, learnt statistical predictors can be used to predict more than just the presence of a line. In recent studies, for example, orientation~\cite{Zwiggelaar_etal_TMI04,Ayres_Rangayyan_JEI07}, width~\cite{Steger_TPAMI98,Zwiggelaar_etal_TMI04} and multi-class labels~\cite{Zwiggelaar_etal_TMI04} have all been predicted from image feature vectors.
+
+Other facets of tube detection and measurement are interesting though not directly relevant to this work: %
+detecting lines at multiple scales~\cite{Lindeberg_IJCV98,Sato_etal_MIA98}; %
+dealing with junctions and bifurcations where multiple lines meet at a point~\cite{Chen_etal_TPAMI00};
+regularizing estimated lines via snakes~\cite{Laptev_etal_MVA00} or dynamic programming~\cite{Gruen}; %
+and line following or tracking~\cite{Aylward_Bullitt_TMI02,Perez_etal_ICCV01}.
+

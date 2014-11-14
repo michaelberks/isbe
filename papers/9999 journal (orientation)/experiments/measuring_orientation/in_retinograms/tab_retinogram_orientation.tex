@@ -1,0 +1,21 @@
+\begin{table}[b]
+\centering
+\begin{tabular}{l|c c c c}
+							& \multicolumn{4}{c}{Feature Type} \\
+							& Monogenic		& 2nd deriv.	& Haar				& \dtcwt{} \\
+\hline
+\input{retinogram_table.txt}
+\end{tabular}
+%
+\caption{Median absolute error (degrees) for combinations of input feature and regressor on the DRIVE database of retinal images (images 01-20).}
+\label{t:retinopathy}
+\end{table}
+
+%% CVPR
+%\begin{table}[tb]
+%\centering
+%\input{retinogram_table.txt}
+%%
+%\caption{Median absolute error in degrees for images 01-20 of the DRIVE database of retinal images. Results are shown both for the whole vessel and (in brackets) along the centre of the vessel only. These are given over different window sizes ($1{\times}1$ and $3{\times}3$) for first ($G'$) and second ($G''$) derivatives of gaussians, the monogenic signal, and the dual tree complex wavelet transform. Each feature type is used to predict orientation using the analytic solution (except for the \dtcwt), linear regression, Boosted regression and Random Forest regression.}
+%\label{t:retinopathy}
+%\end{table}

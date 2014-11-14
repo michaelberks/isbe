@@ -1,0 +1,4 @@
+%Since we are predicting sin2T and cos2T, it makes sense to apply some limits to the values these can take. One possibility is to us logistic regression (usually used for classification) which can model a linear region for appropriately scaled targets or a sigmoidal output if necessary. We scale sin and cos to the range [0,1] to learn the regressor and apply the reverse transform on the predictions. This does not restrict outputs to be on (or within) the unit circle but within the unit square.
+%
+%This is slower to train since it requires iteratively reweighted least squares to minimize the objective function though adds little to testing times.
+%Uncertainty will be tricky here

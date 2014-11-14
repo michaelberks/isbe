@@ -1,0 +1,11 @@
+\label{s:exp_retinogram_orientation_wrt_regressor}
+% Compare all regressors with a given input feature (preferably the richest - dtcwt)
+%
+Comparing the performance of all estimation methods for a fixed input feature type (the \dtcwt{}), orientation was consistently estimated more accurately by regression compared to the analytic method with particular improvement seen in faint narrow vessels. 
+
+Moreover, complex regressors such as Random Forests outperformed simpler ones such as linear regression. This suggests that the relationship between responses to the \dtcwt{} and line orientation is nonlinear.
+
+Our use of statistical learning approaches was motivated threefold: by their ability to pool over scales and local neighbourhoods; to combine filter responses where an analytic solution was not obvious (when using the \dtcwt{}, for example); and to model data-dependent properties such as image noise and the observed distribution of line widths and contrasts. 
+
+% Linear regression
+%As noted earlier, when using second derivative responses it is necessary to compute the responses at the two possible solutions to determine which is the correct one. Since the linear regressor minimizes the average error, however, it contains no mechanism for selecting the correct orientation and this is likely to be one reason for its poor performance relative to more sophisticated regressors such as the Random Forest.

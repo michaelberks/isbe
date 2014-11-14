@@ -1,0 +1,28 @@
+\label{s:orientation_representation}
+%
+When orientation is considered as a continuous variable, it is appropriate to estimate its value by regression. (Classifiers may be used in instances where orientatation is discretized into a finite number of bins.) Orientation, however, violates a common assumption in that it does not live in a Euclidean space; adding $2\pi$ radians gives the same orientation, for example. Also, orientation (unlike \emph{direction}) is only defined over half the circle; orientations exactly $\pi$radians apart are also considered to be identical.
+
+A different representation is therefore needed, and one that respects these two conditions uses a unit vector in the complex plane where the underlying angle is doubled such that two orientations exactly $\pi$radians apart are mapped to the same complex value~\cite{Mardia_Jupp_00}:
+
+\begin{equation}
+	t_k = \cos 2\theta_k + i\sin 2\theta_k
+\end{equation}
+
+% Difference between two orientations
+Representing orientation as a complex vector also allows us to define a distance measure between two values -- an estimated value, $t_{est}$, and ground truth, $t_{gt}$, for example:
+
+\begin{equation}
+	2\theta_{err} = |\angle(t_{gt} \cdot t_{est}^*)|,
+\end{equation}
+%
+\noindent where $t^*$ denotes the complex conjugate of $t$. This error metric therefore accounts for the circular nature of orientation in a principled way.
+
+% Interpreting the mean vector and its magnitude
+Taking the mean over a set of orientations gives a complex vector whose angle is twice the average orientation over the set, and whose magnitude,
+%
+\begin{equation}
+D = \left| \frac{\sum{t_k}}{N} \right|,
+\label{e:2d}
+\end{equation}
+%
+\noindent defines the spread -- known as the \emph{angular dispersion} -- of the samples in the set~\cite{Mardia_Jupp_00}. By definition, $D$ reaches a maximum of $1$ when all $t_k$ are equal, and a minimum of $0$ when orientations are distributed uniformly about the circle or when the sample consists of pairs exactly $\pi \text{radians}$ apart. 

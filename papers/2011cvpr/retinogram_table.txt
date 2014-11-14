@@ -1,0 +1,47 @@
+\begin{tabular}{l c c c c c}
+\toprule
+& & \multicolumn{4}{c}{Feature Type} \\
+& & $G'$ & $G''$ & Mono. & \dtcwt \\
+%
+\cmidrule{2-6}
+\multirow{2}{*}{Analytic} &
+\multirow{2}{*}{1{$\times$}1} &
+       34.7  	&     7.6  	&    16.4  	&     -  \\
+& &   (42.1) 	&    (8.7) 	&   (29.0) 	&    (-) \\
+%
+\cmidrule{2-6}
+\multirow{4}{*}{LinReg} &
+\multirow{2}{*}{1{$\times$}1} &
+       40.6  	&     7.7  	&    28.9  	&     8.1  \\
+& &   (42.0) 	&    (7.9) 	&   (35.7) 	&    (9.3) \\
+%
+  &
+\multirow{2}{*}{3{$\times$}3} &
+        7.8  	&     7.8  	&    11.9  	&     7.6  \\
+& &    (8.0) 	&    (8.0) 	&   (10.1) 	&    (8.3) \\
+%
+\cmidrule{2-6}
+\multirow{4}{*}{Boost} &
+\multirow{2}{*}{1{$\times$}1} &
+       25.5  	&     8.8  	&    14.0  	&     7.3  \\
+& &   (29.5) 	&    (9.4) 	&   (25.0) 	&    (8.3) \\
+%
+  &
+\multirow{2}{*}{3{$\times$}3} &
+       10.0  	&     8.3  	&     8.9  	&     7.1  \\
+& &    (9.4) 	&    (9.1) 	&   (10.1) 	&    (8.0) \\
+%
+\cmidrule{2-6}
+\multirow{4}{*}{Forest} &
+\multirow{2}{*}{1{$\times$}1} &
+       13.2  	&     7.0  	&    13.3  	&     5.8  \\
+& &   (22.7) 	&    (7.5) 	&   (23.5) 	&    (6.5) \\
+%
+  &
+\multirow{2}{*}{3{$\times$}3} &
+        6.7  	&     6.0  	&     8.4  	&     5.5  \\
+& &    (7.5) 	&    (6.9) 	&    (9.9) 	&    (6.1) \\
+%
+\bottomrule
+\noalign{\smallskip}
+\end{tabular}

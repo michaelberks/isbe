@@ -1,0 +1,121 @@
+\begin{tabularx}{\linewidth}{p{3.1cm} p{3cm} r r r r r}
+\toprule
+\multicolumn{7}{l}{Fibre data} \\
+\midrule
+            &
+            & $w$
+            & Size
+            & Time
+            & \multicolumn{1}{c}{Vessel Detection \linebreak ($A_z$)}
+            & \multicolumn{1}{c}{Vessel Orientation \linebreak ($MedAE$)}  \\
+
+\midrule
+\multirow{6}{3.1cm}{\centering
+    \textbf{Gaussian}
+    \newline separable filters,
+    \newline
+    \newline $\Gxxs$,..., $H_a(\sigma),...$
+    \newline  $\sigma = [1, 2, 4, 8, 16]$ }
+        & $G$                       & 1 &    15 &   3   & 0.896 $\pm$ 3.2   & 8.82 $\pm$ 0.16 \\
+        & $H$                       & 1 &    20 &   4   & 0.819 $\pm$ 1.8   &16.60 $\pm$ 0.47 \\
+        & $G, H$                    & 1 &    35 &   7   & 0.901 $\pm$ 3.0   & 8.68 $\pm$ 0.17 \\
+        & $G$                       & 3 &   135 &   3   & 0.902 $\pm$ 3.2   & 8.43 $\pm$ 0.17 \\
+        & $H$                       & 3 &   180 &   4   & 0.892 $\pm$ 2.7   & 8.98 $\pm$ 0.24 \\
+        & $G, H$                    & 3 &   315 &   7   & 0.903 $\pm$ 3.0   & 8.32 $\pm$ 0.17 \\
+
+\midrule
+\multirow{10}{3.1cm}{\centering
+    \textbf{Gaussian}
+    \newline steered responses,
+    \newline
+    \newline $G_{\theta}(\sigma)$, $H_{\theta}(\sigma)$
+    \newline $\sigma = [1, 2, 4, 8, 16]$
+    \newline $\theta = [ \nicefrac{i\pi}{N_\theta} ], N_\theta = 6$ }
+        & $G$                       & 1 &  30   &  3    & 0.897 $\pm$ 3.2   & 8.76 $\pm$ 0.16 \\
+        & $H$                       & 1 &  30   &  4    & 0.820 $\pm$ 1.9   &16.10 $\pm$ 0.43 \\
+        & $G,H$                     & 1 &  60   &  7    & 0.901 $\pm$ 3.0   & 8.60 $\pm$ 0.16 \\
+        & $G$                       & 3 & 270   &  4    & 0.903 $\pm$ 3.1   & 8.40 $\pm$ 0.16 \\
+        & $H$                       & 3 & 270   &  5    & 0.892 $\pm$ 2.8   & 8.85 $\pm$ 0.23 \\
+        & $G,H$                     & 3 & 540   &  9    & 0.903 $\pm$ 2.9   & 8.31 $\pm$ 0.16 \\
+        & $Mag$                     & 3 & 270   & 11    & 0.876 $\pm$ 2.5   & 8.65 $\pm$ 0.19 \\
+        & $Phase$                   & 3 & 270   & 11    & 0.876 $\pm$ 3.5   & 9.34 $\pm$ 0.21 \\
+        & $Mag, Phase$              & 3 & 540   & 11    & 0.901 $\pm$ 2.8   & 8.27 $\pm$ 0.19 \\
+        & $\mathbf{Mag, Phase{^*}}$ & \textbf{3} & \textbf{540} & \textbf{11} & \textbf{0.903 $\pm$ 3.1} & \textbf{8.15 $\pm$ 0.17} \\
+        & \hspace{2mm} \ldots rotated
+                                    & 3 & 540   & 11    & 0.900 $\pm$ 2.7   & --- \\
+        & \hspace{2mm} \ldots interpolated
+                                    & 3 & 540   &  2    & 0.901 $\pm$ 3.1   & 8.57 $\pm$ 0.18 \\
+        & \hspace{2mm} \ldots ${\sigma = 1}$
+                                    & 3 & 108   &${<}1$ & 0.851 $\pm$ 3.2   &12.40 $\pm$ 0.38 \\
+        & \hspace{2mm} \ldots ${\sigma = 2}$
+                                    & 3 & 108   &${<}1$ & 0.885 $\pm$ 3.2   & 9.27 $\pm$ 0.23 \\
+        & \hspace{2mm} \ldots ${\sigma = 4}$
+                                    & 3 & 108   &  1    & 0.893 $\pm$ 3.3   & 8.48 $\pm$ 0.18 \\
+        & \hspace{2mm} \ldots ${\sigma = 8}$
+                                    & 3 & 108   &  2    & 0.839 $\pm$ 2.9   &11.70 $\pm$ 0.17 \\
+
+\midrule
+\multirow{14}{3.1cm}{\centering
+    \textbf{Gabor}
+    \newline oriented filters,
+    \newline
+    \newline $W_{re}(\sigma,\theta)$, $W_{im}(\sigma,\theta)$
+    \newline $\sigma = [1, 2, 4, 8, 16]$
+    \newline $\theta = [ \nicefrac{i\pi}{N_\theta} ], N_\theta = 6$ }
+        & $Re$                      & 1 &  30   & 82    & 0.901 $\pm$ 3.1   & 7.92 $\pm$ 0.15 \\
+        & $Im$                      & 1 &  30   & 82    & 0.835 $\pm$ 2.2   &13.11 $\pm$ 0.41 \\
+        & $Re,Im$                   & 1 &  60   &164    & 0.906 $\pm$ 3.0   & 7.75 $\pm$ 0.15 \\
+        & $Re$                      & 3 & 270   & 82    & 0.907 $\pm$ 3.1   & 7.64 $\pm$ 0.13 \\
+        & $Im$                      & 3 & 270   & 82    & 0.895 $\pm$ 3.0   & 7.87 $\pm$ 0.23 \\
+        & $Re,Im$                   & 3 & 540   &164    & 0.908 $\pm$ 3.0   & 7.51 $\pm$ 0.13 \\
+        & $Mag$                     & 3 & 270   &164    & 0.884 $\pm$ 2.5   & 7.23 $\pm$ 0.14 \\
+        & $Phase$                   & 3 & 270   &164    & 0.867 $\pm$ 3.6   &10.41 $\pm$ 0.26 \\
+        & $Mag,Phase$               & 3 & 540   &164    & 0.905 $\pm$ 3.1   & 7.07 $\pm$ 0.14 \\
+        & $\mathbf{Mag, Phase{^*}}$ & \textbf{3} & \textbf{540} &\textbf{164} & \textbf{0.908 $\pm$ 3.0} & \textbf{7.05 $\pm$ 0.13} \\
+        & \hspace{2mm} \ldots rotated
+                                    & 3 & 540   &164    & 0.906 $\pm$ 2.6   & --- \\
+        & \hspace{2mm} \ldots interpolated
+                                    & 3 & 540   &  7    & 0.899 $\pm$ 2.9   & 7.93 $\pm$ 0.17 \\
+        & \hspace{2mm} \ldots ${\sigma = 1}$
+                                    & 3 & 108   &  6    & 0.814 $\pm$ 3.2   &17.00 $\pm$ 0.54 \\
+        & \hspace{2mm} \ldots ${\sigma = 2}$
+                                    & 3 & 108   & 11    & 0.866 $\pm$ 3.1   &10.50 $\pm$ 0.31 \\
+        & \hspace{2mm} \ldots ${\sigma = 4}$
+                                    & 3 & 108   & 22    & 0.893 $\pm$ 3.1   & 7.50 $\pm$ 0.18 \\
+        & \hspace{2mm} \ldots ${\sigma = 8}$
+                                    & 3 & 108   & 43    & 0.887 $\pm$ 3.3   & 7.91 $\pm$ 0.14 \\
+
+\midrule
+\multirow{14}{3.1cm}{\centering
+    \textbf{\dtcwt{}}
+    \newline 5 levels
+    \newline 6 oriented sub-bands }
+        & $Re$                      & 1 &  30   &${<}1$ & 0.897 $\pm$ 3.0   & 8.07 $\pm$ 0.14 \\
+        & $Im$                      & 1 &  30   &${<}1$ & 0.834 $\pm$ 2.4   &13.42 $\pm$ 0.42 \\
+        & $Re,Im$                   & 1 &  60   &  1    & 0.902 $\pm$ 3.0   & 7.91 $\pm$ 0.15 \\
+        & $Re$                      & 3 & 270   &  6    & 0.903 $\pm$ 3.0   & 7.80 $\pm$ 0.14 \\
+        & $Im$                      & 3 & 270   &  6    & 0.891 $\pm$ 3.0   & 8.06 $\pm$ 0.21 \\
+        & $Re,Im$                   & 3 & 540   & 12    & 0.905 $\pm$ 2.9   & 7.65 $\pm$ 0.13 \\
+        & $Mag$                     & 3 & 270   & 12    & 0.869 $\pm$ 2.2   & 7.49 $\pm$ 0.15 \\
+        & $Phase$                   & 3 & 270   & 12    & 0.845 $\pm$ 4.4   &10.69 $\pm$ 0.21 \\
+        & $Mag,Phase$               & 3 & 540   & 12    & 0.898 $\pm$ 2.6   & 7.26 $\pm$ 0.16 \\
+        & $\mathbf{Mag, Phase{^*}}$ & \textbf{3} & \textbf{540} & \textbf{2} & \textbf{0.902 $\pm$ 2.6} & \textbf{7.19 $\pm$ 0.15} \\
+        & \hspace{2mm} \ldots rotated
+                                    & 3 & 540   & 12    & 0.899 $\pm$ 2.3   & --- \\
+
+\midrule
+\multirow{2}{3.1cm}{\centering
+    \textbf{Monogenic Signal}
+    \newline A, $\psi$, $\theta$
+    \newline 5 levels}
+
+                                   && \textbf{3} & \textbf{135} &  \textbf{5} & \textbf{0.883 $\pm$ 2.5} & \textbf{12.10 $\pm$ 0.35} \\
+                                   &&   &       &       &                   & \\
+\midrule
+\multicolumn{1}{c}{\textbf{All filters}}
+                                   && 3 & 1755  &???    & 0.907 $\pm$ 2.5   & 7.05 $\pm$ 0.22 \\
+                                   &&   &       &       &                   & \\
+
+\bottomrule
+\noalign{\smallskip}
+\end{tabularx}

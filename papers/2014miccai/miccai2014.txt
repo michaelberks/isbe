@@ -1,0 +1,340 @@
+
+%%%%%%%%%%%%%%%%%%%%%%% file typeinst.tex %%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% This is the LaTeX source for the instructions to authors using
+% the LaTeX document class 'llncs.cls' for contributions to
+% the Lecture Notes in Computer Sciences series.
+% http://www.springer.com/lncs       Springer Heidelberg 2006/05/04
+%
+% It may be used as a template for your own input - copy it
+% to a new file with a new name and use it as the basis
+% for your article.
+%
+% NB: the document class 'llncs' has its own and detailed documentation, see
+% ftp://ftp.springer.de/data/pubftp/pub/tex/latex/llncs/latex2e/llncsdoc.pdf
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\documentclass[runningheads,a4paper]{llncs}
+
+\setcounter{tocdepth}{3}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{times}
+\usepackage{epsfig}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{nicefrac}
+
+\usepackage{url}
+\urldef{\mailsa}\path|{alfred.hofmann, ursula.barth, ingrid.haas, frank.holzwarth,|
+\urldef{\mailsb}\path|anna.kramer, leonie.kunz, christine.reiss, nicole.sator,|
+\urldef{\mailsc}\path|erika.siebert-cole, peter.strasser, lncs}@springer.com|
+\newcommand{\keywords}[1]{\par\addvspace\baselineskip
+\noindent\keywordname\enspace\ignorespaces#1}
+
+% macros for referencing figures, tables, equations and sections
+\def\figpath{./figs}
+\newcommand{\fref}[1]{Figure~\ref{#1}}
+\newcommand{\eref}[1]{(\ref{#1})}
+\newcommand{\tref}[1]{Table~\ref{#1}}
+\newcommand{\sref}[1]{Section~\ref{#1}}
+\newcommand{\aref}[1]{Algorithm~\ref{#1}}
+
+% alternatives if booktabs not available
+%\newcommand{\toprule}{\hline\noalign{\smallskip}}
+%\newcommand{\midrule}[1]{\cline{#1}\noalign{\smallskip}}
+%\newcommand{\bottomrule}{\hline\noalign{\smallskip}}
+
+% maths macros
+\def\G{G}
+\def\Gx{G_x}
+\def\Gy{G_y}
+\def\Gxx{G_{xx}}
+\def\Gxxs{G_{xx}(\sigma)}
+\def\Gxy{G_{xy}}
+\def\Gxys{G_{xy}(\sigma)}
+\def\Gyx{G_{yx}}
+\def\Gyy{G_{yy}}
+\def\Gyys{G_{yy}(\sigma)}
+\def\Ix{I_x}
+\def\Iy{I_y}
+\def\Ixsqr{I_{x^2}}
+\def\Iysqr{I_{y^2}}
+\def\Ixx{I_{G_{xx}}}
+\def\Ixxs{I_{G_{xx}}(\sigma)}
+\def\Ixy{I_{G_{xy}}}
+\def\Ixys{I_{G_{xy}}(\sigma)}
+\def\Iyy{I_{G_{yy}}}
+\def\Iyys{I_{G_{yy}}(\sigma)}
+\def\Igt{I_{G_{theta}}}
+\def\Iht{I_{H_{theta}}}
+\def\dtcwt{DT-$\mathbb{C}$WT}
+\def\figpath{./figs}
+\def\ie{i.e.}
+\def\eg{e.g.}
+\def\etc{etc.}
+\def\etal{\emph{et al.}}
+
+% command for adding inline comment to text
+\newcommand{\comment}[1]{\textbf{[#1]}}
+%\newcommand{\comment}[1]{}
+
+\begin{document}
+
+\mainmatter  % start of an individual contribution
+
+% first the title is needed
+\title{An Automated System for Detecting and Measuring Nailfold Capillaries}
+
+% a short form should be given in case it is too long for the running head
+\titlerunning{Detecting and measuring nailfold capillaries}
+
+% the name(s) of the author(s) follow(s) next
+%
+% NB: Chinese authors should write their first names(s) in front of
+% their surnames. This ensures that the names appear correctly in
+% the running heads and the author index.
+%
+\author{*}%
+%\thanks{Please note that the LNCS Editorial assumes that all authors have used
+%the western naming convention, with given names preceding surnames. This determines
+%the structure of the names in the running heads and the author index.}%
+%\and Ursula Barth\and Ingrid Haas\and Frank Holzwarth\and\\
+%Anna Kramer\and Leonie Kunz\and Christine Rei\ss\and\\
+%Nicole Sator\and Erika Siebert-Cole\and Peter Stra\ss er}
+%
+%\authorrunning{Lecture Notes in Computer Science: Authors' Instructions}
+% (feature abused for this document to repeat the title also on left hand pages)
+
+% the affiliations are given next; don't give your e-mail address
+% unless you accept that it will be published
+\institute{*}
+%Tiergartenstr. 17, 69121 Heidelberg, Germany\\
+%\mailsa\\
+%\mailsb\\
+%\mailsc\\
+%\url{http://www.springer.com/lncs}}
+
+%
+% NB: a more complex sample for affiliations and the mapping to the
+% corresponding authors can be found in the file "llncs.dem"
+% (search for the string "\mainmatter" where a contribution starts).
+% "llncs.dem" accompanies the document class "llncs.cls".
+%
+
+\toctitle{Lecture Notes in Computer Science}
+\tocauthor{ }
+\maketitle
+
+
+\begin{abstract}
+Nailfold capillaroscopy is an established qualitative technique in the assessment of patients displaying Raynaud’s phenomena. We describe a fully automated system for extracting quantitative biomarkers from capillaroscopy images, using a layered machine learning approach. Evaluation on a unseen set of 455 images shows the system detects and locates individual capillaries as well as human experts, and makes measurements of vessel morphology that reveal statistically significant differences between patients with (relatively benign)Primary Raynaud’s, and those with potentially life-threatening systemic sclerosis.
+
+\end{abstract}
+
+\section{Introduction}
+\label{s:introduction}
+Systemic sclerosis (SSc) is a connective tissue disorder which can lead to morbidity and mortality, often in young people -- with a reported prevalence in the adult population of 250 per million~\cite{Mayes_etal_AR03}. Clinically, it results in fibrosis and microvascular abnormality, leading to ischaemic injury (\eg~ulceration, scarring, and gangrene), particularly in the fingers and toes. The commonest presenting feature is Raynaud's phenomenon (episodic colour change and pain in the fingers, usually in response to cold), but this is also a symptom of Primary Raynaud’s disease (PR), which is far more common and relatively benign.
+
+There is thus a clinical need to distinguish between PR and SSc-related Raynaud’s phenomenon. There is also a pressing need for quantitative biomarkers for monitoring SSc response to treatment, both clinically and in clinical trials, where existing end-points (eg digital ulceration) are unreliable, leading to a limited evidence base~\cite{HerrickCOinR2011, HerrickAR2009}. Nailfold capillaroscopy, a non-invasive technique for imaging capillaries at the base of the fingernails (see \fref{f:capillaroscopy}), is already used clinically to assess the degree of microvascular abnormality, and has the potential to provide quantitative biomarkers for SSc. Standardised protocols for qualitative grading of nailfold images exist~\cite{Cutolo_etal_BPRCR08}, but do not provide quantitative data. (Semi-)Manual measurements of capillary spacing, vessel width at the tops of loops (apices)and vessel tortuosity have been shown to have potential as quantitative biomarkers for SSc~\cite{Murray_etal_AR09}, but are too time-consuming and open to subjective factors for routine use. There is thus a clear rationale for developing automated methods for analysing nailfold images.
+
+
+In this paper we describe and evaluate a fully automated system for detecting and measuring capillaries in nailfold images, adopting a machine learning approach, and building on experience with existing semi-automated systems~\cite{Murray_etal_AR09,Paradowski_etal_KES09b}. Specifically, our contributions are:
+
+[bullet list – can’t remember syntax]
+A method for estimating vessel probability and orientation at each pixel;
+A method for generating candidate vessel apices;
+A method for refining candidate vessel apices and measuring vessel properties;
+A large-scale evaluation of performance, compared to human experts;
+Initial results for classifying patients based on the automated measurements.
+
+In summary we show that our automated system is indistinguishable from human experts in detecting and locating vessel apices, and that there are statistically significant differences, at the population level, between vessel measurements for SSc patients and normal or PR subjects. 
+ 
+
+%\newpage
+\begin{figure}[t]
+\centering
+\begin{tabular}{@{}c@{} @{}c@{}}
+\includegraphics[width=0.48\columnwidth]{\figpath/nailfold_10598c_cropped}
+\includegraphics[width=0.48\columnwidth]{\figpath/nailfold_54611c_cropped} \\
+\noalign{\smallskip}
+\end{tabular}
+%
+\caption{Sections from two nailfold mosaics: one from a healthy control subject (left) and one from a patient with SSc (right) showing enlargement, distortion and irregular spacing of capillaries.}
+\label{f:capillaroscopy}
+\end{figure}
+%
+\section{Nailfold Capillaroscopy Data}
+Our images were acquired by a capillaroscopy system in a specialist rheumatic disease clinic at [anonymous hospital]. Patients gave informed consent. High magnification, $768 \times 576$, 8-bit monochome pixel video frames were captured at a resolution of $1.25 \mu m$ per pixel. Images captured along the nailbed were registered and compounded into a single mosaic (similarly to~\cite{Anderson_etal_JRh05}) showing the whole nailfold (\fref{f:capillaroscopy}). 
+
+In normal subjects, vessel loops are all similar, arranged regularly and oriented approximately vertically. Current clinical practice is to confine attention to the ‘distal row’ of vessels, whose apices lie on a smooth, approximately horizontal line towards the top of the image. This pattern is disrupted in SSc by structural damage to the microvasculature -- see \fref{f:capillaroscopy}.
+
+We have access to a set of 990 mosaics, manually annotated as part of a separate clinical study, involving three subject groups: healthy controls (HC), subjects with PR, and patients with SSc. Each image was annotated independently by two expert observers, one of which (Observer 1) was the same for every image, with the other drawn from a pool of experts. In each image, the observers attempted to mark the locations and apical widths of all distal capillaries. This is a challenging and subjective task for which perfect agreement is rare (\sref{s:results}).
+
+In a subset of 80 images, Observer 1 provided a precise demarcation of the inner and outer edges of the distal capillaries. Regions of interest around these capillaries were created, resulting in a set of 450 training RoIs with matching capillary masks, which we used for training learning algorithms(\sref{s:segmenting_vessels}, \sref{s:capillary_apexes}, \sref{s:distal_row}). The remaining images were split into a validation set of 456 images (104 HC, 83 PR, 269 SSc) used to locate capillaries and determine the distal row, and a test set of 455 images (104 HC, 83 PR, 268 SSc) used to evaluate performance (\sref{s:results}).
+%
+%\newpage
+\section{Vessel detection and characterisaton}
+\label{s:segmenting_vessels}
+
+Nailfold images contain several challenges: capillaries are often very low contrast, particularly in SSc images were the microvasculature is damaged; stitching the mosaic produces contrast changes across the image and may introduce artefacts at the joins; the size, shape, number and spacing of capillaries vary hugely throughout the data due to the disease process (e.g. the average width of a capillary is around $10-15 \mu m$, but can reach up to $200-300 \mu m$). Our detection models therefore need to be robust to large changes in contrast, scale and rotation, without making assumptions about the number of detections in an image. 
+
+Although previous work on automated capillaroscopy is limited, we can draw on the extensive literature on curvilinear structure detection in medical images (eg~\cite{Staal_etal_TMI04,Soares_etal_TMI06, Jiang_Mojon_TPAMI03,Berks_etal_IPMI11}.  In particular, we adopt the well-established machine learning approach to predict, at each pixel, the probability that is belongs to a vessel (detection) eg ~\cite{Soares_etal_TMI06}, and the local orientation and width~\cite{Berks_etal_IPMI11} (though the latter are only meaningful at vessel pixels). In the following sections we explain the features we used to describe local image structure, and the learning methods we used to obtain vesselness, orientation and width models.
+
+\subsection{Image Features}
+
+Our choice of local structure representation is based on an extensive evaluation of alternatives, the details of which are beyond the scope of this paper.  To characterise the local structure at each training pixel, we use a feature vector of responses to symmetric (even) and asymmetric (odd) filters across scale and orientation. Specifically, we use a steerable filter bank~\cite{Freeman_Adelson_TPAMI91} of directional second order derivatives of a Gaussian kernel~\cite{Staal_etal_TMI04} and their (approximate) Hilbert transforms so that responses at any orientation can be computed efficiently. 
+
+From an initial scale $\sigma=1$ we compute even and odd responses at six angles $\theta_i = \nicefrac{i\pi}{6}$ over five scales, in each case keeping $\sigma$ fixed whilst downsampling the image by a factor of $2$ in each direction (\ie~the coarsest scale is equivalent to $\sigma=16$ at the original image resolution). For the coarser scales, we use bilinear interpolation to approximate the responses at the finest scale. At each pixel the responses at that pixel, along with its 8-connected neighbours, are concatenated into a feature vector without further manipulation. These features are designed to accommodate the wide range in size, shape and orientation of imaged capillaries.
+
+\subsection{Learning Vesselness, Orientation and Width Models}
+
+We treat vessel detection as a supervised classification problem, and orientation and width prediction as regression problems, all based on the features outlined in the previous section. We have used Random Forests~\cite{Breiman_ML01}, due to their ease of training, flexibility, relative robustness to over-fitting and strong performance in comparable learning tasks, but we do not believe the choice of learning method is critical.
+
+For training, we used the 80 fully annotated images described in [ref to section 2] each of which provides a binary vessel mask for training a vesselness classifier. To provide ground-truth for orientation and width regression, we skeletonised the binary masks, measured orientation and width at each centreline point, and propagated the measurements back to every point on the binary vessel mask using a simple nearest pixel interpolation. For orientation regression, we represented orientation as a unit vector in the complex plane, $t = \cos 2\theta + i\sin 2\theta$, doubling the angle $\theta$ to make orientation invariant to direction~\cite{Mardia_Jupp_00}, and avoiding ‘wraparound’ problems that arise if angle is used directly. This permits a correct definition of variance for a set of orientations, the angular dispersion~\cite{Mardia_Jupp_00}, that is defined as the magnitude of the mean vector over the set \ie~$D = |(\sum{t_k})/N|$. This has a maximum of 1 when all $t_k$ are equal, and a minimum of 0 when orientations are distributed uniformly about the circle or when the sample consists of pairs exactly $180^\circ$ apart. Halving the inverse tangent of the mean vector returns the angular mean of the set in radians.
+
+We trained three random forests (RFs), each containing 100 trees: one classifier on background versus labelled vessel pixels, and one regressor each for orientation and width. Rather than bootstrapping from the data, we sampled a new set of 100k background and 100k vessel pixels from the set of images to train each tree (although the same set was reused for each of the three forests). Although orientation and width are only defined for the vessel points, we found it advantageous to include background points with random width and orientations in training the regressors. For efficiency, the separable filters were applied once to the images and stored such that the upscaled, steered responses could be computed for the pixels included in the sample for each tree. We also maintained maps of which pixels were selected for each tree, so that unbiased predictions could be made on the training images for use in the next section.
+
+During RF training, $\sqrt{D}$ of the $D$ dimensions in the feature vectors are tested for splitting. The standard Gini coefficient is used to determine splits and stopping criteria in the classification trees, whilst for regression trees we maximise the sum of the variances (angular dispersion for orientation) of the two samples produced by the split.
+
+To make predictions in an unseen image we apply the separable basis filters, compute the interpolated, steered responses and extract feature vectors, before feeding the vectors through the trees in each forest and computing the mean, pooled over all leaf nodes, as the prediction output. For orientation, the unit vectors are converted back to radians. The result for each input image is a map of vessel probability ($V_s$), orientation ($V_\theta$) and width ($V_w$). [refer to figure]
+
+\section{Locating Candidate Apices}
+\label{s:capillary_apexes}
+
+%I don’t think it’s helpful to talk about segmentation (which implies binarisation) – vesselness or vessel probability are better. I’ve changed the words, but I suggest you also change $V_s$ to $V_v$
+
+Given maps of $V_s$, $V_\theta$ and $V_w$, we wish to detect and localise vessel apices in a robust way that ignores errors in the maps (\eg~due to imperfections in the trained classifier or similar-looking structures such as large blood vessels). Treating this as an object detection problem, we again adopt a learning approach in which each vessel pixel votes for the location of a nearby apex. Specifically, we use RF regression, trained using patches sampled near known capillary apices annotated in the training data, to encode observed relationships between appearance and location~\cite{Criminisi_MICCAI11,Roberts_etalMICCAI12}. 
+
+To train the RF, we thin the estimated vessel segmentation by applying non-maximal suppression along the line normal to the estimated vessel orientation, computing sub-pixel values of $V_s$ via bilinear interpolation. We then extract $64 \times 64$ training patches, centred at local maxima in $V_s$ and scaled and rotated according to the estimated width and orientation. If a patch contains a marked apex and is also centred at a vessel pixel in the original training masks, we label the patch as positive and record the offset to the apex; otherwise, we label the patch as negative. (Several positive patches are therefore associated with each apex.) For each patch, a histogram of gradients (HoG) feature vector is formed by concatenating weighted histograms of gradient direction, computed for overlapping blocks in the patch~\cite{Dalal_Triggs_CVPR05}. A 100 tree random forest classifier is then trained to distinguish between positive and negative patches, whilst a regression forest is trained to predict the offset associated with each positive patch. 
+
+For an unseen image, we extract a scale and rotation normalised patch about each local maximum and pass these through the classification forest. The output labels at each leaf node are pooled and averaged, forming $\alpha(p)$, the probability that the patch contains an apex. The regression forest then predicts the offset to the nearest apex, and therefore the apex location in the image. A Gaussian kernel -- centred at the apex, scaled by $\sigma = V_w(a)$ and weighted by $\alpha(p)$ -- is added to a vote map of apex locations $A$.\footnote{the scaling accounts for the fact that wider capillaries have a larger region in which an apex could reasonably be located} The local maxima of $A$ are the candidate locations for capillary apices. In practice, we applied a threshold $\lambda = 0.5$ (determined empirically) to $\alpha(p)$, thus ignoring the offset votes where $\alpha(p) < \lambda$.
+[reference figure]
+
+\section{Refining Candidate Apices and Making Measurements}
+\label{s:distal_row}
+
+Given a set of candidate apex locations as training data, we can now train a new classifier that can better discriminate between true apices and false positives, and between distal and non-distal apices. We do so in two ways:
+first, we reclassify each candidate, now using patches located only at candidate apex locations;
+second, we exploit the fact that capillaries should lie in a single, approximately horizontal line across the image. 
+
+As data, we used candidate apices computed for the set of 441 validation images. Each candidate $C_i=(x_i,y_i)$ was labelled as positive only if it fell within a circle centred at a marked apex with diameter equal to the marked apical width. Of the X positive and Y negative samples, the positive samples were further split into X distal and Y non-distal capillaries\footnote{Where one observer marked a capillary as distal, and the other as non-distal, the label was randomly assigned to one of the two cases}. [assume you X and Y are supposed to be actual numbers]
+
+A 100 tree random forest classifier was trained as before, taking bootstrap samples of positive and negative samples for each tree, and using HoG features on scale and rotation normalised patches extracted about each sampled candidate from the original image (rather than $V_s$). The outputs of the trees were pooled to give a single appearance score, $c_i \in [0, 1]$, for each candidate, allowing us to define each candidate as the tuple of its location and score, $C_i=(x_i,y_i,c_i)$. %A detection ROC for the set of $C_i$ from all images in the validation set is shown in fig .
+
+%
+\begin{figure}[t]
+\centering
+\begin{tabular}{@{}c c c@{}}
+\includegraphics[width=0.31\columnwidth]{\figpath/02_orientation_prediction} &
+\includegraphics[width=0.31\columnwidth]{\figpath/01_vessel_prediction} &
+\includegraphics[width=0.31\columnwidth]{\figpath/03_apex_heat_map} \\
+(a) & (b) & (c)\\
+\includegraphics[width=0.31\columnwidth]{\figpath/04_apex_location_map} &
+\includegraphics[width=0.31\columnwidth]{\figpath/05_conditional_pdfs} &
+\includegraphics[width=0.31\columnwidth]{\figpath/00_nailfold} \\
+(d) & (e) & (f)\\
+\noalign{\smallskip}
+\end{tabular}
+%
+\caption{Detecting nailfold capillaries %
+(a) Estimated vessel orientation $V_\theta$, displayed using an hue/intensity color-map for angle/prediction confidence; %
+(b) Vessel segmentation $V_s$ with oriented local maxima marked by green dots. Red dots have $\alpha(q)>0.5$ and vote for apex locations; %
+(c) Vote map $A$ of apex locations; %
+(d) Estimated distal row (green line), from weighted kernel density of maxima in $A$. Candidate capillary locations are shown as red circles (scaled by candidate appearance score) with $y$ displacements to estimated distal line; %
+(e) Mesh plots of the joint class conditional distribution over candidate displacement and appearance score, viewed from score axis (left) and displacement axis (right): false positves (red), distal capillaries (green), non-distal capillaries (blue); %
+(f) Capillaries selected by our method (red circle) and experts observers (blue and green squares), solid markers show distal capillaries.
+}
+\label{f:detection_method}
+\end{figure}
+%
+In addition to the final appearance score, the location of a candidate relative to the other candidates in any image can indicate its likelihood of being a distal row apex. Specifically, we assume the ideal distal row to be a smooth, non-parametric line running across the mosaic and passing through every true distal capillary apex. If we can estimate this line in an unseen image, we can use the vertical displacement of each candidate to the line to classify it as distal or nondistal.
+
+To achieve this, we compute a density map of candidate locations by summing a Gaussian kernel centred at each discrete candidate location. Each kernel is weighted by the \comment{rescored?} candidate's appearance score, so that strong candidates contribute more to the density. The density for each location in the mosaic can thus be computed as
+%
+\begin{equation}
+D(u,v) = Z\sum\limits_{i=1}^N c_i\exp \left[ -\frac{(u-x_i)^2}{2{\sigma_x}^2}\right]\exp \left[ -\frac{(v-y_i)^2}{2{\sigma_y}^2}\right]
+\label{e:kernel_estimate}
+\end{equation}
+where there are $N$ candidates in the image, and $Z$ is a normalisation constant so that $D$ sums to unity. The value for $\sigma_x$ is given by~\cite{}:
+%
+\begin{equation}
+\sigma_x = 1.06N^{\nicefrac{-1}{5}} \left[ (N-1)^{-1} \sum\limits_{i=1}^N (x_i - \bar{x})^2 \right] ^{\nicefrac{1}{2}}
+\label{e:kernel_sigma}
+\end{equation}
+%
+\noindent and substituting $y$ for $x$ produces an equivalent formula for $\sigma_y$. Again, we threshold the candidates by their score so that only those with $c_i > 0$ ???? contribute to $D$. Each apex's displacement from the distal row is then given by
+%
+\begin{equation}
+d_i = y_i -  \operatorname*{arg\,max}_v D(x_i,v)
+\label{e:candidate_displacment}
+\end{equation}
+%
+Using the observers' annotations, each candidate $C_i=(x_i,y_i,c_i,d_i)$ in the validation images is also assigned a label $l_i \in [1,2,3]$ for false positives, distal capillaries and non-distal capillaries respectively. \fref{f:detection_method}(e) shows a kernel estimate of the class-conditional probability density $P(c_i, d_i | l_i)$ and the class priors for each label type $P(li)$ can be estimated empirically from the data. We could thus use Bayes' rule to compute the class probability, $P(l_i | c_i, d_i)$, of each candidate, given its appearance score and displacement. 
+
+Each candidate is rejected, or labelled as either a distal or non-distal capillary. For each kept candidate $c_i$ we record its width $V_w(c_i)$, and use $V_\theta$ and $V_s$ to compute the entropy of an orientation histogram of pixels connected to $c_i$ as a measure of tortuosity (rather than selecting a hard threshold on connectivity, we weight the contribution of each pixel $p$ to the histogram by the largest threshold $\phi \in [0, 1]$ on $V_s$ such that $p$ and $c_i$ are connected). Finally, we compute the mean distance between the the distal capillaries and record this as capillary density (the inverse of inter-capillary distance). 
+%
+\section{Results}
+\label{s:results}
+We applied our detection method to the set of 455 test images, and compared the selected capillaries to the annnotations of the two human observers (\ie~treating our method as a third observer). In total, X [need the number] capillaries were selected by at least one of the three observers. To each such capillary, we assign a label $L_1=$not marked, $L_2=$distal, or $L_3$=non-distal for each observer and compute the $3 \times 3 \times 3$ co-occurrence matrix for each combination of label and observer (\tref{t:cooccurrence}). To assess the validity of our method as an expert observer, we compute Cohen's kappa statistic $(\kappa)$ to evaluate pairwise agreement between three observers at two levels: (a) the ability to detect a capillary $\kappa_m(O_i,O_j)$ and (b) the classification of a capillary as distal or non-distal $\kappa_d(O_i,O_j)$ (conditional upon the capillary being marked by both observers), where $\kappa_x(O_i,O_j)$ =1 implies complete agreement.
+
+Defining the two expert observers as $O_1$ and $O_2$, and our method as $O_3$, we have $\kappa_m(O_1,O_2)=0.612$, $\kappa_m(O_1,O_3)=0.557$, $\kappa_m(O_2,O_3)=-0.574$, similarly $\kappa_d(O_1,O_2)=-0.013$, $\kappa_d(O_1,O_3)=0.126$, $\kappa_d(O_2,O_3)=-0.132$. These results suggest reasonable agreement between all pairs of observers as regards apex detection, but relatively poor agreement regarding assignment to distal or non-distal categories. The difference between the average agreement of our method to the two experts and the agreement between the experts can computed as \comment{Is there an error here? Should it be k(2,3)-(k(1,2)+k(1,3))/2?} 
+$\hat{\kappa_m} = \kappa_m(O_1,O_3) - mean(\kappa_m(O_1,O_3)+\kappa_m(O_1,O_3)) = -0.001$ (CI -0.049, 0.030), and $\hat{\kappa_d} = 0.0461$ (CI -0.0223, 0.114), where 95\% confidence intervals have been estimated using 1000 bootstrap samples of the test images. That both confidence intervals straddle zero suggest there is no evidence that experts agree better with each other than they do with our method.
+%
+\begin{table}[tb]
+\centering
+%\small
+\input{cooccurrence_table.txt}
+%
+\caption{Vessel detection and classification as distal or non-distal: co-occurrence counts for each label/observer combination}
+\label{t:cooccurrence}
+\end{table}
+%
+%The table below can probably be culled, it shows pairwise co-occurrence matrices obtained by summing over the dimension of the left-out observer. I've left it in below in case you want to keep it...
+%\begin{table}[tb]
+%\centering
+%\small
+%\input{cooccurrence_table2.txt}
+%
+%\caption{Caption here.}
+%\label{t:cooccurrence_marginals}
+%\end{table}
+%
+
+
+Finally, we present initial results for disease status characterisation, based on the measurements extracted for the detected capillaries. Distributions of capillary measurements (capillary density, median width and median tortuosity) for the three groups HC (104 images), RP (83 images), and SSc (268 images) [say subjects if they are] are shown in (\fref{f:subject_apex_measures}). Generally the distributions for HC and RP are similar, but those for SSc appear different to the other two groups. Because the distributions are asymmetric, we used the non-parametric Wilcoxon rank sum to test for group differences (the null hypothesis being that the samples are drawn from distributions with equal median). Tests between all groups showed significant differences at least the 0.01 confidence level (at least), except for the comparison between RP and HC for vessel density -- an expected result given that we would not expect the RP group to show any signs of capillary loss. 
+
+%That difference between RP and HC can be observed for the width and tortuosity measurements (albeit with large overlaps in the group distributions), suggests our method may be sensitive to early changes in microvasculature that may be indicative of RP sufferers at risk of progressing to SSc.
+
+%
+\begin{figure}[t]
+\centering
+\begin{tabular}{@{}c c c@{}}
+\includegraphics[width=0.31\columnwidth]{\figpath/vessel_density_pdf} &
+\includegraphics[width=0.31\columnwidth]{\figpath/median_apex_width_pdf} &
+\includegraphics[width=0.31\columnwidth]{\figpath/median_orientation_entropy_pdf} \\
+(a) & (b) & (c)\\
+\noalign{\smallskip}
+\end{tabular}
+%
+\caption{Distributions of capillary measurements by subject group: %
+(a) Capillary density; %
+(b) Median apical width; %
+(c) Median capillary tortuosity.
+}
+\label{f:subject_apex_measures}
+\end{figure}
+%
+\section{Conclusions}
+\label{s:conclusions}
+We have presented a fully automated system for measuring vessel morphology from nailfold capillaroscopy images. Evaluation on a large data set suggests that our system performs as well as experts in detecting vessels, and initial results for automated measurement suggest that we can detect significant differences between disease groups. Further work will involve refining apex detection, adding more sophisticated measurements, and combining measurements to make useful predictions at the level of the individual.
+
+%\end{document}
+
+\bibliographystyle{splncs}
+\bibliography{./bib/_aliases,./bib/mobio,./bib/mammography,./bib/ml,./bib/local,./bib/nailfold,./bib/papers_by_year}
+
+\end{document}

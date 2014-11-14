@@ -1,0 +1,33 @@
+A simple but na\"ive filtering approach uses smoothed derivatives, $\Gx$ and $\Gy$ (\fref{f:filters}a-b), and their corresponding responses, $\Ix$ and $\Iy$, to compute the direction,
+
+\begin{equation}
+\tan^{-1}(\Iy/\Ix),
+\label{e:1d}
+\end{equation}
+
+\noindent in which gradient is strongest; the perpendicular to this gradient defines the line orientation.
+
+%\begin{figure}
+%\centering
+%\framebox[0.8\columnwidth][l]{\rule[0.2\textheight]{0pt}{0pt}}
+%\caption{Overview image}
+%\end{figure}
+
+One problem with this approach is that although the gradient has a clear direction its perpendicular does not (there are two opposite directions, both with zero gradient) and the estimated orientation is arbitrary up to a rotation of $180^\circ$. Though technically we do not distinguish between opposite orientations, opposites cancel when computing statistics (\eg~the mean orientation over a local patch). This can be avoided by multiplying filter responses and instead solving
+
+\begin{equation}
+\tan(2\theta) = \frac{2\Ix\Iy}{\Ix^2-\Iy^2}
+\label{e:1dsqr}
+\end{equation}
+
+\noindent where, by doubling the angle, opposite orientations reinforce each other rather than cancel out~\cite{Mardia_Jupp_00}. A further criticism is that $\Gx$ and $\Gy$ respond most strongly at the edges (rather than the centre) of a bar. In fact, any approach based on odd image filters (\eg~the monogenic signal~\cite{Felsberg_Sommer_TSP01}) fails at the centre of symmetric bar features where both $\Ix$ and $\Iy$ are close to zero such that line orientation is poorly defined.
+
+Taking products of the responses does not help in this respect (the products are also close to zero) but filters based on second derivatives (and that are therefore even) can provide a more stable solution. As noted some years ago (and exploited in mammography applications~\cite{Karssemeijer_teBrake_TMI96}), second derivatives are `steerable' -- the response to a filter at an arbitrary angle can be determined from the responses to three filters at fixed orientations~\cite{Freeman_Adelson_TPAMI91,Koenderink_vanDoorn_TPAMI92} -- and are therefore highly efficient. For further efficiency, we may compute equivalent \emph{separable} filters $\Gxx$, $\Gyy$ and $\Gxy$ (\fref{f:filters}c-e) by differentiating $\Gx$ and $\Gy$, and then determine line orientation by solving
+
+\begin{equation}
+\tan(2\theta) = \frac{2\Ixy}{\Ixx-\Iyy}
+\label{e:2d}
+\end{equation}
+
+\noindent where $\Ixx$, $\Iyy$ and $\Ixy$ are the responses to $\Gxx$, $\Gyy$ and $\Gxy$, respectively. Since \eref{e:1dsqr} and \eref{e:2d} actually give values of $2\theta \pm k\pi$, solving for $\theta$ gives two orientations (one minimum and one maximum) that are $90^\circ$ apart. An analytic solution then requires us to compute the actual response at the two solutions in order to determine which is the direction we want. 
+

@@ -1,0 +1,43 @@
+%% Standard maxima
+Results on the validation images for the MICCAI list of data
+Original apex maps  in: C:\isbe\nailfold\data\rsa_study\master_set\apex_maps\set12g_half_296655
+All subsequent data in: standard_maxima\
+
+Notes: These maxima should be the same as used in the results for the MICCAI
+submission. The results may have changed slightly from the paper due to
+subsequent changes in candidate selecetion (in particular, post-merging the
+candidates)
+
+A vs B
+% A distal missed by B = 36.8, (2593)
+% A distal marked as distal by B = 55.5, (3913)
+% A distal marked as non-distal by B = 7.68, (541)
+---
+B vs A
+% B distal missed by A = 22, (1110)
+% B distal marked as distal by A = 77.7, (3913)
+% B distal marked as non-distal by A = 0.298, (15)
+Accuracy = 43.6
+-----------------------------------------------------------------
+A vs C
+% A distal missed by C = 22.3, (1571)
+% A distal marked as distal by C = 72.6, (5118)
+% A distal marked as non-distal by C = 5.08, (358)
+---
+C vs A
+% C distal missed by A = 29.8, (2310)
+% C distal marked as distal by A = 66.1, (5118)
+% C distal marked as non-distal by A = 4.11, (318)
+Accuracy = 45.7
+-----------------------------------------------------------------
+B vs C
+% B distal missed by C = 22.2, (1119)
+% B distal marked as distal by C = 75.2, (3788)
+% B distal marked as non-distal by C = 2.6, (131)
+---
+C vs B
+% C distal missed by B = 44.2, (3427)
+% C distal marked as distal by B = 48.9, (3788)
+% C distal marked as non-distal by B = 6.86, (531)
+Accuracy = 51.3
+-----------------------------------------------------------------

@@ -1,0 +1,54 @@
+\chapter{Detecting Spiculated Masses}
+
+\section{Related Work}
+Kupinski and Giger~\cite{Kupinski_Giger_TMI98} present a method for computing the boundary of the lesion, given that you know its centre in advance. It's basically a thresholding algorithm with some constraints to make the boundary smoother (I guess you'd get something similar by applying a snake~\cite{Kass_etal_IJCV88}.
+
+Interestingly, Hand \etal~\cite{Hand_etal_CBR79} look for both circumscribed and spiculated masses also using the idea that gradients are oriented in different directions for the two types. Not bad for 1979, given that they digitized the films using a video camera and framegrabber.
+
+
+\subsection{Spiculated Masses}
+Ball and Bruce~\cite{Ball_Bruce_EMBC07} use level sets to segment the spiculated mass from the background. They start with an initialization from a previous work~\cite{Ball_PhD07} which is in turn based on Reyer's paper~\cite{Zwiggelaar_etal_TMI04} and Linop~\cite{Dixon_Taylor_IPC79}. Wait a minute. They're lying. They don't use level sets at all -- just a horribly complex sequence of image processing steps.
+
+
+\subsection{Mass Classification}
+Baeg and Kehtarnavaz~\cite{Baeg_Kehtarnavaz_ELCVIA02} present a method that that classifies masses into \emph{benign} or \emph{malignant}, depending on their image properties. They compute two features: denseness and (confusingly) `architectural distortion', and feed these into a neural network. It looks like their classifier boils down to `malignant masses are brighter and less round than benign ones'.
+
+
+\section{Detecting Curvilinear Structure}
+When looking for a spiculated mass, it is not unusual to look for its characteristic pattern of spicules radiating from a central mass. Since the central mass is not always present (in which case the abnormality presents itself as an \emph{architectural distortion}), we can instead look for the radial pattern of the spicules alone. The usual approach is to apply a classifier of some description that looks for curvilinear structure and look for a focal point all lines in a region of interest.
+
+Karssemeijer's method is a prime example~\cite{Karssemeijer_teBrake_TMI96}. There are, however, a number of points to be made about this:
+
+\begin{itemize}
+\item This requires a line strength threshold above which pixels are classified as `line'; it is not clear what this threshold should be. 
+
+\item I'm not entirely convinced that taking the maximum over all scales is a good thing. In fact, the whole point of using RFs with \dtcwt~coefficients is to avoid doing this.
+
+\item Line strength is not necessarily a good indicator of line presence. For example, a perfectly circular disc will give a strong response yet its orientation is not well defined. We could consider points where there is a big difference between maximum and minimum responses -- this is probably a stronger indication of a linear structure with well-defined orientation.
+
+\item Black-on-white lines are discarded, even though they have the correct orientation and may be valid estimates of oriented texture (even though they are not spicules). 
+
+\item Another criteria for elimination is that a gradient operator gives a strong response \emph{and} the orientation estimate from 1st derivatives and 2nd derivatives agree (indicating an edge); since we know that 2nd derivatives are rubbish at edges, however, the pixels closest to the edge usually are not discarded (though other points close to the edge are).
+
+\item The 1st derivative gradient operator is applied at a single large scale (much larger than the 2nd derivative operators). I find this a little weird and may give funny results for edge detection.
+
+\item The second derivative filters do not have the same power and therefore are not scale invariant. They should be adapted to avoid bias between levels.
+
+\item True lines are characterized by a strong negative response at the line centre, with a fairly strong positive response at a known distance along the normal on both sides. 
+\end{itemize}
+
+
+\section{Karssemeijer's Method}
+\subsection{Region Of Interest}
+Outer radius, inner radius and size of `bullseye': I think the inner radius should be big enough to mask out the mass, and the outer radius about twice the size. The bullseye is around half the inner radius in my experiments. Karssemeijer uses different parameters.
+
+There is also the open question of whether the measure should be scale invariant (it isn't). There are arguments both ways here.
+
+\subsection{Pixel Weights}
+The weights of individual pixels can be defined in different ways, each with a sensible argument. The one Karssemeijer uses has a bullseye and points are counted as `positive' if their line passes through the bullseye; this puts high weight on points far from the centre (since it is more unusual for one far away to be correctly aligned). Another defines a fixed angular error such that points are weighted equally. A third could be to put more weight on points that are close to the centre (since those points should be directed to the centre whereas we expect points far from the mass to be more randomly oriented).
+
+\subsection{Sensitivity to Line Maps}
+The selected points appear to have a larger effect on g2d estimated orientations than those from the Random Forest. We're not sure why.
+
+\subsection{Assumed Background Distribution}
+It should be possible to model the background distribution as a spatially varying quantity, given normal images with which to train. This would be instead of the assumed uniform distribution over orientation which is not true for regions close to the skin.

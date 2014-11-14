@@ -1,0 +1,25 @@
+\begin{table}
+\centering
+\caption{Line detection and orientation computation results. For every algorithm, we present the area under the ROC curve ($A_z$), the sensitivity at 90\% specificity, and the mean absolute error of the orientation estimate.}
+\label{t:line_detection}
+%
+\begin{tabular}{l c c c}
+Algorithm	
+		& $A_z$							& Sens. \@ 90\% spec. & MAE \\
+\hline
+\dtcwt{}/RF ($w$ = 1, $s$ = 5)												
+		& 0.923$\pm$0.00036	& 0.792 							& 15.88 \\
+Linop/RF ($w$ = 1, $s$ = 5, 8 orientations)				
+		& 0.911$\pm$0.00048	& 0.757								& 19.35 \\
+Gaussian/RF ($w$ = 1, $s$ = 4, $\sigma_{min}$ = 1)
+		& 0.901$\pm$0.00048	& 0.731								& 21.37 \\
+Monogenic/RF ($w$ = 1, $s$ = 4, $\lambda$ = 4)
+		& 0.868$\pm$0.00045	& 0.643								& 33.73 \\
+Monogenic ($s$ = 3, $\lambda$ = 4)									
+		& 0.818$\pm$0.00055	& 0.547								& 30.86 \\
+Gaussian ($s$ = 4, $\sigma_{min}$ = 1)							
+		& 0.813$\pm$0.00053	& 0.533								& 24.27 \\
+Linop ($s$ = 5, 8 orientations)										
+		& 0.737$\pm$0.00060	& 0.413								& 29.32 \\
+\end{tabular}
+\end{table}

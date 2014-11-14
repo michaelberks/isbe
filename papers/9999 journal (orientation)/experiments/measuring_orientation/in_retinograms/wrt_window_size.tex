@@ -1,0 +1,4 @@
+\label{s:exp_retinogram_orientation_wrt_window_size}
+Pooling results over a local neighbourhood by stacking filter responses into a single vector also had a significant effect on error rates. This was particularly the case for features based on odd filter responses, since it reduces the effect of small gradients at the centre-line by pooling estimates from nearby pixels with stronger gradients and therefore better estimates.
+
+We also note that second Gaussian derivatives can be closely approximated using finite differencing of a first Gaussian derivative. Therefore, a linear regression over first derivative responses at neighbouring pixels is able to replicate the errors of the method based on second derivatives.

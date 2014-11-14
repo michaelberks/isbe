@@ -1,0 +1,9 @@
+*** nag_opt_lsq_no_deriv (e04fcc)
+Nonlinear least squares without a derivative/gradient function. Equivalent to lsqnonlin in Matlab and uses finite differencing. Necessary for robust error functions. No mention of sparsity being exploited.
+
+*** nag_opt_lsq_deriv (e04gbc)
+Nonlinear least squares with a derivative/gradient function. Will be faster than that without the gradient function, if a little more work. Necessary for robust error functions. No mention of sparsity being exploited.
+
+*** nagf04 nagf08
+Linear least squares - can be used for non-robust error functions. Should be almost instantaneous. Not certain how these would fit with more complex error functions (e.g. that include displacements).
+

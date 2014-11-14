@@ -1,0 +1,3 @@
+A Gabor filter pair consists of one sine and one cosine function, in 2 dimensions and windowed with a Gaussian function. They are therefore directionally sensitive, and can also recover phase information from the underlying image region.
+
+Because Gabor filters recover both orientation and phase information, they are a popular choice of filter in image processing applications~\cite{Daugman_TASSP88}. In general, however, they are neither separable nor steerable, although methods to approximate steerability have been explored~\cite{Teo_1987,Perona_PAMI95}. Therefore, they must be applied exhaustively over a discrete set of orientations which makes them expensive in terms of computation and (if all responses are to be stored simultaneously) memory.

@@ -1,0 +1,19 @@
+\begin{tabular*}{0.9\textwidth}{@{\extracolsep{\fill} } l c r r r c r r r c r r r}
+\toprule
+&& \multicolumn{10}{c}{Our method, $O_3$} \\
+&& \multicolumn{3}{c}{$L_1=$Missing}&& \multicolumn{3}{c}{$L_2=$Distal}&& \multicolumn{3}{c}{$L_3=$Non-distal} \\
+%
+\cmidrule{3-13}
+&& \multicolumn{10}{c}{Obs. 1} \\
+&            & $L_1$ & $L_2$ & $L_3$    && $L_1$ & $L_2$ & $L_3$  && $L_1$ & $L_2$ & $L_3$ \\
+%
+                     \cmidrule{3-5} \cmidrule{7-9} \cmidrule{11-13}
+%
+\multirow{3}{*}{\rotatebox[origin=c]{90}{Obs. 2}}
+ &$L_1$      & 0*     & 790   & 2851     && 1714  & 1627  & 196    && 649   & 176   & 535   \\
+ &$L_2$      & 521   & 504   &   9      &&  558  & 3300  &   4    &&  31   & 109   &   2   \\
+ &$L_2$      & 689   & 128   & 364      &&  134  &  292  &  88    && 123   & 121   & 277   \\
+%
+%&&&&&&&&&&&& \\
+\bottomrule \noalign{\smallskip}
+\end{tabular*}

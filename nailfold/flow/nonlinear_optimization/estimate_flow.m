@@ -1,0 +1,482 @@
+function [p_opt, p_init, confidence] = ...
+    estimate_flow(imgStack, outpath, gt, p_init, f_save_results)
+% Estimate the flow parameters for a given image sequence.
+%   imgStack is the image sequence
+%   outpath is the folder in which to store the output
+%   gt is a structure storing the ground truth (if known)
+%   p_init is an initial estimate of the parameters
+%   f_save_results determines whether to save resuls to disk.
+
+if (nargin==0 && nargout==0), p_opt = test(); return; end
+
+%% Parse parameters
+if ~exist('gt', 'var'), gt = []; end
+if ~exist('p_init', 'var'), p_init = []; end
+if ~exist('f_save_results', 'var'), f_save_results = true; end
+
+% rand('twister', 123456);
+% randn('state', 654321);
+
+[m,n,nImages] = size(imgStack);
+
+% Define dummy ground truth values
+if isempty(gt) || isempty(gt.flow)
+    gt.flow = complex(zeros(m,n), zeros(m,n));
+end
+if isempty(gt) || isempty(gt.mask)
+    gt.mask = zeros(m,n);
+end
+if isempty(gt) || isempty(gt.displacements)
+    gt.displacements = zeros(nImages-1,2);
+end
+if isempty(gt) || isempty(gt.presence)
+    gt.presence = nan(m,n);
+end
+if isempty(gt) || isempty(gt.orientation)
+    gt.orientation = [];
+end
+
+% Persistent variables are used for efficiency in several functions. We
+% need to clear them before we begin optimizing.
+clear_persistents();
+
+% Derivatives are computed between imgStack and imgStackWarped, unless
+% imgStackWarped is empty (in which case they are computed using imgStack
+% alone).
+if isempty(p_init) || ~isfield(p_init,'flow') || isempty(p_init.flow)
+    base_flow = complex(zeros(m,n), zeros(m,n));
+    imgStackWarped = [];
+else
+    % Warp the images at this level
+    base_flow = p_init.flow;
+    imgStackWarped = warp_pyramid(imgStack, base_flow);
+end
+
+% Decide how many (and which) pixels to sample for the data error
+% Pixels used are indicated as 1s in a binary mask, equal in size to
+% imgStack.
+nObservations = 1e6;
+observationMask = create_observation_mask(size(imgStack), nObservations);
+
+%% Define initial conditions
+
+% Define whether to parameterize flow as u+v or as F+theta
+% f_use_uv = isempty(gt.orientation);
+f_use_uv = true;
+
+% Whether to mix with ground truth values or add noise (for debugging)
+wt_gt = 0.0;
+wt_noise = 0.0;
+
+% Displacements capture the shaking that is often apparent under real
+% conditions. Whereas the flow field varies in space but is fixed in time,
+% the displacements vary in time but are fixed (i.e. constant over the
+% image) for any given frame.
+[flow1, flow2, displacements] = ...
+    initialize_variables(gt, wt_gt, wt_noise, f_use_uv);
+
+if isfield(p_init, 'displacements') && ~isempty(p_init.displacements)
+    displacements = p_init.displacements;
+end
+
+% Create two structures:
+%   variables holds all of the parameters that we're estimating
+%   observations holds all of the parameters that will remain fixed
+[variables, observations] = define_variables_and_observations(...
+    imgStack, imgStackWarped, gt, observationMask, ...
+    f_use_uv, flow1, flow2, displacements);
+
+% Store a copy of the initial parameter values.
+p_init = merge_structs(observations, variables);
+p_init = reshape_variables(p_init);
+
+% Display/log initial errors
+if f_save_results
+    if ~exist(outpath,'dir')
+        mkdir(outpath);
+    end
+
+    logfilename = fullfile(outpath, 'logfile.txt');
+    logfile = fopen(logfilename, 'w');
+    
+    fprintf(logfile, 'Initial solution:\n');
+    log_flow_error(flowmap_from(p_init, base_flow), gt.flow, ...
+                   logfile, '  ');
+end
+           
+           
+%% Define optimizer parameters
+    
+% Choose robust error function: 
+rho_function = 'quadratic';
+% rho_function = 'charbonnier';
+% rho_function = 'lorentzian';
+% rho_function = 'geman-mcclure';
+
+% Create the (variable) parameter vector over which we'll optimize
+[v0, sz_vec, lbound, ubound] = ncm_pack(variables);
+
+% Ignore defined bounds (debug)
+lbound = []; ubound = [];
+
+fprintf('Getting derivative patterns...');
+    % Clear the persistents first
+    error_vec([],[],[],[], true);
+    [res, de, se, Jrows,Jcols] = ...
+        error_vec(v0, sz_vec, observations, rho_function);
+
+    nv = sum(sz_vec);
+    nr = length(res);
+
+    jacobianPattern = sparse(Jrows,Jcols, 1, nr,nv);
+fprintf('done\n');
+
+% Show sum of squared error
+disp(res'*res);
+
+% Minimize error via nonlinear optimization:
+fmin_name = 'lsqnonlin';
+% fmin_name = 'fminunc';
+
+opts = optimset(fmin_name);
+opts = optimset(opts, ...
+                'display', 'iter', ...
+                'TolFun', 1e-2, ...
+                'TolX', 1e-2, ...
+                'MaxIter', 5, ...
+                'DiffMaxChange', 1e0, ...
+                'DiffMinChange', 1e-3, ...
+                'PlotFcn', @(x, optimValues, state) plotfcn(x, optimValues, state, sz_vec, observations, gt.flow, base_flow), ...
+                'JacobPattern', double(jacobianPattern));
+clear('jacobianPattern');
+
+if exist('hessianPattern','var')
+    opts = optimset(opts, ...
+                    'Hessian', 'off', ...
+                    'HessPattern', double(hessianPattern));
+    clear('hessianPattern');
+end
+
+%% Optimize
+% The confidence values come from the diagonal of the Hessian (or its
+% approximation, JtJ). Because there are as many confidence values as there
+% are parameters, ncm_pack/ncm_unpack work as well as they do for
+% parameters.
+switch (fmin_name)
+    case 'lsqnonlin',
+        [v_opt, resnorm, residual, exitflag, output, lambda, jacobian] = ...
+            lsqnonlin(@(v) error_vec(v, sz_vec, observations, rho_function), ...
+                      v0, ... % initial solution
+                      lbound, ubound, ... % bounds
+                      opts);
+        confidence = ncm_unpack(diag(jacobian'*jacobian), sz_vec);
+                      
+    case 'fminunc',
+        [v_opt, fval, exitflag, output, grad, hessian] = ...
+            fminunc(@(v) error_val(v, sz_vec, observations, rho_function), ...
+                    v0, ... % initial solution
+                    opts);
+        confidence = ncm_unpack(diag(hessian), sz_vec);
+end
+
+confidence = reshape_variables(merge_structs(observations, confidence));
+
+% Convert optimized parameter vector back into a properly sized structure
+optimized_variables = ncm_unpack(v_opt, sz_vec);
+p_opt = merge_structs(observations, optimized_variables);
+p_opt = reshape_variables(p_opt);
+
+% Display/log errors at optimized solution
+if f_save_results
+    fprintf(logfile, 'Optimized solution:\n');
+    log_flow_error(flowmap_from(p_opt, base_flow), gt.flow, ...
+                   logfile, '  ');
+
+    % If logfile is an actual file (as opposed to standard error, fid=1)
+    % then close it.
+    if (logfile >= 3), fclose(logfile); end
+end
+
+
+%% Save results to file
+
+if f_save_results
+    % Generate the final flowmaps and save
+    [v, sz_vec] = ncm_pack(p_opt);
+    [ignore, flowim] = ...
+        plotfcn(v, [], [], sz_vec, observations, gt.flow, base_flow);
+
+    imsz = size(flowim);
+    flowim_rgb = show_flow_as('rgb', flowim(:,:));
+    imwrite(flowim_rgb(:,(1:imsz(2)),:), fullfile(outpath,'flowmap_gt.png'));
+    imwrite(flowim_rgb(:,(1:imsz(2))+imsz(2),:), fullfile(outpath,'flowmap_est.png'));
+
+    % Save the results
+    observations_to_remove = {'imgStack', 'imgStackWarped'};
+    p_opt = rmfield(p_opt, observations_to_remove);
+    p_init = rmfield(p_init, observations_to_remove);
+    save(fullfile(outpath, 'results.mat'), ...
+         'gt', 'p_init', 'p_opt', 'base_flow', 'nImages', 'confidence');
+end
+
+[v_opt, sz_vec] = ncm_pack(optimized_variables);
+[ev, p_test] = brightness_error_vec(v_opt, sz_vec, observations);
+p_opt.imgStack = p_test.imgStack;
+
+% END
+
+
+
+%% Plot function for the optimizer
+function [stop, flowim] = ...
+    plotfcn(x, optimValues, state, sz_vec, observations, gt_flow, base_flow)
+
+p = merge_structs(observations, ncm_unpack(x, sz_vec));
+p = reshape_variables(p);
+
+[h,w] = size(gt_flow);
+
+if isfield(p, 'uu')
+    est_flow = complex(p.uu, p.vv);
+else
+    est_flow = p.f(1) .* p.F .* complex(cos(p.theta), sin(p.theta));
+end
+
+% Combine estimated flow update with base flow map.
+est_flow = base_flow + est_flow;
+
+% Trim off 2 pixels at the edge to mask boundary effects
+flowim = cat(3, gt_flow(3:end-2,3:end-2), est_flow(3:end-2,3:end-2));
+flowim_rgb = show_flow_as('rgb', flowim(:,:));
+flowim_rgb = [flowim_rgb(:,1:w-4,:) 0.8*ones(h-4,1,3) flowim_rgb(:,w-3:end,:)];
+image(flowim_rgb);
+axis('image','ij','off');
+    
+h = gcf;
+figure(10); clf; hold on;
+    axis('equal', 3*[-1,1,-1,1]);
+    plot(p.displacements(:,1), p.displacements(:,2), 'b');
+    plot(p.displacements(1,1), p.displacements(1,2), 'bo');
+    drawnow;
+figure(h);
+
+stop = false;
+
+
+%% Return sum of squared error
+function val = error_val(var_vec, sz_vec, observations, rho_function)
+               
+res = error_vec(var_vec, sz_vec, observations, rho_function);
+val = res(:)' * res(:);
+
+
+%% Fiddle with input data
+function [gt, imgStack] = trim(gt, imgStack)
+if 1
+    % Isolate just some vertical bits
+    rrng = (1:12)+12;
+    crng = (4:36);
+elseif 1
+    % Isolate the apex
+    rrng = (61:size(imgStack,1));
+    crng = (1:size(imgStack,2));
+else
+    % Isolate downward flow
+    rrng = (1:60);
+end
+imgStack = imgStack(rrng,crng,:);
+gt.mask = gt.mask(rrng,crng);
+gt.flow = gt.flow(rrng,crng);
+
+function [gt, imgStack] = flip(gt, imgStack)
+gt.flow = complex(-real(gt.flow(:,end:-1:1)), ...
+                   imag(gt.flow(:,end:-1:1)));
+gt.mask = gt.mask(:,end:-1:1);
+gt.displacements(:,1) = -gt.displacements(:,1);
+imgStack = imgStack(:,end:-1:1,:);
+
+function [gt, imgStack] = flop(gt, imgStack)
+gt.flow = complex( real(gt.flow(end:-1:1,:)), ...
+                  -imag(gt.flow(end:-1:1,:)));
+gt.mask = gt.mask(end:-1:1,:);
+gt.displacements(:,2) = -gt.displacements(:,2);
+imgStack = imgStack(end:-1:1,:,:);
+
+function [gt, imgStack] = reverse(gt, imgStack)
+gt.flow = -gt.flow;
+imgStack = imgStack(:,:,end:-1:1);
+
+function [gt, imgStack] = pad_right(gt, imgStack)
+n = 1;
+gt.flow = [gt.flow zeros([size(gt.flow,1), n])];
+gt.mask = [gt.mask zeros([size(gt.mask,1), n])];
+imgStack = [imgStack ...
+            imgStack(1,end,1)*ones([size(imgStack,1),n,size(imgStack,3)]) ];
+
+function [gt, imgStack] = pad_left(gt, imgStack)
+n = 1;
+gt.flow = [zeros([size(gt.flow,1), n]) gt.flow];
+gt.mask = [zeros([size(gt.mask,1), n]) gt.mask];
+imgStack = [imgStack(1,1,1)*ones([size(imgStack,1),n,size(imgStack,3)]) ...
+            imgStack ];
+
+
+%% Test script.
+function p_opt = test()
+% clc;
+
+% Ensure that the working directory is that which contains the modified
+% stdnls.m and color.m files so that we don't die of old age before it's
+% finished.
+[mfilepath,f,e] = fileparts(mfilename('fullpath'));
+cd(mfilepath);
+
+% Profile this function?
+f_profile = false;
+if f_profile, profile clear; profile on; end
+
+imgroot = flow_imgroot();
+
+n_frames = 30;
+
+% Define output path for results
+% Can assume this doesn't already exist since it's the datetime
+outpath = fullfile(imgroot, datestr(now, 'flow/yyyymmddTHHMMSS'));
+
+% Load the images
+imgStack = load_image_stack(imgroot, n_frames);
+
+% Build the pyramids
+nPyramidLevels = 4;
+testLevel = 1;
+imgPyramid = build_image_pyramid(imgStack, nPyramidLevels);
+imgStack = imgPyramid{testLevel};
+clear('imgPyramid');
+
+gt = load_ground_truth(imgroot, nPyramidLevels, testLevel, n_frames);
+
+% [gt, imgStack] = trim(gt, imgStack);
+% [gt, imgStack] = flip(gt, imgStack); % Flip input data left-to-right
+% [gt, imgStack] = flop(gt, imgStack); % Flip input data top-to-bottom
+% [gt, imgStack] = reverse(gt, imgStack); % Reverse the order of the frames
+% [gt, imgStack] = pad_right(gt, imgStack);
+% [gt, imgStack] = pad_left(gt, imgStack);
+
+% imgStack = imgStack(:,:,1:4:end);
+% gt.displacements = [0 0; gt.displacements];
+% gt.displacements = gt.displacements(1:4:end,:);
+% gt.displacements = gt.displacements(2:n_frames,:);
+% n_frames = size(imgStack,3);
+% gt.flow = gt.flow * 4;
+
+% Estimate flow
+f_save_results = true;
+tic;
+[p_opt, p_init, confidence] = estimate_flow(imgStack, ...
+                                           outpath, ...
+                                           gt, [], f_save_results);
+toc;
+
+if f_profile, profile off; profile report; end
+
+% show_histograms(p_opt);
+
+if isfield(p_opt, 'F')
+    p_opt.uu = p_opt.F .* cos(p_opt.theta);
+    p_opt.vv = p_opt.F .* sin(p_opt.theta);
+end
+
+if isempty(gt.flow)
+    gt.flow = complex(nan(size(p_opt.uu)), nan(size(p_opt.vv)));
+end
+if isempty(gt.displacements)
+    gt.displacements = nan(size(p_opt.displacements));
+end
+
+gt_flow = gt.flow;
+mask = (abs(gt_flow) > 0);
+est_flow = complex(p_opt.uu, p_opt.vv);
+
+% [ max(abs(real(gt_flow(mask)))) max(abs(real(est_flow(mask))));
+%   max(abs(imag(gt_flow(mask)))) max(abs(imag(est_flow(mask))));
+%   max(abs(     gt_flow(mask)))  max(abs(     est_flow(mask))) ]
+%     
+% disp_error_init = mean((p_init.displacements(:)-gt.displacements(:)).^2);
+% disp_error_opt  = mean((p_opt.displacements(:)-gt.displacements(:)).^2);
+% disp([disp_error_init disp_error_opt]);
+% 
+% disp_error_init = max((p_init.displacements(:)-gt.displacements(:)).^2);
+% disp_error_opt  = max((p_opt.displacements(:)-gt.displacements(:)).^2);
+% disp([disp_error_init disp_error_opt]);
+
+% [p_init.displacements p_opt.displacements gt.displacements]
+% d_off = mean(p_opt.displacements - gt.displacements)
+
+p_opt.displacements = [0 0; p_opt.displacements];
+
+figure(10); clf; hold on;
+subplot(3,1,1); hold on;
+    axis('equal', 3*[-1,1,-1,1]);
+    plot(gt.displacements(:,1), ...
+         gt.displacements(:,2), 'g-');
+    plot(gt.displacements(1,1), ...
+         gt.displacements(1,2), 'go');
+    plot(p_init.displacements(:,1), ...
+         p_init.displacements(:,2), 'r');
+    plot(p_opt.displacements(:,1), ...
+         p_opt.displacements(:,2), 'b');
+    plot(p_opt.displacements(1,1), ...
+         p_opt.displacements(1,2), 'bo');
+subplot(3,1,2); cla; hold on;
+    plot(1:n_frames, [0; gt.displacements(:,1)], 'g-');
+    plot(1:2:n_frames, p_opt.displacements(1:2:end,1), 'b-');
+    plot(2:2:n_frames, p_opt.displacements(2:2:end,1), 'c-');
+subplot(3,1,3); cla; hold on;
+    plot(1:n_frames, [0; gt.displacements(:,2)], 'g-');
+    plot(1:2:n_frames, p_opt.displacements(1:2:end,2), 'b-');
+    plot(2:2:n_frames, p_opt.displacements(2:2:end,2), 'c-');
+
+% return
+
+figure(20); colormap(gray(256));
+f = 1;
+while true
+    if 1
+        figure(20); clf; hold off;
+%             image(uint8([imgStack(:,:,f) p_opt.imgStack(:,:,f)])); 
+            imagesc([imgStack(:,:,f) p_opt.imgStack(:,:,f)]);
+            axis('image','ij'); 
+            pause(1/30);
+
+        % Show blanking frame
+        if (f == n_frames)
+            figure(20); clf; hold off;
+    %             image(uint8([imgStack(:,:,f) p_opt.imgStack(:,:,f)])); 
+                image(zeros(size([imgStack(:,:,f) p_opt.imgStack(:,:,f)])));
+                axis('image','ij'); 
+                pause(1/4);
+        end
+        
+        f = mod(f, n_frames) + 1;
+    else
+        figure(20); clf; hold off;
+%             image(uint8([imgStack(:,:,f) p_opt.imgStack(:,:,f)]));
+            imagesc([imgStack(:,:,f) p_opt.imgStack(:,:,f)]);
+            axis('image','ij');
+        pause(0.5);
+
+        if (f == 1)
+            f = size(p_opt.imgStack,3);
+        else
+            figure(20); clf; hold off;
+    %             image(uint8([imgStack(:,:,f) p_opt.imgStack(:,:,f)]));
+                imagesc(zeros(size([imgStack(:,:,f) p_opt.imgStack(:,:,f)])));
+                axis('image','ij');
+            pause(0.5);
+            
+            f = 1;
+        end
+    end
+end
+
+return

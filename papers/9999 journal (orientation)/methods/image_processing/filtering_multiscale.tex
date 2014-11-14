@@ -1,0 +1,9 @@
+\label{s:filtering_multiscale}
+%
+Since curvilinear structure appears at a number of scales in the image (\eg~from fine spicules to thick ducts in mammograms), it is necessary to filter the image at several scales to capture all structure~\cite{Lindeberg_IJCV98b}. 
+
+For the first and second derivative methods this is achieved by varying the width of the Gaussian kernels applied to the full-size image; for the monogenic signal, we must choose a suitable isotropic bandpass filter $B$. For the \dtcwt{}, however, multiresolution filtering is implicit in the decimated decomposition of the image.
+
+Having obtained responses at a number of scales, we must decide how best to combine them into a single estimate of orientation. One option is to discard all scales but that with the strongest overall response~\cite{Karssemeijer_teBrake_TMI96}, using the responses from the discrete orientations only at the selected scale to determine orientation analytically. In this work, we compare this analytical approach to an alternative whereby we use the responses at all scales as input to a regressor that predicts the orientation directly. 
+
+In addition to being a general purpose approach that is independent of the input features, this has the added advantage that it can be applied for filter banks such as the \dtcwt{} where an analytic solution is not obvious.

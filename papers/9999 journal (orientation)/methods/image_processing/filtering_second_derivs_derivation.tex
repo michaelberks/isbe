@@ -1,0 +1,58 @@
+In light of this problem, when working exclusively with curvilinear structures it makes sense to apply filters with even symmetry. A natural choice are directional Gaussian second derivatives, for which, as noted some years ago, a steered response can be determined from three filters at fixed orientations~\cite{Freeman_Adelson_TPAMI91,Koenderink_vanDoorn_TPAMI92}. This has been exploited in mammography applications~\cite{Karssemeijer_teBrake_TMI96} using filters $G_0$, $G_1$ and $G_2$ oriented at $0$, $\pi/3$ and $2\pi/3$ respectively. From the responses $I_0$, $I_1$ and $I_2$ it is possible to compute the steered response
+
+\begin{align}
+R(\theta) = \frac{1}{3}\Big[ %\left
+    &  \left(1 + 2\cos(\theta) \right)I_0 \nonumber \\
+    &+ \left(1 + \cos(2\theta) + \sqrt{3}\sin(2\theta)\right)I_1  \nonumber \\
+    &+ \left(1 - \cos(2\theta) - \sqrt{3}\sin(2\theta)\right)I_2 \Big] \label{e:r2} %\right
+\end{align}
+
+\noindent and by differentiating and solving \eref{e:r2}, the angle of maximum response
+
+\begin{equation}
+\theta = \frac{1}{2}\tan^{-1}\left[ \sqrt{3} \frac{I_2 - I_1}{I_1 + I_2 - 2I_0} \right].
+\label{e:2d}
+\end{equation}
+
+
+We define $\G_{(2)}(\theta)$ as the second derivative filter at angle $\theta$ such that
+
+\begin{align}
+\G_{(2)}(\theta)
+	&= 	\frac{\partial}{\partial x}(\Gx \cos(\theta) + \Gy \sin(\theta))\frac{\partial x}{\partial r} \notag\\
+		&\qquad + \frac{\partial}{\partial y}(\Gx \cos(\theta) + \Gy \sin(\theta))\frac{\partial y}{\partial r} \\
+%
+	&= 	(\Gxx \cos(\theta) + \Gyx \sin(\theta))\cos(\theta) \notag\\
+		&\qquad + (\Gxy \cos(\theta) + \Gyy \sin(\theta))\sin(\theta) \\
+%
+	&= 	\Gxx\cos^2(\theta) + \Gyy\sin^2(\theta) + 2\Gxy\sin(\theta)\cos(\theta) \\
+%
+	&=	\Gxx\cos^2(\theta) + \Gyy\sin^2(\theta) + \Gxy\sin(2\theta)
+\label{e:ddG}
+\end{align}
+
+As noted some years ago, second derivatives are also steerable and are therefore highly efficient~\cite{Freeman_Adelson_TPAMI91,Koenderink_vanDoorn_TPAMI92}. For further efficiency, we differentiating $\Gx$ and $\Gy$ to get the equivalent \emph{separable} filters $\Gxx$, $\Gyy$ and $\Gxy$ (\fref{f:filters}c-e), and use these to compute the response to $G_{(2)}(\theta)$,
+
+Again, three separable basis filters -- $\Gxx$, $\Gyy$ and $\Gxy$ (\fref{f:filters_secondderivs}) -- give the orientation and corresponding steered response~\cite{Freeman_Adelson_TPAMI91,Koenderink_vanDoorn_TPAMI92,Karssemeijer_teBrake_TMI96}:
+
+\begin{align}
+R_{(2)}(\theta)
+	&= 	\G_{(2)}(\theta) \ast I \\
+	&=	\Ixx\cos^2(\theta) + \Iyy\sin^2(\theta) + \Ixy\sin(2\theta).
+\label{e:R2}
+\end{align}
+
+\noindent where $\Ixx$, $\Iyy$ and $\Ixy$ are the responses to $\Gxx$, $\Gyy$ and $\Gxy$, respectively. If we differentiate with respect to $\theta$, we find a stationary point at
+
+\begin{align}
+\frac{d}{d\theta}R_{(2)}
+	&= 	-2\Ixx\cos(\theta)\sin(\theta) + 2\Iyy\sin(\theta)\cos(\theta) + 2\Ixy\cos(2\theta) \\
+	&= 	(\Iyy-\Ixx)\sin(2\theta) + 2\Ixy\cos(2\theta) = 0 \\
+\Rightarrow \tan(2\theta)
+	&= 	\frac{2\Ixy}{\Ixx-\Iyy}.
+\label{e:t2}
+\end{align}
+
+Since \eref{e:t1sqr} and \eref{e:t2} actually give values of $2\theta \pm k\pi$, solving for $\theta$ gives two orientations (one minimum and one maximum) that are $90^\circ$ apart. An analytic solution then requires us to compute the actual response at the two solutions in order to estimate line orientation. 
+
+This solution is a mathematical reworking of orientation estimation through Hessian filtering~\cite{Frangi_MICCAI98,Sato_MIA98} in which a Hessian matrix is filled with the $\Ixx$ and $\Iyy$ on the leading diagonal and $\Ixy$ terms on the off diagonal. Decomposing this matrix produces eigenvectors with direction $\theta$ and $\theta^{\perp}$ associated with eigenvalues $R(\theta)$ and $R(\theta^{\perp})$.

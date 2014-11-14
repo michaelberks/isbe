@@ -1,0 +1,12 @@
+
+es = 
+
+          n_samples: 577646
+               mean: 0.3072
+                 sd: 20.9285
+           abs_mean: 13.3557
+         abs_median: 7.8414
+          abs_range: [1.0903e-005 89.9981]
+    abs_percentiles: [1x100 double]
+
+

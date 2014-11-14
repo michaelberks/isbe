@@ -1,0 +1,65 @@
+\section{Classification}
+Whichever representation we choose, we end up with a vector of features from which we want to predict either a classification label (e.g. vessel vs. non-vessel, spicule vs. non-spicule) or a real number (e.g. line orientation).
+
+
+If we have examples of labelled image data for which we wish to estimate orientation, a sensible approach is to compute filter responses (\ie~that form a feature vector) at sampled points in these images and train a regressor to predict the corresponding orientation. We can then apply the trained regressor to a previously unseen image in order to estimate orientation in new cases. Not only is this approach beneficial where an analytic solution is not obvious (as in the \dtcwt) but can also account for factors such as the expected distribution of line widths in a typical image and non-Gaussian noise in medical imaging applications. For the three regressors we use, the targets that we predict are a unit vector in the complex plane where the angle has been doubled (\ie~$t_k = \cos 2\theta_k + i\sin 2\theta_k$) to avoid ambiguity over direction~\cite{Mardia_Jupp_00}. Furthermore, for each pixel we define the feature vector as the responses to all filters pooled over the surrounding $3{\times}3$ pixel region.
+
+
+\subsection{Linear Regression}
+\label{s:learning_linear}
+The simplest approach uses a linear regressor such that the predicted output is a weighed sum of the filter responses. Because the outputs are complex the regression coefficients are complex also, though this problem is equivalent to regressing over $\cos 2\theta$ and $\sin 2\theta$ independently.
+%Under ideal conditions, applying this method to the real filters (\eg~first and second derivatives) should produce regression coefficients identical to those computed analytically.\comment{Not sure if that is entirely relevant}
+
+%Since the linear regressor minimizes the mean squared error (in $\cos 2\theta$ and $\sin 2\theta$), the uncertainty in the prediction can be represented as an axis aligned Gaussian distribution in the complex plane. If the errors are equally distributed for both $\cos 2\theta$ and $\sin 2\theta$ -- and our experience suggests that they are typically close -- then the angular error (\ie~the angle subtended by isocontours of the Gaussian) is constant for an input of given magnitude; uncertainty is proportionally lower for inputs with larger magnitude, and vice versa. Since phase is limited to the range $[-\pi,\pi)$, however, the magnitude of the feature vector is strongly correlated with the magnitude (rather than phase) of the response to the \dtcwt. As a result, image features with high contrast that respond strongly to the \dtcwt~have lower relative uncertainty (an intuitive result).\comment{This could be considered as 'discussion' and may not be relevant right here}
+
+
+%\subsection{Logistic Regression}
+%\label{s:learning_logistic}
+%Since we are predicting sin2T and cos2T, it makes sense to apply some limits to the values these can take. One possibility is to us logistic regression (usually used for classification) which can model a linear region for appropriately scaled targets or a sigmoidal output if necessary. We scale sin and cos to the range [0,1] to learn the regressor and apply the reverse transform on the predictions. This does not restrict outputs to be on (or within) the unit circle but within the unit square.
+%
+%This is slower to train since it requires iteratively reweighted least squares to minimize the objective function though adds little to testing times.
+%Uncertainty will be tricky here
+
+
+\subsection{Boosted Regression}
+\label{s:learning_boosted}
+Though straightforward, linear regression breaks down if the relationship between inputs and outputs is in fact nonlinear. Furthermore, the output of a linear regressor is unbounded even though in reality $-1 \leq \sin\theta,\cos\theta \leq 1$. We therefore investigate additive (or \emph{boosted}) regression models that can not only limit output but also capture any nonlinearities in the relationship between feature vector and orientation.
+
+In this work we use an additive model composed of $N=100$ piecewise constant functions. To train the model, we start with a zero residual and iterate the following steps $N$ times: fit a weak predictor to each dimension of the training data in turn; select the dimension and corresponding predictor that minimize the residual error; add a fraction (we use $0.05$) of the prediction to the estimated outputs -- a process known as \emph{shrinkage}~\cite{Friedman_AoS01}; and recompute the residual error. This boosting process is thought to be more insensitive to overtraining than most Machine Learning methods.
+
+
+\subsection{Random Forest Regression}
+\label{s:learning_forest}
+Random forests have been shown to be capable of learning complex nonlinear relationships over large numbers of variables (with absolute scales that are incommensurate) at a reasonable computational cost~\cite{Breiman_ML01}. Furthermore, they require little or no tuning and are often resistant to overtraining, making them ideally suited to our regression task. We must be cautious, however, when using trees to predict orientation where vectors close to each other in the complex plane (\eg~$-1+\epsilon i$ and $-1-\epsilon i$) may be confused as being far apart based on their angle alone.
+
+Moreover, splitting dimensions and thresholds are usually chosen based on the variance of the sample either side of the threshold under the assumption of a input Euclidean space. As this assumption does not apply to orientation vectors, we instead use the angular dispersion~\cite{Mardia_Jupp_00}: for a sample of $N$ orientations $\{\theta_k\}$, represented in angle-doubled vector form as $t_k = \cos 2\theta_k + i\sin 2\theta_k$, the angular dispersion, $D$, of the sample can be defined as the magnitude of the mean vector over the sample,
+%
+\begin{equation}
+D = |\frac{\sum{t_k}}{N}|.
+\label{e:2d}
+\end{equation}
+
+By definition, $D$ reaches its maximum of 1 when all $t_k$ are equal, and its minimum of 0 when orientations are distributed uniformly about the circle or when the sample consists of pairs exactly $180^\circ$ apart. The aim of each regression tree is to find parts of the input feature space that are associated with pure samples of orientation. Thus we implement our splitting criteria such that the sum of the angular dispersions of the two samples produced by the split is maximised.
+
+We have found, however, that rather than constructing trees until completely pure leaves are found (\ie~nodes with $D$ arbitrarily close to 1), it is both computationally more efficient and more robust to stop when some minimum leaf size is reached (typically 0.05\% of the total input samples). We then store the mean sample vector of orientations at each leaf, in effect encoding a summary description of the sample of orientations at that point in feature space. The magnitude of these vectors can be viewed as the confidence in a leaf's ability to predict orientation. 
+
+When we come apply the regression forest to predict orientations, we take the mean of the predictions from the individual trees. As a result, trees which described the input feature poorly (and thus return a leaf orientation vector with small magnitude) contribute little to the overall orientation prediction, relative to trees that were able to match the input feature to a pure sample of orientations. Implementing forests in this way produces orientation predictions that are both more accurate and more robust (\ie~resistant to overtraining) than those from unpruned trees with uniform weighting. 
+
+Finally, the magnitude of the prediction gives a measure of the forest's confidence in the prediction. Not only could this serve as a substitute for curvilinear structure detection, but is also useful for weighting predictions in visualization (see \fref{f:real_mammography}). 
+%Previous work has looked at detecting structure by applying random forest classifiers to \dtcwt based feature vectors and we are currently exploring the link between two. \comment{ possibly cite our earlier work or reyhaneh's stuff - I promise I'm not doing this just self cite, it seems genuinely relevant!}
+
+
+\comment{
+\item When estimating orientation with a tree (or forest of trees), there is a particular problem when the output is limited to a specific range e.g. (0,2pi]. At the two extremes of the range, samples in the bins near the end are biased toward the centre of the range such that, in our case, it is very unlikely that a 0 or 2pi will be output by the forest.
+Random Forests (or trees for that matter) have the option of giving us a multimodal distribution over orientation which will be useful at points where lines cross.
+One advantage of the (pruned) tree approach is that each bin contains a number of training samples such that we can estimate a mean value and an uncertainty (variance) for every leaf. In other words, the variance is very much data dependent.
+This then propagates in the case of a Random Forest since the individual tree outputs can be combined with their respective variance accounted for correctly.
+The output from the Random Forest is always between 0 and 1 in magnitude. Question: should we be taking the square root of the complex vector to halve the angle (and therefore sqrt the magnitude also)? At the moment, vectors are weighed by their unsquared magnitude.
+}
+
+\section{Random Forests}
+Random forest classifiers have become popular because of their ease of use (rapid training, no critical parameters to select), resistance to overtraining, and near state-of-the-art performance. Given a set of training data consisting of N samples, each of which is a $D$-dimensional feature vector labelled as belonging to one of $C$ classes, a random forest comprises a set of tree predictors constructed from the training data~\cite{Breiman_ML01}. Each tree in the forest is built from a bootstrap sample of the training data (that is, a set of $N$ samples chosen randomly, with replacement, from the original data). The trees are built using a standard classification and regression tree (CART) algorithm; however, rather than assessing all D dimensions for the optimal split at each tree node, only a random subset of $d < D$ dimensions are considered. The trees are built to full size (\ie until a leaf is reached containing samples from only one class) and do not need to be pruned (although they can be for the sake of efficiency).
+
+During classification, an unseen feature vector is classified independently by each tree in the forest; each tree casts a unit class vote, and the most popular class can be assigned to the input vector. Alternatively, the proportion of votes assigned to each class can be used to provide a probabilistic labelling of the input vector. Random forests are particularly suited to learning non-linear relationships in high-dimensional multi-class training data, and have been shown to perform as well as classifiers such as Adaboost or support vector machines, whilst being more efficient to compute~\cite{Breiman_ML01}.
+
+Similarly, by building regression rather than classification trees, a random forest can be constructed to learn the relationship between patterns of high-dimensional training data and a single output variable.
