@@ -3,12 +3,12 @@
 %--------------------------------------------------------------------------
 
 %Script showing examples of good code practice
-data_dir = 'P:\MatlabTutorial\data\';
+data_dir = 'P:\Matlab\data\';
 load([data_dir '024RCC.mat']); %loads in a data structure mammogram
-load([data_dir '024RCC_cancer_map.mat'])
+cancer_map = medfilt2(imresize(rgb2ind(imread([data_dir 'f_map.jpg']), jet(256)), size(mammogram)), [21 21]);
 %%
 figure; imagesc(mammogram); axis image; colormap(gray(256));
-figure; imagesc(cancer_map); axis image; colormap(gray(256));
+figure; imagesc(cancer_map); axis image; colormap(jet(256)); hold all;
 
 %%
 %Now try and use the function: localimagemaximanocomments to find all the
@@ -18,7 +18,7 @@ localimagemaximanocomments
 
 %%
 %Now try and use the function local_image_maxima_comments
-[maxima_pos, maxima_vals] = local_image_maxima_comments(cancer_map, 50, [], 25);
+[maxima_pos, maxima_vals] = local_image_maxima_comments(cancer_map, 100, [], 100);
 
 plot(maxima_pos(:,1), maxima_pos(:,2), 'kx', 'markersize', 10);
 plot(maxima_pos(1,1), maxima_pos(1,2), 'ko', 'markersize', 10);
