@@ -12,7 +12,7 @@ ymax = max([inner(:,2); outer(:,2)]);
 
 % Define a border equal to 10% of the height
 % (Could be better)
-border_sz = 0.1 * (ymax - ymin);
+border_sz = 0;%0.1 * (ymax - ymin);
 
 % Compute the scale from units to pixels
 scale = (img_width-1) / (xmax-xmin + 2*border_sz);

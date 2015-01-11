@@ -40,9 +40,9 @@ register_dual_camera_frames([frames_dir 'final_corrections\'],...
 %%
 load([frames_dir 'difference_images_f\difference_image001.mat']);
 
-rf_det = u_load('C:\isbe\nailfold\models\vessel\detection\rf_classification\257273\predictor.mat');
+rf_det = u_load('C:\isbe\nailfold\models\vessel\detection\rf_classification\296655\predictor.mat');
 rf_det.tree_root = 'C:\isbe\nailfold\models\vessel\detection\rf_classification/';
-det_args = u_load('C:\isbe\nailfold\models\vessel\detection\rf_classification\257273\job_args.mat');
+det_args = u_load('C:\isbe\nailfold\models\vessel\detection\rf_classification\296655\job_args.mat');
 
 valid_mask = ~isnan(registered_mosaics(:,:,1)) & ~isnan(registered_mosaics(:,:,2));
 
@@ -68,6 +68,10 @@ vessel_im2(isnan(vessel_im2)) = mean(vessel_im2(valid_mask));
     'output_type', 'detection');
 
 vessel_mask = vessel_prob1 > 0.8 & vessel_prob2 > 0.8;
+
+figure; 
+subplot(1,2,1); imgray(vessel_prob1);
+subplot(1,2,2); imgray(vessel_prob2);
 
 
 save([frames_dir 'difference_images_f\vessel_masks001.mat'], 'vessel_prob1', 'vessel_prob2', 'vessel_mask'); 

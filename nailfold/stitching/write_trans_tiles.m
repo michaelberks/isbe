@@ -1,4 +1,4 @@
-function [diff_img seq_mask] = write_trans_tiles(tiles, compound_transforms, ...
+function [diff_img seq_mask g_lims] = write_trans_tiles(tiles, compound_transforms, ...
                            trans_dir, trans_name, g_lims, mosaic, ...
                            varargin)
 %WRITE_TRANS_TILES *Insert a one line summary here*
@@ -23,11 +23,14 @@ function [diff_img seq_mask] = write_trans_tiles(tiles, compound_transforms, ...
 % Copyright: (C) University of Manchester
 args = u_packargs(varargin,... % the user's input
     '0', ... % non-strict mode
+    'match_grey_levels', 1,...
+    'diff_image', [],...
     'tile_masks', [],...
     'format', 'png',...
     'debug', 0);
 clear varargin;
 
+no_write = false;
 if isnan(trans_dir)
     no_write = true;
 end
@@ -65,8 +68,12 @@ end
 
 %Loop the the tiles again adding each one to mosaic and recording how much
 %weight it adds at each pixel
+
 diff_img = zeros(tile_sz);
 for i_tile = 1:num_tiles
+    
+    display(['Correcting tile ' num2str(i_tile) ' of ' num2str(num_tiles)]);
+    
     % Sample the mosaic into the camera coordinate frame (where the vessel
     % moves and dirt on the lens stays still).
     [mosaic_cam] = sample_tile_image({mosaic}, ones(mosaic_sz), ...
@@ -80,6 +87,11 @@ for i_tile = 1:num_tiles
     else
         tile_curr = double(imread(tiles{i_tile}));
     end
+    
+    if ~isempty(args.diff_image)
+        tile_curr = tile_curr - args.diff_image;
+    end
+    
     diff_img_i = tile_curr - mosaic_cam;
     diff_img_i(isnan(diff_img_i)) = 0;
     diff_img = diff_img + diff_img_i;
@@ -115,17 +127,28 @@ for i_tile = 1:num_tiles
         img0 = trans_tile;
         mask0 = mask;
         
+        g_min = min(trans_tile(mask));
+        g_max = max(trans_tile(mask));
+        
         seq_mask = mask;
     else
         % Find overlapping pixels between this image and the first - also
         % make sure we only use non NaN pixels
         pixels = mask0 & mask & ~isnan(img0) & ~isnan(trans_tile);
         
-        % Match greyvalues by computing a 1D affine transformation.
-        src_pixels = trans_tile(pixels);
-        tgt_pixels = img0(pixels);
-        gain_bias = [src_pixels ones(size(src_pixels))] \ tgt_pixels;
-        trans_tile = (gain_bias(1) * trans_tile) + gain_bias(2);
+        if args.match_grey_levels
+            % Match greyvalues by computing a 1D affine transformation.
+            src_pixels = trans_tile(pixels);
+            tgt_pixels = img0(pixels);
+            gain_bias = [src_pixels ones(size(src_pixels))] \ tgt_pixels;
+            trans_tile = (gain_bias(1) * trans_tile) + gain_bias(2);
+        end
+        
+        min_i = min(trans_tile(pixels));
+        max_i = max(trans_tile(pixels));
+        
+        g_min = min(min_i, g_min);
+        g_max = max(max_i, g_max);
 
         seq_mask = seq_mask & mask;
     end
@@ -146,6 +169,8 @@ for i_tile = 1:num_tiles
         timebar(tb, 'advance');
     end
 end
+
+g_lims = [g_min g_max];
 
 % Get average difference between a frame and the mosaic (where camera-based
 % artefacts have, with luck, been removed).

@@ -89,13 +89,15 @@ fprintf(fid, '      %s \n', 'points: {');
 fprintf(fid, '      %s \n', '// (x, y, width)');
 
 if isfield(vessels, 'apex_aam_fit')
-    num_points = size(vessels.apex_aam_fit(:,:,i_v), 1);
-    for i_pt = 1:num_points
-        fprintf(fid, '        %5.3f %5.3f %5.3f \n',...
-            vessels.apex_aam_fit(i_pt,1,i_v)*resize_factor, vessels.apex_aam_fit(i_pt,2,i_v)*resize_factor, 0);
+    if vessels.apex_aam_score(i_v) > -2e4
+        num_points = size(vessels.apex_aam_fit(:,:,i_v), 1);
+        for i_pt = 1:num_points
+            fprintf(fid, '        %5.3f %5.3f %5.3f \n',...
+                vessels.apex_aam_fit(i_pt,1,i_v)*resize_factor, vessels.apex_aam_fit(i_pt,2,i_v)*resize_factor, 0);
+        end
     end
-    fprintf(fid, '      %s \n', '} // points');
 end
+fprintf(fid, '      %s \n', '} // points');
 
 a_theta = angle(vessels.base_orientation(i_v)) / 2;
 nx = sin(a_theta);
@@ -123,7 +125,11 @@ feature_names = {...
     'candidate_displacements', 'apex_displacement';};
 
 for i_f = 1:length(feature_names)
-    fprintf(fid, '        %s%s %5.3f \n', feature_names{i_f,2}, ': ', vessels.(feature_names{i_f,1})(i_v));
+    if isfield(vessels, feature_names{i_f,1})
+        fprintf(fid, '        %s%s %5.3f \n', feature_names{i_f,2}, ': ', vessels.(feature_names{i_f,1})(i_v));
+    else
+        fprintf(fid, '        %s%s\n', feature_names{i_f,2}, ': <empty>');
+    end
 end
 ori_entropy = mb_entropy(vessels.orientation_hist(i_v,:));
 fprintf(fid, '        %s %5.3f \n', 'orientation_entropy: ', ori_entropy);

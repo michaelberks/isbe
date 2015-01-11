@@ -6,10 +6,12 @@ if ~exist('n_wanted','var'), n_wanted = []; end
 img = imread(imgname);
 img = mean(img,3);
 
-[r,c] = find(img == 0);
+[sr sc] = find(img(:,:,1)<255 & img(:,:,1)>0);
+[r,c] = find(img(:,:,1)<255);
 
 n_pts = length(r);
-pts_in = [c, r];
+pts_in = [sc sr; c, r];
+
 pts_out = [];
 
 pts_out(end+1,:) = pts_in(1,:);
@@ -36,8 +38,9 @@ return
 function test()
 clc;
 
-imgpath = 'S:\projects\nailfold\synthesis';
-imgname = fullfile(imgpath,'m_outline.png');
+%imgpath = 'S:\projects\nailfold\synthesis';
+imgpath = 'C:\isbe\nailfold';
+imgname = fullfile(imgpath,'b_outline.png');
 
 pp = ncm_outline(imgname);
 

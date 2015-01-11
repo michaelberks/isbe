@@ -5,15 +5,16 @@ pts_per_letter = 300;
 
 % h = text(0,0.5,'ncm','Fontname','elementary sf black','fontsize',250);
 
-imgpath = 'S:\projects\nailfold\synthesis';
-pp{1} = ncm_outline(fullfile(imgpath,'n_outline.png'), pts_per_letter);
-pp{2} = ncm_outline(fullfile(imgpath,'c_outline.png'), pts_per_letter);
-pp{3} = ncm_outline(fullfile(imgpath,'m_outline.png'), pts_per_letter);
+%imgpath = 'S:\projects\nailfold\synthesis';
+imgpath = 'C:\isbe\nailfold';
+pp{1} = ncm_outline(fullfile(imgpath,'b_outline.png'), pts_per_letter);
+pp{2} = ncm_outline(fullfile(imgpath,'m_outline.png'), pts_per_letter);
+pp{3} = ncm_outline(fullfile(imgpath,'s_outline.png'), pts_per_letter);
 
-pp{2}(:,1) = pp{2}(:,1) + 330;
-pp{2}(:,2) = pp{2}(:,2) + 10;
-pp{3}(:,1) = pp{3}(:,1) + 640;
-pp{3}(:,2) = pp{3}(:,2) + 32;
+pp{2}(:,1) = pp{2}(:,1) + 125;
+pp{2}(:,2) = pp{2}(:,2) - 5;
+pp{3}(:,1) = pp{3}(:,1) + 220;
+pp{3}(:,2) = pp{3}(:,2) + 30;
 
 for i = 1:3
     [widths{i}, dirs{i}, inner{i}, outer{i}] = ...
@@ -24,10 +25,10 @@ end
     scale_vessel(cat(1,pp{:}), cat(1,widths{:}), ...
                  cat(1,inner{:}), cat(1,outer{:}), 640);
 
-pts = unstack(pp_out, [pts_per_letter, 2, 3]);
-widths = unstack(widths_out, [pts_per_letter, 1, 3]);
-inner = unstack(inner_out, [pts_per_letter, 2, 3]);
-outer = unstack(outer_out, [pts_per_letter, 2, 3]);
+pts = permute(reshape(pp_out', 2, pts_per_letter, 3), [2 1 3]);%unstack(pp_out, [pts_per_letter, 2, 3]);
+widths = reshape(widths_out, pts_per_letter, 1, 3);
+inner = permute(reshape(inner_out', 2, pts_per_letter, 3), [2 1 3]);
+outer = permute(reshape(outer_out', 2, pts_per_letter, 3), [2 1 3]);
 dirs = cat(3, dirs{:});
 
 % Trim a few points off the end
@@ -70,7 +71,7 @@ cloud_mult = noiseonf(max(imsz), 1.5);
 cloud_mult = 0.75 * normim(cloud_mult(1:imsz(1),1:imsz(2)), 'stretch_fixed');
 cloud_mult = 1 - cloud_mult;
 
-outpath = 'U:\projects\nailfold\synthesis\showcase\ncm_outline\input';
+outpath = 'C:\isbe\nailfold\synthesis\showcase\ncm_outline\input';
 if ~exist(outpath,'dir')
     mkdir(outpath);
 else
@@ -81,9 +82,9 @@ f = 1;
 for i = 1:n_frames
     img = make_frame(cp(:,:,f:f+samples_per_frame), ...
                      imsz, cell_sz/2, ...
-                     [], 140 + cloud_add, 32 * cloud_mult);
+                     [], 140 + cloud_add, 64 * cloud_mult);
 	figure(1); clf; hold off; colormap(gray(256));
-        image(img); axis('image');
+        imagesc(img); axis image;
     drawnow;
 
 	f = f+samples_per_frame;

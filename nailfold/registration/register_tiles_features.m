@@ -172,6 +172,8 @@ while (it < max_iterations)
         else
             tile_curr = double(imread(tiles{i_tile}));
         end
+        
+        display(['Registering tile ' num2str(i_tile) ' of ' num2str(length(tile_range))]);
             
         if strcmp(registration_method, 'features')
             % Get feature-based estimate of motion between current frame and
@@ -396,6 +398,8 @@ for ii = 1:min(max_pts, size(xy_src,1));
                    1, offset_sz(2), offset_sz(1));
     end
 end
+
+offset_counts = imfilter(offset_counts, fspecial('gaussian', 7, 2), 'replicate');
 
 %Workout the offset with maximum vote for this theta
 [count_theta max_idx_theta] = max(offset_counts(:));
