@@ -44,3 +44,17 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+*.prj
+*.exe
+*.zip
+hydra/tomos/my_function.m
+hydra/tomos/my_function_shell_script.sh
+hydra/tomos/my_function_wrapper.m
+CopyNailfoldImages/for_redistribution_files_only/readme.txt
+CopyNailfoldImages/for_redistribution_files_only/splash.png
+CopyNailfoldImages/for_testing/mccExcludedFiles.log
+CopyNailfoldImages/for_testing/readme.txt
+CopyNailfoldImages/for_testing/splash.png
+CopyNailfoldImages/PackagingLog.txt
+hydra/tomos/README.txt
