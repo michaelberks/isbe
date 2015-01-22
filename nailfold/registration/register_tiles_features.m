@@ -1,4 +1,4 @@
-function [compound_transforms] = register_tiles_features(tiles, varargin)
+function [compound_transforms, match_counts] = register_tiles_features(tiles, varargin)
 %REGISTER_FRAME *Insert a one line summary here*
 %   [nailfold_mosaic mosaic_weights offsets thetas] = register_tile(tiles, tile_masks, offset_lim, theta_lim, debug)
 %
@@ -31,13 +31,14 @@ function [compound_transforms] = register_tiles_features(tiles, varargin)
 % Copyright: (C) University of Manchester
 
 if (nargin==0 && nargout==0), test_script(); return; end
-[compound_transforms] = func(tiles, varargin{:});
+[compound_transforms, match_counts] = func(tiles, varargin{:});
 
 
 %% The function
-function [compound_transforms] = func(tiles, varargin)
+function [compound_transforms, match_counts] = func(tiles, varargin)
 args = u_packargs(varargin,... % the user's input
     '0', ... % non-strict mode
+    'ref_type', 'previous',...
     'tile_masks', [],...
     'sigma', [2],...
     'offset_lim', [],...
@@ -46,6 +47,8 @@ args = u_packargs(varargin,... % the user's input
     'weights', 'rect',...
     'debug', false, ...
     'compound_transforms', [], ...
+    'offset_centres', [],...
+    'mosaic', [],....
     'max_iterations', 1);
 
 clear varargin;
@@ -92,6 +95,12 @@ else
     end
 end
 
+if (size(args.offset_centres,1)==num_tiles && size(args.offset_centres,2)==2)
+    offset_centres = args.offset_centres;
+else
+    offset_centres = zeros(num_tiles,2);
+end
+
 if isempty(args.theta_range)
     theta_range = -10:10; %Use default 10 if range not user specified
 else
@@ -100,10 +109,11 @@ end
 theta_range = theta_range * pi/180;
 theta_sz = length(theta_range);
 
+match_counts = zeros(num_tiles, 1);
 
 %% Pre-allocate space for compound transforms
-if isempty(args.compound_transforms)
-    ref_type = 'previous';
+if strcmpi(args.ref_type, 'previous')
+    
     max_iterations = 1;
     
     compound_transforms = zeros(3, 3, num_tiles);
@@ -116,13 +126,17 @@ if isempty(args.compound_transforms)
         tile0 = double(imread(tiles{1}));
     end
     tile_range = 2:num_tiles;
-else
-    ref_type = 'mosaic';
-    max_iterations = args.max_iterations;
+else %args.ref_type = 'mosaic';
     
+    max_iterations = args.max_iterations;
     compound_transforms = args.compound_transforms;
-    [tile0, mosaic_weights, compound_transforms] = ...
-        create_mosaic(tiles, compound_transforms, args.weights, args.tile_masks);
+    
+    if isempty(args.mosaic)      
+        [tile0, ~, compound_transforms] = ...
+            create_mosaic(tiles, compound_transforms, args.weights, args.tile_masks);
+    else
+        tile0 = args.mosaic;
+    end
 
     tile_range = 1:num_tiles;
 end
@@ -133,7 +147,7 @@ registration_method = 'features';
 %% Loop through each of the remaining tiles, registering it to the previous
 %  tile and saving the offset and theta
 if strcmp(username(), 'ptresadern')
-    ttl = ['Registering to ', ref_type, ' via features'];
+    ttl = ['Registering to ', args.ref_type, ' via features'];
     tb = timebar('title', ttl, ...
                  'limit', length(tile_range) * max_iterations);
 end
@@ -148,8 +162,8 @@ while (it < max_iterations)
         % Compute line points in reference tile as the initial target
         [x_tgt, y_tgt] = get_line_points(tile0, args.sigma, ...
                                          args.tile_masks(:,:,1));
-        x_tgt = x_tgt - cx;
-        y_tgt = y_tgt - cy;
+        x_tgt = x_tgt - cx - offset_centres(1,1);
+        y_tgt = y_tgt - cy - offset_centres(1,2);
         
         n_updated = 0;
     end
@@ -173,7 +187,7 @@ while (it < max_iterations)
             tile_curr = double(imread(tiles{i_tile}));
         end
         
-        display(['Registering tile ' num2str(i_tile) ' of ' num2str(length(tile_range))]);
+        display(['Registering tile ' num2str(i_tile-1) ' of ' num2str(length(tile_range))]);
             
         if strcmp(registration_method, 'features')
             % Get feature-based estimate of motion between current frame and
@@ -185,7 +199,7 @@ while (it < max_iterations)
             x_src = x_src - cx;
             y_src = y_src - cy;
 
-            if strcmp(ref_type,'mosaic')
+            if strcmp(args.ref_type,'mosaic')
                 % Transform to reference tile frame
                 pts = compound_transforms(:,:,i_tile) * ...
                       [x_src(:)'; y_src(:)'; ones(1,numel(x_src))];
@@ -210,10 +224,16 @@ while (it < max_iterations)
                                   0           0          1 ];
                               
                     offset_t = [cx cy] - (transform(1:2, 1:2)*[cx; cy])';
-                              
-                    transform(1,3) = offset(1) + offset_t(1);
-                    transform(2,3) = offset(2) + offset_t(2);
+                          
+                    if strcmp(args.ref_type,'mosaic')
+                        transform(1,3) = offset(1) + offset_t(1);
+                        transform(2,3) = offset(2) + offset_t(2);
+                    else
+                        transform(1,3) = offset(1) + offset_t(1) + offset_centres(i_tile-1,1);
+                        transform(2,3) = offset(2) + offset_t(2) + offset_centres(i_tile-1,2);
+                    end
                 end
+                match_counts(i_tile) = max_count;
             end
 
             transform_diff = transform - eye(3);
@@ -245,7 +265,7 @@ while (it < max_iterations)
         % full mosaic
        
         % Compound the offsets and rotations for all tiles up to this tile
-        if strcmp(ref_type, 'previous')
+        if strcmp(args.ref_type, 'previous')
             % Update compound transform by chaining existing sequence
             compound_transforms(:,:,i_tile) = transform * ...
                                           compound_transforms(:,:,i_tile-1);
@@ -257,39 +277,59 @@ while (it < max_iterations)
 
         if args.debug
             
-            if i_tile == 2
-                tile_prev = tile0;
-            end
+            if strcmp(args.ref_type, 'previous') 
+                if i_tile == 2
+                    tile_prev = tile0;
+                end
             
-            % Display the transformed vessel points with respect to the first
-            % frame
-            xy_src_t = (compound_transforms(:,:,i_tile) * ...
-                          [x_src y_src ones(size(x_src,1),1)]')';
-            plot(all_vessels, xy_src_t(:,1), xy_src_t(:,2), '.', 'markersize', 4);
+                % Display the transformed vessel points with respect to the first
+                % frame
+                xy_src_t = (compound_transforms(:,:,i_tile) * ...
+                              [x_src y_src ones(size(x_src,1),1)]')';
+                plot(all_vessels, xy_src_t(:,1), xy_src_t(:,2), '.', 'markersize', 4);
 
-            % Display the two tile and the vessel points found on each
-            figure(2); clf; colormap(gray(256));
-            subplot(1,2,2);
-                imagesc(tile_curr); axis image; hold on;
-                plot(cx+x_src, cy+y_src, 'g.', 'markersize', 2);
-            subplot(1,2,1);
-                imagesc(tile_prev); axis image; hold on;
-                plot(cx+x_tgt, cy+y_tgt, 'r.', 'markersize', 2);
-                % Display the vessel points from the src tile on the target tile
-                xy_src_t = (transform * [x_src y_src ones(size(x_src,1),1)]')';
-                plot(cx+xy_src_t(:,1), cy+xy_src_t(:,2), 'g.', 'markersize', 2);
-                
-            display(transform);
+                % Display the two tile and the vessel points found on each
+                figure(2); clf; colormap(gray(256));
+                subplot(1,2,2);
+                    imagesc(tile_curr); axis image; hold on;
+                    plot(cx+x_src, cy+y_src, 'g.', 'markersize', 2);
+                subplot(1,2,1);
+                    imagesc(tile_prev); axis image; hold on;
+                    plot(cx+x_tgt, cy+y_tgt, 'r.', 'markersize', 2);
+                    % Display the vessel points from the src tile on the target tile
+                    xy_src_t = (transform * [x_src y_src ones(size(x_src,1),1)]')';
+                    plot(cx+xy_src_t(:,1), cy+xy_src_t(:,2), 'g.', 'markersize', 2);
+
+                display(transform);
             
-            %Save the previous tile to display next time...
-            tile_prev = tile_curr;              
+                %Save the previous tile to display next time...
+                tile_prev = tile_curr; 
+                
+            else
+                
+                
+                xy_src_t = (transform * [x_src y_src ones(size(x_src,1),1)]')';
+                xy_src_o = (compound_transforms(:,:,i_tile) \ [xy_src_t(:,1:2) ones(size(x_src,1),1)]')';
+                
+                figure(2); clf;
+                subplot(1,2,1);
+                    imgray(tile_curr);
+                    plot(cx+xy_src_o(:,1), cy+xy_src_o(:,2), 'g.', 'markersize', 2);
+                    
+                subplot(1,2,2); hold on;
+                    plot(x_tgt, y_tgt, 'r.', 'markersize', 2);
+                    plot(xy_src_t(:,1), xy_src_t(:,2), 'g.', 'markersize', 2); 
+                    axis equal ij;
+                    axis([min(xy_src_t(:,1)) max(xy_src_t(:,1)) min(xy_src_t(:,2)) max(xy_src_t(:,2))]);
+                  
+            end
                 
         end
 
         % Update target points if we are to match consecutive frames
-        if strcmp(ref_type, 'previous')
-            x_tgt = x_src;
-            y_tgt = y_src;
+        if strcmp(args.ref_type, 'previous')
+            x_tgt = x_src - offset_centres(i_tile,1);
+            y_tgt = y_src - offset_centres(i_tile,2);
         end
 
         if exist('tb', 'var')
@@ -297,7 +337,7 @@ while (it < max_iterations)
         end
     end
 
-    if strcmp(ref_type,'mosaic')
+    if 0%strcmp(args.ref_type,'mosaic')
         % Redefine the reference tile
         [tile0, mosaic_weights, compound_transforms] = ...
             create_mosaic(tiles, compound_transforms, args.weights, args.tile_masks);
@@ -310,19 +350,19 @@ while (it < max_iterations)
     
     it = it + 1;
     
-    if (strcmp(ref_type, 'mosaic') && ...
-        strcmp(registration_method, 'features') && ...
-        ((it == max_iterations) || (n_updated == 0)))
-        % Switch to flow-based registration and restart iterations if no 
-        % further feature-based corrections were applied.
-        registration_method = 'flow';
-        
-        ttl = ['Registering to ', ref_type, ' via flow'];
-        timebar(tb, 'reset', 'title', ttl, ...
-                    'limit', length(tile_range) * max_iterations);
-        it = 0;
-        continue;
-    end
+%     if (strcmp(args.ref_type, 'mosaic') && ...
+%         strcmp(registration_method, 'features') && ...
+%         ((it == max_iterations) || (n_updated == 0)))
+%         % Switch to flow-based registration and restart iterations if no 
+%         % further feature-based corrections were applied.
+%         registration_method = 'flow';
+%         
+%         ttl = ['Registering to ', args.ref_type, ' via flow'];
+%         timebar(tb, 'reset', 'title', ttl, ...
+%                     'limit', length(tile_range) * max_iterations);
+%         it = 0;
+%         continue;
+%     end
 end
 
 if exist('tb', 'var')

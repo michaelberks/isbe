@@ -1,4 +1,7 @@
-%%
+function [] = miccai_make_results_table(co_occurrence_t, table_path)
+%
+%table_path = 'C:\isbe\matlab_code\mab\papers\2014miccai\results_table.txt';
+%
 nb = 1000;
 num_images = size(co_occurrence_t,4);
 
@@ -101,7 +104,7 @@ fa_ab_s = (std(fa_ab,1,3));
 %Write a table from this
 o_txt = {'$O_2$ v $O_1$', '$O_3$ v $O_1$', '$O_3$ v $O_2$', '$O_3$ v $O_1,O_2$'};
 
-fid = fopen('C:\isbe\matlab_code\mab\papers\2014miccai\results_table.txt', 'wt');
+fid = fopen(table_path, 'wt');
 fprintf(fid, '%s \n', '\begin{tabular*}{0.95\textwidth}{@{\extracolsep{\fill} } l r r r r r}');
 fprintf(fid, '%s \n', '\toprule');
 fprintf(fid, '%s \n', '%');

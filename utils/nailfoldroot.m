@@ -5,7 +5,7 @@ function myroot = nailfoldroot(m_drive)
             m_drive = 0;
         end
         if m_drive
-            myroot = 'M:\nailfold\';
+            myroot = 'N:\Nailfold Capillaroscopy\';
         else
             switch get_username
                 case {'mberks', 'Michael Berks', 'momeemb2'}

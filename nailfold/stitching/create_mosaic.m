@@ -1,8 +1,10 @@
 function [mosaic, mosaic_weights, t2m_transforms] = ...
-    create_mosaic(tiles, t2m_transforms, tile_weight_type, tile_masks)
+    create_mosaic(tiles, t2m_transforms, tile_weight_type, tile_masks, mosaic, mosaic_weights)
 
-if ~exist('tile_weight_type','var'), tile_weight_type = 'rect'; end
+if ~exist('tile_weight_type','var') || isempty(tile_weight_type), tile_weight_type = 'rect'; end
 if ~exist('tile_masks','var'), tile_masks = []; end
+if ~exist('mosaic','var'), mosaic = []; end
+if ~exist('mosaic_weights','var'), mosaic_weights = []; end
 
 tiles_loaded = isnumeric(tiles);
 
@@ -21,13 +23,19 @@ if isempty(tile_masks)
     tile_masks = zeros(0, 0, num_tiles);
 end
 
-% Get size of mosaic
-[mosaic_sz, t2m_transforms] = ...
-    mosaic_limits(tile_sz, t2m_transforms);
+if isempty(mosaic)
+    % Get size of mosaic
+    [mosaic_sz, t2m_transforms] = ...
+        mosaic_limits(tile_sz, t2m_transforms);
 
-% Pre-allocate space for the nailfold mosaic and the sum of tile weights
-mosaic = zeros(mosaic_sz);
-mosaic_weights = zeros(mosaic_sz);
+    % Pre-allocate space for the nailfold mosaic and the sum of tile weights
+    mosaic = zeros(mosaic_sz);
+    mosaic_weights = zeros(mosaic_sz);
+else
+    mosaic_sz = size(mosaic);
+    mosaic = mosaic.*mosaic_weights;
+    mosaic(isnan(mosaic))=0;
+end
 
 t_weights = tile_weights(tile_sz, tile_weight_type);
 
