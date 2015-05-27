@@ -48,7 +48,7 @@ for i_tree = 1:100
 end
 predictor.D = 30;
 predictor.d = 5;
-predictor.tree_dir = 'C:\isbe\nailfold\data\rsa_study\vessel_contours\rfs\apex_width_prediction\trees\';
+predictor.tree_dir = 'C:\isbe\nailfold\models\apex\width\trees\';
 predictor.tree_root = [];
 predictor.regression_method = 'rf_regression';
 predictor.sampled_data_dir = [];

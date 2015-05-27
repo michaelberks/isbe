@@ -1,8 +1,8 @@
 %ACR script
 
 %Load in the data
-load('C:\isbe\nailfold\data\2_year_study\results\auto_stats.mat');
-load('C:\isbe\nailfold\data\2_year_study\results\people_stats.mat');
+load('C:\isbe\nailfold\data\2_year_study\results\miccai\auto_stats.mat');
+load('C:\isbe\nailfold\data\2_year_study\results\miccai\people_stats.mat');
 
 %Check what images we have each subject at each timepoint
 present_mask = squeeze(sum(sum(people_stats.present,2),3));
@@ -118,7 +118,7 @@ for i_f = 1:3
         plot([m(i_g,2) m(i_g,2)], [max_y*(1+i_g/21) max_y*(1+i_g/19)], [grp_cols(i_g) '-'], 'linewidth', 2);
         plot([m(i_g,3) m(i_g,3)], [max_y*(1+i_g/21) max_y*(1+i_g/19)], [grp_cols(i_g) '-'], 'linewidth', 2);
     end
-    exportfig([fig_dir 'f' num2str(i_f) '.png']);
+    %exportfig([fig_dir 'f' num2str(i_f) '.png']);
     switch feature{1}
         case 'mean_inter_capillary_distance'
             %m = 1./ m;
@@ -306,9 +306,9 @@ extract_apex_measures_set(...
     'prob_dir',             'rf_classification/296655',...
     'ori_dir',              'rf_regression/296621',...
     'width_dir',            'rf_regression/297037',...
-    'candidates_dir',       'apex_maps\set12g_half_296655\island_maxima\rescores',...
-    'displacements_dir',    'apex_maps\set12g_half_296655\island_maxima\displacements',...
-    'selected_dir',         'apex_maps\set12g_half_296655\island_maxima\selected_apexes',...
+    'candidates_dir',       'apex_maps\set12g_half_296655\miccai_maxima\rescores',...
+    'displacements_dir',    'apex_maps\set12g_half_296655\miccai_maxima\displacements',...
+    'selected_dir',         'apex_maps\set12g_half_296655\miccai_maxima\selected_apexes',...
     'metrics_dir',          [],...
     'width_predictor',      [],...[nailfoldroot 'models/apex/width/rf.mat'],...
     'prob_sigma',           2,...
@@ -462,3 +462,163 @@ auto_stats = analyse_qseries_apex_measures([],...auto_stats,...
     'fig_dir', [],...
     'xls_filename', []);
 %%
+
+example_names = {'c02V6LD4X3LrgMosaic','d136V1LD4X3LrgMosaic','p04V1LD4X3LrgMosaic','u03V1LD4X3LrgMosaic'};
+
+for i_im = 1:4
+    im_name = [example_names{i_im} '.png'];
+
+    n = rgb2gray(imread(['P:\isbe\conferences_and_symposia\2014\acR2104\figs\' im_name]));
+    n2 = imread(['C:\isbe\nailfold\data\2_year_study\anonymous_png\' im_name]);
+
+    patch = n(1:101, 1:101);
+    corr_map = mb_normxcorr2(patch, n2);
+
+    [~, i] = max(corr_map (:));
+    [sr, sc] = ind2sub(size(corr_map ),i);
+    
+    plot_view = [sc-50 sc+1549 sr-50 sr+349]/2;
+    plot_caxis = [min(n(:)) max(n(:))];
+
+    display_automated_markup(... % non-strict mode
+        'image_names',         example_names(i_im),...
+        'data_dir',             [nailfoldroot 'data/2_year_study/'],...
+        'image_dir',            'images',...
+        'vessel_centre_dir',    'vessel_centres',...
+        'metrics_dir',          'apex_maps\set12g_half_296655\miccai_maxima\apex_metrics',...
+        'candidates_dir',       'apex_maps\set12g_half_296655\miccai_maxima\rescores',...
+        'selected_dir',         'apex_maps\set12g_half_296655\miccai_maxima\selected_apexes',...
+        'selected_features', [],...
+        'fig_dir',          [],...
+        'um_per_pix',       1.25,...
+        'aam_thresh',       inf,...
+        'plot_nondistal',    0,...
+        'plot_rejected',    0,...
+        'plot_r', 1,...
+        'plot_c', 1,...
+        'plot_view', plot_view,...
+        'plot_caxis', plot_caxis); 
+    
+    title([]);
+    axis off;
+    set(gcf, 'windowStyle', 'normal', 'position', [1 1 1280 320]);
+    exportfig(['P:\isbe\conferences_and_symposia\2014\acR2104\figs\a' im_name]);
+end   
+%%
+extract_apex_measures_set(...
+    'image_names',          example_names(3),...
+    'data_dir',             [nailfoldroot 'data/2_year_study/'],...
+    'image_dir',            'images',...
+    'prob_dir',             'rf_classification/296655',...
+    'ori_dir',              'rf_regression/296621',...
+    'width_dir',            'rf_regression/297037',...
+    'candidates_dir',       'apex_maps\set12g_half_296655\miccai_maxima\rescores',...
+    'displacements_dir',    'apex_maps\set12g_half_296655\miccai_maxima\displacements',...
+    'selected_dir',         'apex_maps\set12g_half_296655\miccai_maxima\selected_apexes',...
+    'metrics_dir',          [],...
+    'width_predictor',      [],...[nailfoldroot 'models/apex/width/rf.mat'],...
+    'prob_sigma',           2,...
+    'ori_sigma',            0,...
+    'width_sigma',          2,...
+    'all',                  0,...
+    'do_aam',               0,...
+    'overwrite',            0,...
+    'plot', 1);
+%%
+people_id = find(...
+    people_stats.people_ids == 1002 |...
+    people_stats.people_ids == 4004 |...
+    people_stats.people_ids == 2136 |...
+    people_stats.people_ids == 5003);
+
+display(people_stats.mean_weighted_width(people_id, 4, 1, 1))
+%%
+im_recats = people_stats.super_category;
+im_recats(people_stats.category == 4) = 2;
+im_recats(people_stats.super_category == 2) = 3;
+im_recats(people_stats.category == 5) = 4;
+
+grps = {'HC', 'PR', 'SSc', 'UD'};
+grp_comps = {'HC,PR', 'HC,SSc', 'HC,UD', 'PR,SSc', 'PR,UD', 'SSc,UD'};
+grp_cols = 'rgbm';
+feature_names = {'Mean capillary width', 'Mean capillary tortuosity', 'Capillary density'};
+xlabels = {'log Width (mm)', 'Tortuosity', 'Density (mm^{-1})'};
+
+fig_dir = 'P:\isbe\conferences_and_symposia\2014\submissions\acr\figs\';
+
+for i_f = 1:3
+      
+    feature = selected_features(i_f);
+    feature_str = feature{1};
+    feature_str(feature_str == '_') = ' ';
+    feature_str(1) = feature_str(1) - 32;
+    
+    display(['Tests for ' feature_str]);
+    
+    feature_scores = people_stats.(feature{1})(:,4,1,1);    
+    switch feature{1}
+        case 'mean_inter_capillary_distance'
+            feature_scores = 1./ feature_scores;
+        case {'mean_weighted_width', 'max_mean_width'}
+            feature_scores = log(feature_scores);
+    end
+    
+    valid_scores = isnumeric(feature_scores) & isfinite(feature_scores) & ~isnan(feature_scores) & ...
+        people_stats.present(:,4,1,1);
+    
+    [p,table,stats] = anova1(feature_scores(valid_scores), im_recats(valid_scores));
+    [c,m] = multcompare(stats);
+    m(:,3) = m(:,1)+1.96*m(:,2);
+    m(:,2) = m(:,1)-1.96*m(:,2);
+    
+    figure('WindowStyle', 'normal');
+    set(gca, 'fontsize', 18);
+    hold all;
+    title(feature_names{i_f});
+    ylabel('f(x)');
+    xlabel(xlabels{i_f});
+    
+    min_val = min(feature_scores(valid_scores));
+    max_val = max(feature_scores(valid_scores));
+    grid_pts = linspace(min_val, max_val, 100);
+
+    max_y = 0;
+    
+    leg_text = cell(4,1);
+    for i_g = 1:4
+        kdist = build_1d_kernel_distribution(feature_scores(valid_scores & im_recats==i_g), grid_pts, 0);
+        plot(kdist.x, kdist.D_f, grp_cols(i_g), 'linewidth', 2);
+        max_y = max(max_y, max(kdist.D_f));
+        leg_text{i_g} = [grps{i_g} ' (n = ' num2str(sum(im_recats==i_g)) ')'];
+    end
+    if i_f == 3
+        legend(leg_text, 'location', 'northwest');
+    end
+    
+    for i_g = 1:4
+        plot(m(i_g,1), max_y*(1+i_g/20), [grp_cols(i_g) 'o'], 'markersize', 6,  'markerfacecolor', grp_cols(i_g));
+        plot([m(i_g,2) m(i_g,3)], [max_y*(1+i_g/20) max_y*(1+i_g/20)], [grp_cols(i_g) '-'], 'linewidth', 2);
+        plot([m(i_g,2) m(i_g,2)], [max_y*(1+i_g/21) max_y*(1+i_g/19)], [grp_cols(i_g) '-'], 'linewidth', 2);
+        plot([m(i_g,3) m(i_g,3)], [max_y*(1+i_g/21) max_y*(1+i_g/19)], [grp_cols(i_g) '-'], 'linewidth', 2);
+    end
+    %exportfig([fig_dir 'f' num2str(i_f) '.png']);
+    switch feature{1}
+        case 'mean_inter_capillary_distance'
+            %m = 1./ m;
+        case {'mean_weighted_width', 'max_mean_width'}
+            m = exp(m);
+    end
+    
+    
+    
+    for i_g = 1:4
+        display([grps{i_g} ': ' num2str(m(i_g,1),3) ' (' num2str(m(i_g,2),3) ', ' num2str(m(i_g,3),3) '), n = ' num2str(sum(valid_scores&(im_recats==i_g)))]);
+    end
+    disp_str = ['Sig diffs between: '];
+    for i_gc = 1:6
+        if c(i_gc,6) < 0.05
+            disp_str = [disp_str grp_comps{i_gc} '(' num2str(c(i_gc,6),2) '); '];
+        end
+    end
+    display(disp_str);
+end

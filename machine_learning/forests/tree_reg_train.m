@@ -59,7 +59,8 @@ args = u_packargs(varargin,... % the user's input
              'do_circular', [],...
              'do_ubound', 1,...
              'impure_thresh', 1e-4,...
-             'names', []);
+             'names', [],...
+             'debug', 0);
 
 %Check X is numeric
 if ~isnumeric(X)
@@ -127,6 +128,7 @@ switch(args.split_criterion)
     case 'dsq',         crit_fun = @dsq;
     case 'mabs',        crit_fun = @mabs;
     case 'ssq',         crit_fun = @ssq;
+    case 'bob',         crit_fun = @bob;
     case 'acos',		crit_fun = @acosv;
     otherwise,     error([args.split_criterion 'is not a recognised ''splitcriterion'' parameter.'])
 end
@@ -140,6 +142,7 @@ switch(args.var_criterion)
     case 'mabs',        var_fun = @mabs;
     case 'ssq',         var_fun = @ssq;
     case 'acos',		var_fun = @acosv;
+    case 'bob',         var_fun = @bob;
     otherwise,     error(['Bad value for ''var_criterion'' parameter: ',args.var_criterion])
 end
 
@@ -301,6 +304,8 @@ while(tnode < nextunusednode)
             %we are force splitting, a 50/50 chance of 0 or split_vars
             var_offset = force_split*(rand > .5)*split_vars;
             poss_vars = poss_vars(1:args.random_m) + var_offset;
+        else
+            poss_vars = 1:nvars;
         end
         
 		% now find the splitting variable and value that is closest to this
@@ -308,7 +313,14 @@ while(tnode < nextunusednode)
         end_cut_min = args.end_cut_min;
         if end_cut_min < 1
             end_cut_min = round(end_cut_min * Nnode);
-		end
+        end
+        %% DEBUGGING
+        if args.debug
+            figure;
+            ax = zeros(12,1);
+        end
+        
+        %%
         for ii = 1:args.random_m
             jvar = poss_vars(ii);
             [x,idx] = sort(X(noderows,jvar)); % get sorted jth x variable
@@ -331,13 +343,19 @@ while(tnode < nextunusednode)
                 continue;
             end
             
+            %% DEBUGGING
+            if args.debug
+                subplot(4,6,rem(2*jvar-2,24)+1); hold on;
+            end
+            
+            %%
             if do_circular
                 % Compute cumulative sum of the orientation vectors sorted
                 % by the j-th dimension of x
                 y_cum = cumsum(y_node(idx,:));
                 
                 %Now do the actual splitting
-                [critval,cutval]=Ocritval(x,y_cum,rows,crit_fun,var_fun,args.w_prior);
+                [critval,cutval]=Ocritval(x,y_cum,rows,crit_fun,var_fun,args.w_prior,args.debug);
             else
                 % Compute cumulative sum of the y sorted
                 % by the j-th dimension of x
@@ -348,6 +366,24 @@ while(tnode < nextunusednode)
             end
     
 			opts(:,ii) = [jvar; critval]; % temporary
+            
+            %% DEBUGGING
+            if args.debug
+                y_l = y_node(X(noderows,jvar) < cutval);
+                y_r = y_node(X(noderows,jvar) >= cutval);
+
+                ori_l = atan2(imag(y_l), real(y_l));
+                ori_r = atan2(imag(y_r), real(y_r));
+
+                counts_l = hist(ori_l, linspace(-pi,pi,24));
+                counts_r = hist(ori_r, linspace(-pi,pi,24));
+
+                ax(jvar) = subplot(4,6,rem(2*jvar-1,24)+1); hold on;
+                bar(linspace(-pi,pi,24), counts_l, 0.5, 'b');
+                bar(linspace(-pi,pi,24) + pi/24, counts_r, 0.5, 'r');
+                title(['Max value = ' num2str(critval)]);
+            end
+            %%
 						
             % Change best split if this one is best so far
             if critval>bestcrit
@@ -355,7 +391,10 @@ while(tnode < nextunusednode)
                 bestvar = jvar;
                 bestcut = cutval;
             end
-		end
+        end
+        if args.debug
+            title(ax(bestvar), ['\bf Best value = ' num2str(bestcrit)]);
+        end
         
 		if ispc && strcmp(get_username,'ptresadern')
 			opts = sortrows(opts',2)';
@@ -443,10 +482,14 @@ cutval = (x(cutloc) + x(cutloc+1))/2;
 end
 
 %----------------------------------------------------
-function [crit_val,cut_val]=Ocritval(x,uv_cum,rows,crit_fun,var_fun,w_prior)
+function [crit_val,cut_val]=Ocritval(x,uv_cum,rows,crit_fun,var_fun,w_prior,debug)
 %OCRITVAL Get critical value for splitting node in regression tree where
 %the regression targets are orientations stored as [u v] vectors
    
+if ~exist('debug', 'var')
+    debug = false;
+end
+
 % First get all possible split points
 % Split between each pair of distinct ordered values
 N = numel(x);
@@ -488,7 +531,7 @@ uv_sum_right = uv_cum(end,:)-uv_sum_left;
 
 %Compute critical values based on left/right sums
 crit_vals = feval(crit_fun, uv_sum_left, uv_sum_right, ...
-	                        n_left, n_right, w_prior);
+	                        n_left, n_right, w_prior, debug);
 
 %Get maximum of the summed dispersions and find all indices at the max
 %value - if more than one randomly sample from them
@@ -500,7 +543,7 @@ end
 % the actual critical value we want is something like the average length of
 % the two mean vectors at the cut point
 crit_val = feval(var_fun, uv_sum_left(max_idx), uv_sum_right(max_idx),...
-                          n_left(max_idx), n_right(max_idx), w_prior);
+                          n_left(max_idx), n_right(max_idx), w_prior, 0);
 
 %Get the row correpsonding to the maximum index
 cut_row = rows(max_idx);
@@ -511,15 +554,24 @@ cut_val = (x(cut_row) + x(cut_row+1))/2;
 end
 
 %% Functions for choosing split point
-function crit_vals = midp(sum_left, sum_right, n_left, n_right, w_prior) %#ok
+function crit_vals = midp(sum_left, sum_right, n_left, n_right, w_prior, debug) %#ok
 % ignore all data values and tell it to pick the middle one
+
+if ~exist('debug', 'var')
+    debug = false;
+end
+
 crit_vals = zeros(length(sum_left),1);
 crit_vals(floor(length(crit_vals)/2)) = 1;
 
 end
 
-function crit_vals = dabs(sum_left, sum_right, n_left, n_right, w_prior)
+function crit_vals = dabs(sum_left, sum_right, n_left, n_right, w_prior, debug)
 % Compute squared length of the left/right mean vectors for any split
+if ~exist('debug', 'var')
+    debug = false;
+end
+
 d_left = (real(sum_left).^2 + imag(sum_left).^2) ./ (n_left.*n_left);
 d_right = (real(sum_right).^2 + imag(sum_right).^2) ./ (n_right.*n_right);
 
@@ -533,8 +585,12 @@ end
 
 end
 
-function crit_vals = dsq(sum_left, sum_right, n_left, n_right, w_prior)
+function crit_vals = dsq(sum_left, sum_right, n_left, n_right, w_prior, debug)
 % Compute length of the left/right mean vectors for any split
+if ~exist('debug', 'var')
+    debug = false;
+end
+
 d_left = (real(sum_left).^2 + imag(sum_left).^2) ./ n_left;
 d_right = (real(sum_right).^2 + imag(sum_right).^2) ./ n_right;
 
@@ -548,7 +604,43 @@ end
 
 end
 
-function crit_vals = mabs(sum_left, sum_right, n_left, n_right, w_prior) %#ok
+function crit_vals = bob(sum_left, sum_right, n_left, n_right, w_prior, debug)
+% Compute length of the left/right mean vectors for any split
+if ~exist('debug', 'var')
+    debug = false;
+end
+
+mean_left = sum_left ./ n_left;
+mean_right = sum_right ./ n_right;
+
+abs_l = abs(mean_left);
+abs_r = abs(mean_right);
+crit_vals = min(abs_l, abs_r);% -...
+    %0.5*abs(mean_left./abs_l + mean_right./abs_r);
+
+if debug
+    plot(abs(mean_left), 'r');
+    plot(abs(mean_right), 'b');
+    plot(0.5*abs(mean_left + mean_right), 'g');
+    plot(0.5*(abs(mean_left) + abs(mean_right)), 'm');
+    plot(crit_vals, 'k--', 'linewidth', 2);
+    set(gca, 'ylim', [0 1]);
+end
+
+% add a prior term that favours balanced trees
+if (w_prior>0)
+	crit_vals = crit_vals - w_prior*((n_left-n_right)/n_left(end)).^2;
+end
+
+end
+
+
+
+function crit_vals = mabs(sum_left, sum_right, n_left, n_right, w_prior, debug) %#ok
+if ~exist('debug', 'var')
+    debug = false;
+end
+
 % Compute length of the left/right mean vectors for any split
 d_left  = abs(sum_left)  ./ n_left;
 d_right = abs(sum_right) ./ n_right;
@@ -557,16 +649,31 @@ d_right = abs(sum_right) ./ n_right;
 crit_vals = (d_left + d_right)/2;
 end
 
-function crit_vals = ssq(sum_left, sum_right, n_left, n_right, w_prior) %#ok
+function crit_vals = ssq(sum_left, sum_right, n_left, n_right, w_prior, debug) %#ok
+if ~exist('debug', 'var')
+    debug = false;
+end
+
 % Compute length of the left/right mean vectors for any split
 d_left = (real(sum_left).^2 + imag(sum_left).^2) ./ n_left;
 d_right = (real(sum_right).^2 + imag(sum_right).^2) ./ n_right;
 
 % Return the sum of the mean squared lengths for any split
 crit_vals = d_left + d_right;
+
+if debug
+    plot(d_left, 'r');
+    plot(d_right, 'b');
+    plot(crit_vals/2, 'k--', 'linewidth', 2);
 end
 
-function crit_vals = acosv(sum_left, sum_right, n_left, n_right, w_prior) %#ok
+end
+
+function crit_vals = acosv(sum_left, sum_right, n_left, n_right, w_prior, debug) %#ok
+if ~exist('debug', 'var')
+    debug = false;
+end
+
 % Compute length of the left/right mean vectors for any split
 d_left = abs(sum_left) ./ n_left;
 d_right = abs(sum_right) ./ n_right;

@@ -499,4 +499,12 @@ for i_im = 1:length(all_caps)
     end
     delete([image_dir 'all_data\' all_caps(i_im).name]);
 end
+%%
+im_list = dir([base_dir 'images_png\*.png']);
+fname = 'C:\isbe\nailfold\data\rsa_study\data_lists\set12g_half_image_list.txt';
+fid1 = fopen(fname, 'wt');
+for i_im = 1:length(im_list)
+    fprintf(fid1,'%s \n', im_list(i_im).name);
+end
+fclose(fid1);
     

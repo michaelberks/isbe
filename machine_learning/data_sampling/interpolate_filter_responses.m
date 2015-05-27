@@ -119,7 +119,7 @@ for i_filter = 1:n_filters
         %Interpolate responses
         
         scaling = 2^(i_level-1);
-        offset = 1 + (i_level-1) / (2^i_level);
+        offset = 1 + (scaling - 1) / (2^i_level);
         filter_response = padarray(responses{i_level}(:,:,i_filter), [1 1], 'replicate');
 		samples(:, cols) = interp2(filter_response,...
             offset+cc/scaling, offset+rr/scaling, args.interp_method);

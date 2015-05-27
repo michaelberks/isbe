@@ -195,9 +195,10 @@ for i_s = [9 10 12 15 17]
     [final_mosaic, mosaic_weights] = ...
         create_mosaic(frames, compound_transforms);
     
-    mask = mosaic_weights > 0;
+    mask = mosaic_weights > 0.1;
     gmin = min(final_mosaic(mask));
     gmax = max(final_mosaic(mask));
+    final_mosaic(~mask) = gmax+1;
     
     figure; imgray(final_mosaic);
     write_im_from_colormap(final_mosaic, [im_folder 'static_mosaic.png'], gray(256), [gmin gmax]);
@@ -236,9 +237,9 @@ end
 %%
 num_nsegs = length(segments_ns);
 frame_idx = [];
-for i_seg = 1:num_segs 
+for i_seg = 1:num_nsegs 
     num_frames = length(segments_ns{i_seg});
-    frame_idx_i = segments_ns{i_seg}(1:2:num_frames);
+    frame_idx_i = segments_ns{i_seg}(1:5:num_frames);
     frame_idx = [frame_idx; frame_idx_i]; %#ok
 end
 %%    
@@ -248,8 +249,8 @@ frames = zeros(480,640,num_frames);
 motion_transforms = repmat(eye(3), 1, 1, num_frames);
 for i_f = 1:num_frames
     frames(:,:,i_f) = rot90(imread([im_folder 'frame' zerostr(frame_idx(i_f), 5) '.bmp']),2);
-    motion_transforms(1,3,i_f) = round((motor_x(frame_idx(i_f)) - motor_x(1))*1245);
-    motion_transforms(2,3,i_f) = -round((motor_y(frame_idx(i_f)) - motor_y(1))*1245);
+    motion_transforms(1,3,i_f) = round((motor_x(frame_idx(i_f)) - motor_x(1))*1100);
+    motion_transforms(2,3,i_f) = -round((motor_y(frame_idx(i_f)) - motor_y(1))*1100);
 end
 
 [motion_transforms_new, motion_counts] = ...
@@ -258,13 +259,18 @@ end
         'mosaic', final_mosaic,...
         'compound_transforms', motion_transforms,...
         'theta_range', [0], ...
-        'offset_lim', 40, ...
+        'offset_lim', 120, ...
         'debug', false);
 
 %%
 [motion_mosaic, motion_weights] = ...
-    create_mosaic(frames, motion_transforms_new, [], [], final_mosaic, mosaic_weights*30);
+    create_mosaic(frames, motion_transforms_new, [], [], final_mosaic, mosaic_weights);
 
+mask = motion_weights > 0.1;
+gmin = min(motion_mosaic(mask));
+gmax = max(motion_mosaic(mask));
+motion_mosaic(~mask) = gmax+1;
+    
 figure; imgray(motion_mosaic);
 
 

@@ -72,6 +72,11 @@ for i_im = 1:length(args.image_id_data.im_names)
     marker_files = args.image_id_data.marker_files{i_im};    
     marker_idx = args.image_id_data.marker_idx{i_im};
     
+    if isempty(marker_idx)
+        display(['WARNING: could not process ' im_name ', no markers associated with this image']); 
+        continue;
+    end
+    
     %Only use markers included on the marker lists
     if ~isempty(args.marker_list)
         markers = args.image_id_data.markers{i_im};
@@ -80,11 +85,24 @@ for i_im = 1:length(args.image_id_data.im_names)
         marker_files = marker_files(keep);
     end
     
-    %Don't use the repeat markings for a single observer - at moment this
-    %must be true for cluster_vessel_apices to work properly...
+    %Don't use the repeat markings for a single observer - (at moment this
+    %must be true for cluster_vessel_apices to work properly) MB fixed.
+    %repeats are now handled by setting the marker idx to m = i + 100(r-1)
+    %where r is the repeat number. i.e. if an image was marked by marker 3
+    %twice, then marker ids 3 and 103 will sent as input to
+    %cluster_vessel_apices
     if args.discard_repeats
         [marker_idx keep] = unique(marker_idx, 'first');
         marker_files = marker_files(keep);
+        
+    else
+        unique_markers = unique(marker_idx);
+        for i_ma = unique_markers    
+            matched = marker_idx == i_ma;
+
+            repeat_idx = 100*(0:sum(matched)-1);
+            marker_idx(matched) = marker_idx(matched)+repeat_idx;
+        end
     end
     
     %Compute initial clustering of vessel markups and save it
@@ -100,12 +118,16 @@ for i_im = 1:length(args.image_id_data.im_names)
     %any vessels based on the vessel probability images
     if args.do_post_merge
         markers_per_image = length(vessels.markers);
-        if markers_per_image > 1
-            vessel_prob = u_load([vessel_prob_dir im_name '_pred.mat']);
-            load([cluster_dir im_name '_apex_clusters.mat'], 'vessels');
+        if markers_per_image > 1 
+            if exist([vessel_prob_dir im_name '_pred.mat'], 'file')
+                vessel_prob = u_load([vessel_prob_dir im_name '_pred.mat']);
+                load([cluster_dir im_name '_apex_clusters.mat'], 'vessels');
 
-            [vessels] = post_merge_apexes(vessels, vessel_prob, args.dist_thresh, args.patch_sz2,...
-                args.connect_thresh, args.n_connect_pts, args.reduction_factor);   
+                [vessels] = post_merge_apexes(vessels, vessel_prob, args.dist_thresh, args.patch_sz2,...
+                    args.connect_thresh, args.n_connect_pts, args.reduction_factor);  
+            else
+               display(['WARNING: could not post merge ' im_name ', no vessel probability image found']); 
+            end
         end
         save([post_cluster_dir im_name '_apex_clusters.mat'], 'vessels');
     end

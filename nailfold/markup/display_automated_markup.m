@@ -42,7 +42,9 @@ args = u_packargs(varargin,... % the user's input
     'aam_thresh',       -2e4,...
     'plot_rejected',    1,...
     'plot_r', 3,...
-    'plot_c', 1);
+    'plot_c', 1,...
+    'plot_view', [],...
+    'plot_caxis', []);
 clear varargin;
 
 image_dir = [args.data_dir '/' args.image_dir '/'];
@@ -136,9 +138,9 @@ for i_im = 1:num_images
             plot(apex_width_x, apex_width_y, '-', 'Color', colors(i_can,:), 'linewidth', line_width);
             
             if i_type == 1
-                plot(apex_width_x, apex_width_y, 'o', 'MarkerEdgeColor', colors(i_can,:), 'MarkerSize', 8, 'MarkerFaceColor', colors(i_can,:));
+                plot(apex_width_x, apex_width_y, 'o', 'MarkerEdgeColor', colors(i_can,:), 'MarkerSize', 4, 'MarkerFaceColor', colors(i_can,:));
             else
-                plot(apex_width_x, apex_width_y, 'o', 'MarkerEdgeColor', colors(i_can,:), 'MarkerSize', 8);
+                plot(apex_width_x, apex_width_y, 'o', 'MarkerEdgeColor', colors(i_can,:), 'MarkerSize', 4);
             end
         end
         
@@ -162,5 +164,11 @@ for i_im = 1:num_images
 %             for i_r = 1:length(rejected_probs)
 %                 plot(rejected_xy(i_r,1), rejected_xy(i_r,1), 'r.', 'markersize', 4*rejected_probs(i_r));
 %             end
+    end
+    if ~isempty(args.plot_view)
+        axis(args.plot_view);
+    end
+    if ~isempty(args.plot_caxis);
+        caxis([args.plot_caxis]);
     end
 end

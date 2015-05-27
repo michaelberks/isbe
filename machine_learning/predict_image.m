@@ -174,7 +174,7 @@ switch prediction_args.prediction_type
     case {'rf_classification','rf_regression'}
         if ~isempty(prediction_args.num_trees)
             if prediction_args.num_trees <= length(predictor.trees)
-                predictor.trees(args.num_trees+1:end) = [];
+                predictor.trees(prediction_args.num_trees+1:end) = [];
             else
                 error('The number of trees bigger than the total number of trees in the random forests! ');
             end

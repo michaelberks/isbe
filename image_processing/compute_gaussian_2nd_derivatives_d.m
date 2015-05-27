@@ -44,6 +44,11 @@ g2d_responses = cell(num_scales,1);
 im = double(im);
 padsize = round(5*init_scale);
 
+% x = -1.75:0.5:1.75;
+% f = (sin(pi*x) .* sin(pi*x/2) + eps) ./ ((pi^2 * x.^2 / 2) + eps);
+% f = f / sum(f);
+f = [1 5 8 5 1] / 20;
+
 for i_scale = 1:num_scales
     %pre-allocate array for filter responses
     [r c] = size(im);
@@ -61,7 +66,10 @@ for i_scale = 1:num_scales
     g2d_responses{i_scale}(:,:,3) = Iyy(padsize+(1:r), padsize+(1:c));
     
     %Smooth and downsample the image
-    im = imresize(im(padsize+(1:r), padsize+(1:c)), 0.5, 'lanczos2');
+    im = imresize(im(padsize+(1:r), padsize+(1:c)), 0.5, 'lanczos2');   
+    %im = conv2(im(padsize+(1:r), padsize+(1:c)), f, 'same');
+    %im = conv2(im(:,1:2:end), f', 'same');
+    %im = im(1:2:end,:);
 end
 
 %--------------------------------------------------------------------------
