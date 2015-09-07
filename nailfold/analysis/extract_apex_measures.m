@@ -75,7 +75,12 @@ apex_measures.orientation_hist = zeros(num_apexes,args.num_ori_bins);
 apex_measures.base_orientation = zeros(num_apexes,1);
 apex_measures.connected_orientation = zeros(num_apexes,1);
 apex_measures.weighted_orientation = zeros(num_apexes,1);
+apex_measures.bounding_box = zeros(4,2,num_apexes);
 apex_measures.apex_xy = apex_xy;
+
+if args.plot
+    figure; imgray(vessel_im); a1 = gca;
+end
 
 for i_pt = 1:num_apexes
 
@@ -106,12 +111,21 @@ for i_pt = 1:num_apexes
     xya = args.xy * rot * scale;
     xa = reshape(xya(:,1) + ax, args.patch_sz);
     ya = reshape(xya(:,2) + ay, args.patch_sz);
+    
+    apex_measures.bounding_box(:,:,i_pt) = [...
+        xa(1,1) ya(1,1)
+        xa(end,1) ya(end,1)
+        xa(1,end) ya(1,end)
+        xa(end,end) ya(end,end)];
+    
+    if args.plot
+        plot(a1, xa, ya, 'b.', 'markersize', 2);
+    end
 
     %Sample vessel prob patch
     vessel_prob_patch = interp2(vessel_prob, xa, ya, '*linear', 0);
     vessel_ori_patch = interp2(vessel_ori, xa, ya, '*linear', 0);
-    vessel_width_patch = interp2(vessel_width, xa, ya, '*linear', 0);
-    
+    vessel_width_patch = interp2(vessel_width, xa, ya, '*linear', 0);    
     
     [connectivity_map] = make_connectivity_map(vessel_prob_patch, x_lim, y_lim, args.num_c_pts);
     connectivity_mask = connectivity_map >= args.connect_thresh;
@@ -135,6 +149,13 @@ for i_pt = 1:num_apexes
         apex_measures.total_prob(i_pt) = sum(vessel_prob_patch(connectivity_mask));
         apex_measures.connected_orientation(i_pt) = mean(vessel_ori_patch(connectivity_mask));
     end 
+    
+    a_theta = angle(-apex_measures.connected_orientation(i_pt))/2;
+    rot = [cos(a_theta) -sin(a_theta); sin(a_theta) cos(a_theta)];
+    xya = args.xy * rot * scale;
+    xa = reshape(xya(:,1) + ax, args.patch_sz);
+    ya = reshape(xya(:,2) + ay, args.patch_sz);
+    vessel_prob_patch2 = interp2(vessel_prob, xa, ya, '*linear', 0);
     
     %Create the orientation histogram indices
     
@@ -165,7 +186,8 @@ for i_pt = 1:num_apexes
     if args.plot
         figure;
         subplot(2,3,1); imgray(vessel_prob_patch);
-        subplot(2,3,2); imgray(complex2rgb(vessel_ori_patch));
+        subplot(2,3,2); imgray(vessel_prob_patch2);
+        %subplot(2,3,2); imgray(complex2rgb(vessel_ori_patch));
         subplot(2,3,3); imgray(vessel_width_patch);
         title(num2str([apex_measures.mean_width(i_pt) apex_measures.std_width(i_pt)]));
         

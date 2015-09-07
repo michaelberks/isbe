@@ -7,7 +7,12 @@ function [flowPyramidEst, flowConfidence] = ...
 
 if (nargin==0 && nargout==0), test(); return; end
 
-imgStack = load_image_stack(imageRoot, nFrames);
+if isnumeric(imageRoot)
+    imgStack = imageRoot;
+    nFrames = size(imgStack, 3);
+else
+    imgStack = load_image_stack(imageRoot, nFrames);
+end
 
 nPyramidLevels = levels(end);
 imgPyramid = build_image_pyramid(imgStack, nPyramidLevels);

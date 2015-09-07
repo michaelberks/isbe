@@ -33,13 +33,14 @@ clear varargin;
 no_write = false;
 if isnan(trans_dir)
     no_write = true;
-end
+else
 
-if trans_dir(end) ~= filesep
-    trans_dir = [trans_dir filesep];
-end
-if ~isdir(trans_dir)
-    mkdir(trans_dir);
+    if trans_dir(end) ~= filesep
+        trans_dir = [trans_dir filesep];
+    end
+    if ~isdir(trans_dir)
+        mkdir(trans_dir);
+    end
 end
 
 %Get dimensions of the input tiles
@@ -170,16 +171,27 @@ for i_tile = 1:num_tiles
     end
 end
 
-g_lims = [g_min g_max];
+if no_write
+    g_lims = [];
+    seq_mask = [];
+else
+    g_lims = [g_min g_max];
+
+    for i_tile = 1:num_tiles
+        filename = fullfile(trans_dir, ...
+                        sprintf('%s%04d.%s',trans_name, i_tile, args.format));
+        tile = imread(filename);
+        tile(~seq_mask) = 0;
+        delete(filename);
+        imwrite(tile, filename);
+    end
+    filename = fullfile(trans_dir, 'seq_mask.png');
+    imwrite(seq_mask, filename);
+end
 
 % Get average difference between a frame and the mosaic (where camera-based
 % artefacts have, with luck, been removed).
 diff_img = diff_img / num_tiles;
-
-if ~no_write
-    filename = fullfile(trans_dir, 'seq_mask.png');
-    imwrite(uint8(255*seq_mask), filename);
-end
 
 if exist('tb', 'var')
     timebar(tb, 'close');
@@ -194,3 +206,5 @@ end
 %   ffmpeg -b 1200k -r 30 -i frame_%04d.png -an movie.mpg
 % For a lossless, 30 fps, avi movie (no sound):
 %   ffmpeg -i frame_%04d.png -vcodec huffyuv -r 30 -an movie.avi
+%
+% ffmpeg -i frame_%04d.png -c:v libx264 -preset slow -crf 22 -an movie.mp4

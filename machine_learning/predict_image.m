@@ -43,12 +43,6 @@ clear varargin;
 %Get arguments needed to decompose image into the required feature vectors
 decomposition_args = args.decomposition_args;
 
-%Combine arguments to control the prediction
-prediction_args.prediction_type = args.prediction_type;
-prediction_args.use_probs = args.use_probs;
-prediction_args.output_type = args.output_type;
-prediction_args.num_trees = args.num_trees;
-
 %Get size of image;
 [ROW COL im_chs] = size(args.image_in);
     
@@ -56,12 +50,34 @@ prediction_args.num_trees = args.num_trees;
 r_parts = ceil(ROW / args.max_size);
 c_parts = ceil(COL / args.max_size);
 
+if isstruct(args.predictor)
+    p = args.predictor;
+    args.predictor = cell(1,1);
+    args.predictor{1} = p;
+    clear p;
+    num_preds = 1;
+    
+    %Combine arguments to control the prediction
+    prediction_args(1).prediction_type = args.prediction_type;
+    prediction_args(1).use_probs = args.use_probs;
+    prediction_args(1).output_type = args.output_type;
+    prediction_args(1).num_trees = args.num_trees;
+else
+    num_preds = length(args.predictor);
+    for i_p = 1:num_preds
+        prediction_args(i_p).prediction_type = args.prediction_type{i_p};%#ok
+        prediction_args(i_p).output_type = args.output_type{i_p};%#ok
+        prediction_args(i_p).use_probs = args.use_probs;%#ok
+        prediction_args(i_p).num_trees = args.num_trees;%#ok
+    end
+end
+
 % Preallocate space for output image
-out_dims = 1;
-if strcmp(args.prediction_type, 'rf_classification') && length(args.predictor.classname) > 2;
-    out_dims = length(args.predictor.classname);
-end     
-image_out = zeros(ROW*COL,out_dims);
+% out_dims = 1;
+% if strcmp(args.prediction_type, 'rf_classification') && length(args.predictor.classname) > 2;
+%     out_dims = length(args.predictor.classname);
+% end     
+image_out = zeros(ROW*COL, num_preds);
 
 %See if we have a tree mask and check it's the right size - we'll assume
 %this has only been supplied for RF methods
@@ -156,16 +172,17 @@ for rp = 1:r_parts
             tree_mask = [];
         end
         
-        % Apply the predictor to the test data
-        image_out(part_idx,:) = apply_predictor(args.predictor, test_data, prediction_args, tree_mask);
-        
+        for i_p = 1:num_preds
+            % Apply the predictor to the test data
+            image_out(part_idx,i_p) = apply_predictor(args.predictor{i_p}, test_data, prediction_args(i_p), tree_mask);
+        end
     end
     
     % Move down one block
     rows = rows + args.max_size;
     rows(rows > ROW) = [];
 end
-image_out = reshape(image_out, ROW, COL, out_dims);
+image_out = reshape(image_out, ROW, COL, num_preds);
 
 %% Helper functions
 function [prob_image_part] = apply_predictor(predictor, test_data, prediction_args, tree_mask)

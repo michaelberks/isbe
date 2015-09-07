@@ -1,4 +1,6 @@
-study_dirs = dir('N:\Nailfold Capillaroscopy\camera_capture\wellcome_nailfold_study\0*');
+study_dirs = [
+    dir('N:\Nailfold Capillaroscopy\camera_capture\wellcome_nailfold_study\0*')
+    dir('N:\Nailfold Capillaroscopy\camera_capture\wellcome_nailfold_study\1*')];
 
 num_subs = length(study_dirs);
 recruitment_dates = zeros(num_subs,1);

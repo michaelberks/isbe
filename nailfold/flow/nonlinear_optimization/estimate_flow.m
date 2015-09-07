@@ -20,21 +20,29 @@ if ~exist('f_save_results', 'var'), f_save_results = true; end
 [m,n,nImages] = size(imgStack);
 
 % Define dummy ground truth values
-if isempty(gt) || isempty(gt.flow)
+if isempty(gt) 
     gt.flow = complex(zeros(m,n), zeros(m,n));
-end
-if isempty(gt) || isempty(gt.mask)
     gt.mask = zeros(m,n);
-end
-if isempty(gt) || isempty(gt.displacements)
     gt.displacements = zeros(nImages-1,2);
-end
-if isempty(gt) || isempty(gt.presence)
     gt.presence = nan(m,n);
-end
-if isempty(gt) || isempty(gt.orientation)
     gt.orientation = [];
-end
+else
+    if isempty(gt.flow)
+        gt.flow = complex(zeros(m,n), zeros(m,n));
+    end
+    if isempty(gt.mask)
+        gt.mask = zeros(m,n);
+    end
+    if isempty(gt.displacements)
+        gt.displacements = zeros(nImages-1,2);
+    end
+    if isempty(gt.presence)
+        gt.presence = nan(m,n);
+    end
+    if isempty(gt.orientation)
+        gt.orientation = [];
+    end
+end 
 
 % Persistent variables are used for efficiency in several functions. We
 % need to clear them before we begin optimizing.

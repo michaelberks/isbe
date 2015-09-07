@@ -24,20 +24,28 @@ function [c_array] = read_complex_txt(filename)
 % Copyright: (C) University of Manchester 
 fid = fopen(filename,'r');
 frewind(fid);
-s = textscan(fid, '%s', 'endofline', '\n');
+s = textscan(fid, '%s', 'endofline', '\n', 'delimiter', {' ', ', ', '\n'});
 fclose(fid);
 s = s{1};
 
+%Merge real and imaginary parts of the non-zero elements together
+non_zeros_r = strncmpi(s, '(', 1);
+if s{find(non_zeros_r,1)}(end) ~= ')'
+    non_zeros_i = [false; non_zeros_r(1:end-1,:)];
+    s(non_zeros_i) = strcat(s(non_zeros_r), ',', s(non_zeros_i));
+    s(non_zeros_r) = [];
+end
+
 %Find the end-of-lines, for some reason the initial textscan won't
 %recognise these. Discard and check the expected row and column sizes match
-eol = ~strncmpi(s, '(', 1);
+eol = ~strncmpi(s, '(', 1) & ~strncmpi(s, '0', 1);
 if any(eol)
     col_size = find(eol,1)-1;
     s(eol) = [];
     row_size = length(s) / col_size;
-    if row_size ~= sum(eol)
-        error('End of line paramaters incoorectly read');
-    end
+    %if row_size ~= sum(eol)
+    %    error('End of line paramaters incoorectly read');
+    %end
     %Otherwise resize s (note s will be a column vector, in row order, so
     %need to transpose)
     s = reshape(s, col_size, row_size)';
@@ -47,8 +55,10 @@ end
 c_array = zeros(size(s));
 for i_r = 1:size(s,1)
     for i_c = 1:size(s,2)
-        c_num = textscan(s{i_r,i_c}, '(%n,%n)');
-        c_array(i_r,i_c) = complex(c_num{1}, c_num{2});
+        if ~strncmpi(s{i_r,i_c}, '0', 1)           
+            c_num = textscan(s{i_r,i_c}, '(%n,%n)');
+            c_array(i_r,i_c) = complex(c_num{1}, c_num{2});
+        end
     end
 end
 

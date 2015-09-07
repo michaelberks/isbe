@@ -41,6 +41,7 @@ args = u_packargs(varargin,... % the user's input
     'ref_type', 'previous',...
     'tile_masks', [],...
     'sigma', [2],...
+    'feature_type', 'g1d',...
     'offset_lim', [],...
     'theta_range', [],...
     'max_pts', inf,...
@@ -136,6 +137,12 @@ else %args.ref_type = 'mosaic';
             create_mosaic(tiles, compound_transforms, args.weights, args.tile_masks);
     else
         tile0 = args.mosaic;
+        if isempty(compound_transforms)
+            compound_transforms = zeros(3, 3, num_tiles);
+            for i = 1:num_tiles
+                compound_transforms(:,:,i) = eye(3);
+            end
+        end
     end
 
     tile_range = 1:num_tiles;
@@ -161,7 +168,7 @@ while (it < max_iterations)
        
         % Compute line points in reference tile as the initial target
         [x_tgt, y_tgt] = get_line_points(tile0, args.sigma, ...
-                                         args.tile_masks(:,:,1));
+                                         args.tile_masks(:,:,1), args.feature_type);
         x_tgt = x_tgt - cx - offset_centres(1,1);
         y_tgt = y_tgt - cy - offset_centres(1,2);
         
@@ -195,7 +202,7 @@ while (it < max_iterations)
             
             
             [x_src, y_src] = get_line_points(tile_curr, args.sigma, ...
-                                             args.tile_masks(:,:,i_tile));
+                                             args.tile_masks(:,:,i_tile), args.feature_type);
             x_src = x_src - cx;
             y_src = y_src - cy;
 
@@ -372,9 +379,7 @@ end
 
 %% Find line structures in the image
 function [x, y] = ...
-    get_line_points(tile, sigma, tile_mask)
-
-feature_type = 'g1d';
+    get_line_points(tile, sigma, tile_mask, feature_type)
 
 switch feature_type
     case {'g2d'},

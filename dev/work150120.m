@@ -1,6 +1,6 @@
 root_dir = nailfoldroot(1);
 
-session_dir = [root_dir 'camera_capture\testing_new_camera\bar\2015_01_16\'];
+session_dir = [root_dir 'camera_capture\wellcome_nailfold_study\002wellcome\2015_02_27\'];
 sequences_s = dir(session_dir);
 
 num_seqs = length(sequences_s) - 2;
@@ -10,9 +10,16 @@ for i_s = 1:num_seqs
 end
 %%
 num_seqs = length(sequence_dir);
-%sequences = cell(num_seqs,1);
-for i_s = [15 17]%1:num_seqs
-    [sequences{i_s}] = read_sequence_from([session_dir sequence_dir{i_s} '\sequence_properties.txt']);
+sequences = cell(num_seqs,1);
+for i_s = [1:7 9:10]%1:num_seqs
+    sequence = read_sequence_from([session_dir sequence_dir{i_s} '\sequence_properties.txt']);
+    sequence_name = ['sequence_' sequence_dir{i_s}];
+    eval([sequence_name ' = sequence;']);
+    if exist([session_dir sequence_dir{i_s} '\sequences.mat'], 'file')
+        save([session_dir sequence_dir{i_s} '\sequences.mat'], sequence_name, '-append');
+    else
+        save([session_dir sequence_dir{i_s} '\sequences.mat'], sequence_name);
+    end
 end
 %%
 

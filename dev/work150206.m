@@ -1,6 +1,6 @@
 %%
 %Compute Matlab responses
-im = imread('C:\isbe\nailfold\test_im.png');
+im = imread('C:\isbe\nailfold\data\rsa_study\cxx2\images\enlargedapex0140_vessel.png');
 g2dd = compute_gaussian_2nd_derivatives_d(im, 1, 3);
 h2dd = compute_hilbert_2nd_derivatives_d(im, 1, 3);
 g2di = steer_gaussian_2nd_derivatives(g2dd, [], 6);
@@ -10,9 +10,9 @@ h2di = steer_hilbert_2nd_derivatives(h2dd, [], 6);
 [g2ds] = interpolate_filter_responses(g2di, cc(:), rr(:), 'win_size', 1, 'interp_method', 'cubic');%bilinear
 [h2ds] = interpolate_filter_responses(h2di, cc(:), rr(:), 'win_size', 1, 'interp_method', 'cubic');
 
-switch_cols = [1:3:16 2:3:17 3:3:18];
-g2ds = g2ds(:, switch_cols);
-h2ds = h2ds(:, switch_cols);
+%switch_cols = [1:3:16 2:3:17 3:3:18];
+%g2ds = g2ds(:, switch_cols);
+%h2ds = h2ds(:, switch_cols);
 
 mag_m = sqrt(g2ds.^2 + h2ds.^2);
 %%

@@ -58,6 +58,9 @@ for i_im = 1:num_images
     load([selected_dir im_name '_sel.mat']);
     load([candidates_dir im_name '_candidates.mat']', 'candidate_xy');
     
+    selected_distal = true(size(candidate_xy,1),1);
+    selected_non_distal = false(size(candidate_xy,1),1);
+    
     if exist('metrics_dir', 'var')
         load([metrics_dir im_name '_am.mat'], 'apex_measures');
     end

@@ -86,6 +86,7 @@ if isempty(args.im_names)
     end
 else
     im_names = args.im_names;
+    num_ims = length(im_names);
 end
 
 if isempty(args.im_idx)

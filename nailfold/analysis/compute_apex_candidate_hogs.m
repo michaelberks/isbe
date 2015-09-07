@@ -26,7 +26,6 @@ args = u_packargs(varargin, 0, ... % the user's input
     'candidates_dir',       'apex_maps/local_maxima',...
     'hog_dir',              'apex_hogs',...
     'feature_sigma',        0,...
-    'prob_sigma',           2,...
     'ori_sigma',            0,...
     'width_sigma',          2,...
     'num_cells',            8,...
@@ -39,8 +38,8 @@ args = u_packargs(varargin, 0, ... % the user's input
     'spatial_sigma',        0, ...
     'angle_wrap',           1,...
     'base_width',           20, ...
-    'dist_thresh',          24^2,...
-    'overwrite',            0);
+    'overwrite',            0,...
+    'debug',                0);
 
 %Form full directory paths and create folder for HoGs
 feature_im_dir = [args.data_dir args.feature_im_dir '/'];
@@ -123,10 +122,15 @@ for i_im = 1:num_images
         candidate_widths = interp2(vessel_width, candidate_xy(:,1), candidate_xy(:,2));
         clear vessel_ori vessel_width;
 
-        candidate_oris = angle(candidate_oris / 2); 
+        candidate_oris = angle(candidate_oris) / 2; 
 
         num_candidates = size(candidate_xy,1);
         candidates_hogs = zeros(num_candidates, hog_sz);
+        
+        if args.debug && i_im <= 20
+            figure; imgray(vessel_feature_im); a1 = gca;
+        end
+            
 
         for i_can = 1:num_candidates
 
@@ -148,6 +152,17 @@ for i_im = 1:num_images
             vessel_feature_patch = interp2(vessel_feature_im, xa, ya, '*linear', 0);
             [hog] = compute_HoG(vessel_feature_patch, hog_args);       
             candidates_hogs(i_can,:) = hog(:)';
+            
+            if args.debug && i_im <= 20
+                plot(a1, xa([1 end],1), ya([1 end],1), 'b');
+                plot(a1, xa([1 end],end), ya([1 end],end), 'g');
+                plot(a1, xa(1,[1 end]), ya(1, [1 end]), 'r');
+                plot(a1, xa(end, [1 end]), ya(end, [1 end]), 'm');
+            end
+            
+            if args.debug && i_can == 1 && i_im <= 20
+                plot_hog(vessel_feature_patch, hog, args.num_cells, args.angle_wrap);
+            end
         end
     end
     save([hog_dir im_name '_hog.mat'], 'candidates_hogs', 'candidate_oris', 'candidate_widths');

@@ -112,7 +112,7 @@ if debug_mode
     
     %If debugging, display the density distributions in the breast shape
 
-    figure; 
-    subplot(1,2,1); imagesc(reshape(D, dims(2), dims(1))); axis image; colormap(jet(256));
-    subplot(1,2,2); imagesc(reshape(D_a, dims(2), dims(1))); axis image; colormap(jet(256));
+%     figure; 
+%     subplot(1,2,1); imagesc(reshape(D, dims(2), dims(1))); axis image; colormap(jet(256));
+%     subplot(1,2,2); imagesc(reshape(D_a, dims(2), dims(1))); axis image; colormap(jet(256));
 end

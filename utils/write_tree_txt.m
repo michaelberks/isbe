@@ -1,4 +1,4 @@
-function [] = write_tree_txt(tree, fname)
+function [] = write_tree_txt(tree, fname, out_dims)
 %WRITE_CTREE_TXT write out a 2D array in ascii text format
 %   [] = write_array_txt(complex_mat, fname)
 %
@@ -23,6 +23,15 @@ function [] = write_tree_txt(tree, fname)
 % Email : michael.berks@manchester.ac.uk 
 % Phone : +44 (0)161 275 7669 
 % Copyright: (C) University of Manchester 
+if ~exist('out_dims', 'var')
+    out_dims = [];
+end
+
+if ~isempty(out_dims)
+    branches = tree.var > 0;
+    tree.var(branches) = out_dims(tree.var(branches));
+    tree.var(~branches) = -1;
+end
 
 cxx_names = {
     'node_features'
@@ -43,6 +52,14 @@ if strcmpi(tree.method, 'regression');
         'nodeerr'
         'children_l'
         'children_r'};
+    
+    %Deal with complex valued orientation trees
+    if any(~isreal(tree.class))
+        tree.class = [real(tree.class) imag(tree.class)];
+        tree.nodeerr = [tree.nodeerr zeros(size(tree.nodeerr))];
+    end
+    n_outputs = size(tree.class,2);
+    
 else %tree.method = 'classification'
     if size(tree.classprob, 2) ~= 2
         warning('Method only suitable for binary classsifcation trees');
@@ -56,19 +73,18 @@ else %tree.method = 'classification'
         'children_l'
         'children_r'};
     tree.classprob(:,end) = [];
-    
-     
+    n_outputs = size(tree.classprob,2);    
 end
 
 formats = {'%d ', '%.4f ', '%.4f ', '%.4f ', '%d ', '%d'};  
 
 n_features = tree.npred;
 n_nodes = length(tree.node);
-
 fid1 = fopen(fname, 'wt');
 
 fprintf(fid1,'n_features: %d\n', n_features);
 fprintf(fid1,'n_nodes: %d\n', n_nodes);
+fprintf(fid1,'n_outputs: %d\n', n_outputs);
 
 for i_f = 1:length(fieldnames)
     fprintf(fid1, '%s: {\n', cxx_names{i_f});

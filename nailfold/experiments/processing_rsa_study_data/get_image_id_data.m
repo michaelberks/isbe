@@ -29,6 +29,7 @@ function image_id_data = get_image_id_data(varargin)
 args = u_packargs(varargin, 0, ...
     'main_xls_list',        'full_image_list_19-12-2013.xlsx',...
     'alternative_xls_lists',{'RSA_new_allocation_observers.xlsx', 'RSA_new_allocation_tonia.xlsx'},...
+    'derm_xls_list',        'RSA_dermoscopy_17-10-2014.xlsx',...
     'main_column_order',    [2 3 4 5 6 7],... %Column order = 'id', 'visit', 'hand', 'digit', 'im_name', 'category' 
     'alt_column_orders',    [2 4 5 6 9 3; 1 3 4 5 6 2],... 
     'data_dir',             [nailfoldroot 'data/rsa_study/'],...
@@ -64,6 +65,7 @@ image_id_data.hand = raw(:, args.main_column_order(3));
 image_id_data.digit =  cell2mat( raw(:, args.main_column_order(4)) );
 image_id_data.category = raw(:, args.main_column_order(6));
 image_id_data.alternative_names = cell(num_images, 1);
+image_id_data.derm_names = cell(num_images, 1);
 %%
 %--------------------------------------------------------------------------
 %Now sort out repeats
@@ -100,12 +102,13 @@ image_id_data.visit(discard_rows,:) = [];
 image_id_data.hand(discard_rows,:) = [];
 image_id_data.digit(discard_rows,:) = [];
 image_id_data.category(discard_rows,:) = [];
-image_id_data.alternative_names(discard_rows,:) = [];                        
+image_id_data.alternative_names(discard_rows,:) = [];        
+image_id_data.derm_names(discard_rows,:) = []; 
 num_images = length(image_id_data.im_names);
 %%
 %--------------------------------------------------------------------------
 % Now get the alternative names for each image   
-for i_alt = 1:2
+for i_alt = 1:length(args.alternative_xls_lists)
     [~, ~, raw] = ...
         xlsread([data_list_dir args.alternative_xls_lists{i_alt}]);
     
@@ -139,6 +142,43 @@ for i_alt = 1:2
         end
     end
 end 
+
+%--------------------------------------------------------------------------
+% Now get the dermatoscope image names for each image
+[~, ~, raw] = ...
+    xlsread([data_list_dir args.derm_xls_list]);  
+
+for i_im = 2:size(raw,1)
+    %cols: ID	Visit	Hand	Digit	Filename
+    id = raw{i_im,1};
+    visit = raw{i_im,2};
+    hand = raw{i_im,3};
+    digit = raw{i_im,4};
+    filename = raw{i_im,5}(2:end);
+    
+    match = ...
+        image_id_data.people_id == id &...
+        image_id_data.visit == visit &...
+        strcmpi(image_id_data.hand, hand) &...
+        image_id_data.digit == digit;
+    
+    if any(match)
+    
+        matched_names = image_id_data.derm_names{match};
+        
+        if ~ismember(filename, matched_names)
+            matched_names = [matched_names, {filename}]; %#ok
+            image_id_data.derm_names{match} = matched_names;
+        end
+    else
+        display(['No match for ' ...
+            'ID ' num2str(id) ...
+            ' Visit	' num2str(visit)  ...
+            ' Hand	' hand  ...
+            ' Digit	' num2str(digit)]);
+    end
+end    
+
 
 %%
 %--------------------------------------------------------------------------

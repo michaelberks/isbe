@@ -53,21 +53,25 @@ else
             hog_size = size(candidate_hog, 2);
             train_X = zeros(num_samples, hog_size);
             train_c = false(num_samples,1);
+            train_idx = zeros(num_samples,2);
         end 
         
         %sample the data/labels into the storage containers
-        num_candidates = length(candidates_class);        
-        idx = idx(end) + (1:num_candidates);
+        num_candidates = length(candidates_class);
+        im_idx = 1:num_candidates;
+        idx = idx(end) + im_idx;
                 
         train_X(idx,:) = candidate_hog;
         train_c(idx,:) = candidates_class;
+        train_idx(idx,1) = i_im;
+        train_idx(idx,2) = im_idx;
     end
 
     %Save the data if we've been given a save directory
     if args.save_data
         rf_data_dir = [args.model_root '/training_data/' model_id '/'];
         create_folder(rf_data_dir);
-        save([rf_data_dir 'data.mat'], 'train_X', 'train_c');
+        save([rf_data_dir 'data.mat'], 'train_X', 'train_c', 'train_idx');
     end
 end
 

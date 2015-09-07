@@ -1,3 +1,4 @@
+
 load('C:\isbe\nailfold\data\rsa_study\data_lists\image_id_data.mat');
 num_images = length(image_id_data.im_names);
 miccai_selection.validation = false(num_images,1);

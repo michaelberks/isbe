@@ -397,5 +397,114 @@ for i_sz = 1:3
         end
     end
 end
-        
+%%
+extract_vessel_centres_set(...
+    'num_jobs', 1, ...
+    'task_id', 1,...
+    'data_dir',             [nailfoldroot 'data/rsa_study/cxx2/'],...
+    'data_ext',             '*.txt',...
+    'prob_dir',             'rf_classification/296655',...
+    'ori_dir',              'rf_regression/296621',...
+    'width_dir',            'rf_regression/297037',...
+    'fov_mask_dir',         '',...
+    'centre_dir',           'vessel_centres',...
+    'overwrite',            0);
+%%
+%Write out the forests for preidcting vessel properties and apex location in text format
+% So they can be read into the cxx program
+complex_rep = 2;
+num_angles = 6; 
+num_levels = 5;
+win_size = 9; %3x3
+
+model_names = {
+    'C:\isbe\nailfold\models\vessel\width\rf_regression\297037\predictor.mat'
+	'C:\isbe\nailfold\models\vessel\orientation\rf_regression\296621\predictor.mat'
+	'C:\isbe\nailfold\models\vessel\detection\rf_classification\296655\predictor.mat'
+    'C:\isbe\nailfold\models\vessel\width\rf_regression\675754\predictor.mat'
+    'C:\isbe\nailfold\models\vessel\orientation\rf_regression\675752\predictor.mat'
+    'C:\isbe\nailfold\models\vessel\detection\rf_classification\675753\predictor.mat'
+	'C:\isbe\nailfold\models\apex\classification\set12g_half_296655\rf.mat'
+    'C:\isbe\nailfold\models\apex\offset_x\set12g_half_296655\rf.mat'
+    'C:\isbe\nailfold\models\apex\offset_y\set12g_half_296655\rf.mat'
+    'C:\isbe\nailfold\models\apex\rescoring\miccai_all\rf.mat'
+    'C:\isbe\nailfold\models\apex\rescoring\corrected_miccai_all\rf.mat'};
+
+tree_roots = {
+    'C:\isbe\nailfold\models\vessel\width\rf_regression\'
+	'C:\isbe\nailfold\models\vessel\orientation\rf_regression\'
+	'C:\isbe\nailfold\models\vessel\detection\rf_classification\'
+    'C:\isbe\nailfold\models\vessel\width\rf_regression\'
+	'C:\isbe\nailfold\models\vessel\orientation\rf_regression\'
+	'C:\isbe\nailfold\models\vessel\detection\rf_classification\'
+	''
+    ''
+    ''
+    ''
+    ''};
+
+
+for i_m = 1:6%1:length(model_names)
     
+    if (ismember(i_m, [1 2 3]))
+        translated_dims = translate_feature_dimensions(complex_rep,num_angles,num_levels,win_size); 
+    elseif (ismember(i_m, [4 5 6]))
+        translated_dims = translate_feature_dimensions(complex_rep,num_angles,num_levels,1);
+    else
+        translated_dims = [];
+    end
+
+    rf = u_load(model_names{i_m});
+    if ~isempty(tree_roots{i_m})
+        rf.tree_root = tree_roots{i_m};
+    end
+    write_forest_txt(rf, [rf.tree_root rf.tree_dir 'txt'], translated_dims);
+    create_folder([rf.tree_root rf.tree_dir 'bfs']);
+end
+%%
+base_dir = 'C:/isbe/nailfold/data/rsa_study/master_set/';
+im_types = {...
+        'images/', '.mat', 'images_png/', '.png';...
+        'fov_masks/', '_f_mask.mat', 'fov_masks_cxx/', '_f_mask.png';...
+        'predictions\detection\rf_classification\296655\', '_pred.mat', 'predictions\detection\rf_classification\296655_cxx\', '_pred.txt';
+        'predictions\orientation\rf_regression\296621\', '_pred.mat', 'predictions\orientation\rf_regression\296621_cxx\', '_pred.txt';
+        'predictions\width\rf_regression\297037\', '_pred.mat', 'predictions\width\rf_regression\297037_cxx\', '_pred.txt'};
+num_types = size(im_types,1);    
+for i_type = 1:num_types
+    create_folder([base_dir im_types{i_type,3}]);
+end
+    
+%im_list = dir([base_dir 'images\*.mat']);
+load('C:\isbe\nailfold\data\rsa_study\data_lists\miccai_lists.mat', 'miccai_selection');
+load('C:\isbe\nailfold\data\rsa_study\data_lists\image_id_data.mat');
+im_names = sort(image_id_data.im_names(miccai_selection.validation));
+
+for i_im = 1:length(im_names);
+    im_name = im_names{i_im}; %im_list(i_im).name(1:end-4);
+    display(['converting image ' num2str(i_im)]);
+
+    for i_type = 1:num_types
+        
+        orig_name = [base_dir im_types{i_type,1} im_name im_types{i_type,2}];
+        new_name  = [base_dir im_types{i_type,3} im_name im_types{i_type,4}];
+        
+        if exist(new_name, 'file')
+            continue;
+        end
+        
+        vessel_im = u_load(orig_name);
+        switch i_type
+            case 1
+                imwrite(uint8(vessel_im), new_name);
+            case 2
+                vessel_im = uint8(255*vessel_im);
+                imwrite(vessel_im, new_name);
+            case {3,5}
+                write_array_txt(vessel_im, new_name);
+            case 4
+                write_complex_txt(vessel_im, new_name);
+        end
+        
+    end
+end
+%%

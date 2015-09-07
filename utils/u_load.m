@@ -49,6 +49,10 @@ function [varargout] = u_load(filename)
 
 % Load the file
 S = load(filename);
+if isnumeric(S)
+    varargout{1} = S;
+    return;
+end
 
 fnames = fieldnames(S);
 if length(fnames) < nargout

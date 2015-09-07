@@ -35,7 +35,11 @@ args = u_packargs(varargin, 0, ... % the user's input
     'overwrite',            0);
 
 %Form full directory paths and create folder for HoGs
-fov_mask_dir = [args.data_dir '/' args.fov_mask_dir '/'];
+if isempty(args.fov_mask_dir)
+    fov_mask_dir = [];
+else
+    fov_mask_dir = [args.data_dir '/' args.fov_mask_dir '/'];
+end
 centre_dir = [args.data_dir '/' args.centre_dir '/'];
 apex_map_dir = [args.data_dir '/' args.apex_map_dir '/'];
 candidates_dir = [args.data_dir '/' args.candidates_dir '/'];
@@ -56,9 +60,14 @@ for i_im = 1:num_images
     display(['Processing image ' num2str(i_im) ', ' datestr(now)]);
     
     %Load in the image mask and the apex map
-    load([apex_map_dir im_name '_pred.mat']);        
-    f_mask = u_load([fov_mask_dir im_name '_f_mask.mat']);
-
+    load([apex_map_dir im_name '_pred.mat']);      
+    
+    if isempty(fov_mask_dir)
+        f_mask = true(size(apex_offset_map));
+    else
+        f_mask = u_load([fov_mask_dir im_name '_f_mask.mat']);
+    end
+    
     %See if we need to transform the map
     if args.transform_scores
         load([centre_dir im_name '_vc.mat']);
