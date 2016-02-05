@@ -29,7 +29,12 @@ end
 
 if ~isempty(out_dims)
     branches = tree.var > 0;
-    tree.var(branches) = out_dims(tree.var(branches));
+    
+    if length(out_dims) == 1
+        tree.var(branches) = tree.var(branches) + out_dims;
+    else
+         tree.var(branches) = out_dims(tree.var(branches));
+    end
     tree.var(~branches) = -1;
 end
 

@@ -16,6 +16,14 @@ if d_args.normalise
 end
 
 responses = [];
+
+%Deal with old cases where the decomp type was just a character string,
+%rather than a cell
+if ischar(d_args.decomp_type)
+    d_args.decomp_type = {d_args.decomp_type};
+end
+
+%Now we can switch on the decomp type
 for ii = 1:length(d_args.decomp_type)
     switch d_args.decomp_type{ii}
 

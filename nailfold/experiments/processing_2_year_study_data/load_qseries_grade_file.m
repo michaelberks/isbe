@@ -69,6 +69,9 @@ while 1
             case 'time_taken'
                 grade.time_taken = str2double(value);
                 
+            case 'ims_gradeable'
+                grade.images_gradeable = value(1) == '1';
+                
             case 'ims_normal'
                 grade.images_abnormal = value(1) == '0';
                 
@@ -107,4 +110,11 @@ while 1
     end
 end
 fclose(fid);
+
+%Some old grade file may not have the gradeable tag, so if the field hasn't
+%been set, we just have to assume the images were gradeable
+if ~isfield(grade, 'images_gradeable')
+    grade.images_gradeable = 1;
+end
+        
 

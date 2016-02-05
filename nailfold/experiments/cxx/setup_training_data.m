@@ -424,7 +424,8 @@ model_names = {
     'C:\isbe\nailfold\models\vessel\width\rf_regression\675754\predictor.mat'
     'C:\isbe\nailfold\models\vessel\orientation\rf_regression\675752\predictor.mat'
     'C:\isbe\nailfold\models\vessel\detection\rf_classification\675753\predictor.mat'
-	'C:\isbe\nailfold\models\apex\classification\set12g_half_296655\rf.mat'
+	'C:\isbe\nailfold\models\apex\classification\frog\rf.mat'
+    'C:\isbe\nailfold\models\apex\classification\set12g_half_296655\rf.mat'
     'C:\isbe\nailfold\models\apex\offset_x\set12g_half_296655\rf.mat'
     'C:\isbe\nailfold\models\apex\offset_y\set12g_half_296655\rf.mat'
     'C:\isbe\nailfold\models\apex\rescoring\miccai_all\rf.mat'
@@ -441,17 +442,18 @@ tree_roots = {
     ''
     ''
     ''
+    ''
     ''};
 
 
-for i_m = 1:6%1:length(model_names)
+for i_m = 11%1:length(model_names)
     
     if (ismember(i_m, [1 2 3]))
         translated_dims = translate_feature_dimensions(complex_rep,num_angles,num_levels,win_size); 
     elseif (ismember(i_m, [4 5 6]))
         translated_dims = translate_feature_dimensions(complex_rep,num_angles,num_levels,1);
     else
-        translated_dims = [];
+        translated_dims = -1;
     end
 
     rf = u_load(model_names{i_m});
@@ -477,13 +479,13 @@ end
 %im_list = dir([base_dir 'images\*.mat']);
 load('C:\isbe\nailfold\data\rsa_study\data_lists\miccai_lists.mat', 'miccai_selection');
 load('C:\isbe\nailfold\data\rsa_study\data_lists\image_id_data.mat');
-im_names = sort(image_id_data.im_names(miccai_selection.validation));
+im_names = sort(image_id_data.im_names(miccai_selection.test));
 
 for i_im = 1:length(im_names);
     im_name = im_names{i_im}; %im_list(i_im).name(1:end-4);
     display(['converting image ' num2str(i_im)]);
 
-    for i_type = 1:num_types
+    for i_type = 1:2%num_types
         
         orig_name = [base_dir im_types{i_type,1} im_name im_types{i_type,2}];
         new_name  = [base_dir im_types{i_type,3} im_name im_types{i_type,4}];

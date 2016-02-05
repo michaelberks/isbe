@@ -15,6 +15,7 @@ args = u_packargs(varargin,... % the user's input
     'width_fudge',          0,...
     'do_distal',            1,...
     'do_nondistal',         1,...
+    'use_post_processing',  1,...
     'plot', 0);
 
 %Build up the co-occurence matrix for the observers
@@ -55,12 +56,16 @@ for i_im = 1:num_images
     %load in selected candidates
     candidates_data = load([candidates_dir im_name '_apex_candidates.txt'], 'candidate_xy');
     candidate_xy = candidates_data(:,1:2) + 1;
-    %selected_distal = candidates_data(:,8) > -1;%0;
-    %selected_non_distal = candidates_data(:,9) > 10;%0;
-    %selected_distal = candidates_data(:,9) == 1;%0;
-    %selected_non_distal = candidates_data(:,9) == 2;%0;
-    selected_distal = candidates_data(:,11)>0;
-    selected_non_distal = candidates_data(:,12)>0;
+    %selected_distal = candidates_data(:,11) > -1;%0;
+    %selected_non_distal = candidates_data(:,12) > 10;%0;
+    if args.use_post_processing
+        %selected_distal = candidates_data(:,11)>0;
+        %selected_non_distal = candidates_data(:,12)>0;
+        load([candidates_dir 'mat/' im_name '_caps.mat']);
+    else   
+        selected_distal = candidates_data(:,9) == 1;
+        selected_non_distal = candidates_data(:,9) == 2;
+    end
     
     if exist('metrics_dir', 'var')
         load([metrics_dir im_name '_am.mat'], 'apex_measures');

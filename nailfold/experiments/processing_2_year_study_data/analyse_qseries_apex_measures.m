@@ -32,8 +32,9 @@ args = u_packargs(varargin,... % the user's input
     'do_people_plots',  0,...
     'fig_dir',          [],...
     'save_dir',         [],...
-    'um_per_pix',       1.25,...
-    'xls_filename',     'auto_stats.xls');
+    'um_per_pix',       1.6077,...
+    'xls_filename_images',     'image_auto_stats.xls',...
+    'xls_filename_subjects',     'subject_auto_stats.xls');
 
 vessel_centre_dir = [args.data_dir '/' args.vessel_centre_dir '/'];
 selected_dir = [args.data_dir '/' args.selected_dir '/'];
@@ -43,6 +44,8 @@ if isempty(args.selected_features)
     selected_features = {...
         'num_distal_vessels',...
         'num_nondistal_vessels',...
+        'num_giant_vessels',...
+        'num_enlarged_vessels',...
         'median_apex_width',...
         'mean_mean_width',...
         'mean_weighted_width',...
@@ -52,7 +55,7 @@ if isempty(args.selected_features)
         'max_mean_width',...
         'mean_max_width',...
         'mean_min_width',...
-         'max_max_width',...
+        'max_max_width',...
         'std_mean_width',...
         'mean_orientation_entropy',...
         'median_orientation_entropy',...
@@ -90,12 +93,15 @@ if args.do_auto_stats
     auto_stats.visit = zeros(num_images,1);
     auto_stats.digit = zeros(num_images,1);
     auto_stats.people_id = zeros(num_images,1);
+    auto_stats.people_id_str = cell(num_images,1);
 
     auto_stats.gradeable = false(num_images,1);
     auto_stats.status = zeros(num_images,1);
 
     auto_stats.num_distal_vessels = zeros(num_images,1);
     auto_stats.num_nondistal_vessels = zeros(num_images,1);
+    auto_stats.num_giant_vessels = zeros(num_images,1);
+    auto_stats.num_enlarged_vessels = zeros(num_images,1);
 
     auto_stats.median_apex_width = nan(num_images, 1);
     auto_stats.mean_mean_width = nan(num_images, 1);
@@ -191,6 +197,7 @@ if args.do_auto_stats
                 end
             end
         end
+        auto_stats.people_id_str{i_im} = im_name(1:v_idx-1);
         auto_stats.people_id(i_im) = people_id + 1000*auto_stats.category(i_im);
         auto_stats.visit(i_im) = str2double(im_name(v_idx+1));
         auto_stats.digit(i_im) = str2double(im_name(v_idx+4));
@@ -223,7 +230,18 @@ if args.do_auto_stats
             auto_stats.max_max_width(i_im) = nanmax(apex_measures.distal.max_width) * args.um_per_pix;
             auto_stats.mean_min_width(i_im) = naNmean(apex_measures.distal.min_width) * args.um_per_pix;
             auto_stats.std_mean_width(i_im) = naNstd(apex_measures.distal.mean_weighted_width) * args.um_per_pix;
+            
+            auto_stats.num_giant_vessels(i_im) = sum((apex_measures.distal.mean_weighted_width* args.um_per_pix) > 50);
+            auto_stats.num_enlarged_vessels(i_im) = sum((apex_measures.distal.mean_weighted_width* args.um_per_pix) > 20);
 
+%             if auto_stats.num_nondistal_vessels(i_im)
+%                 auto_stats.num_giant_vessels(i_im) = auto_stats.num_giant_vessels(i_im) +...
+%                     sum((apex_measures.nondistal.mean_weighted_width* args.um_per_pix) > 50);
+%                 auto_stats.num_enlarged_vessels(i_im) = auto_stats.num_enlarged_vessels(i_im) +...
+%                     sum((apex_measures.nondistal.mean_weighted_width* args.um_per_pix) > 20);
+%             end
+            auto_stats.num_enlarged_vessels(i_im) = auto_stats.num_enlarged_vessels(i_im) -...
+                auto_stats.num_giant_vessels(i_im);
 
             ori_entropy = mb_entropy(apex_measures.distal.orientation_hist,2);
             auto_stats.mean_orientation_entropy(i_im) = naNmean(ori_entropy);
@@ -293,13 +311,15 @@ if args.do_xls
         end
         xls_data(2:end,i_f+1) = col_data;
     end
-    xlswrite(args.xls_filename, xls_data, 1, 'A1');            
+    xlswrite(args.xls_filename_images, xls_data, 1, 'A1');
+        
 end
 %%
 %--------------------------------------------------------------------------
 %--------------------------------------------------------------------------
 if args.do_people_stats
-    people_stats.people_ids = unique(auto_stats.people_id);
+    [people_stats.people_ids u_idx] = unique(auto_stats.people_id);
+    people_stats.people_ids_str = auto_stats.people_id_str(u_idx);
     num_people = length(people_stats.people_ids);
     num_images = length(auto_stats.category);
     people_stats.category = zeros(num_people,1);
@@ -344,6 +364,33 @@ if args.do_people_stats
     
     if ~isempty(args.save_dir)
         save([args.save_dir '\people_stats.mat'], 'people_stats');
+    end
+    
+    if args.do_xls
+        xls_data = cell(num_people+2, 3*length(selected_features)+1);
+        xls_data{2,1} = 'Subject IDs';
+        
+        xls_data(3:end,1) = people_stats.people_ids_str;
+        for i_f = 1:length(selected_features);
+
+            feature = selected_features{i_f};
+            feature_str = feature;
+            feature_str(feature_str == '_') = ' ';
+            feature_str(1) = feature_str(1) - 32;
+
+            xls_data{1, 3*i_f - 1} = feature_str;
+            xls_data{2, 3*i_f - 1} = '0 mths';
+            xls_data{2, 3*i_f} = '12 mths';
+            xls_data{2, 3*i_f + 1} = '24 mths';
+
+            col_data = squeeze(sum(sum(people_stats.(feature),2),3));
+
+            if ~iscell(col_data)
+                col_data = num2cell(col_data(:,[1,5,6]));
+            end
+            xls_data(3:end, 3*i_f+(-1:1) ) = col_data;
+        end
+        xlswrite(args.xls_filename_subjects, xls_data, 1, 'A1');
     end
 end
 %--------------------------------------------------------------------------

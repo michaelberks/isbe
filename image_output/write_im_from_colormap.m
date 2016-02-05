@@ -15,7 +15,8 @@ end
 image_in = (image_in - clims(1)) / (clims(2) - clims(1));
 
 %scale to 0-255 and round
-image_in = uint8(255*image_in);
+num_colors = size(cmap,1);
+image_in = uint8((num_colors-1)*image_in);
 
 if nargin > 2
     %convert image to colormap

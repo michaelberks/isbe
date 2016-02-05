@@ -16,11 +16,8 @@ function compile_windows
         mex  -DMATLAB -DWIN64 -output mexClassRF_train   src/classRF.cpp src/classTree.cpp src/cokus.cpp precompiled_rfsub/win64/rfsub.o src/mex_ClassificationRF_train.cpp   src/rfutils.cpp 
         mex  -DMATLAB -DWIN64 -output mexClassRF_predict src/classRF.cpp src/classTree.cpp src/cokus.cpp precompiled_rfsub/win64/rfsub.o src/mex_ClassificationRF_predict.cpp src/rfutils.cpp 
     elseif strcmp(computer,'PCWIN')
-%         mex  -DMATLAB -output mexClassRF_train   src/classRF.cpp src/classTree.cpp src/cokus.cpp precompiled_rfsub/win32/rfsub.o src/mex_ClassificationRF_train.cpp   src/rfutils.cpp 
-%         mex  -DMATLAB -output mexClassRF_predict src/classRF.cpp src/classTree.cpp src/cokus.cpp precompiled_rfsub/win32/rfsub.o src/mex_ClassificationRF_predict.cpp src/rfutils.cpp 
-%%% revised by chen
-        mex  -DMATLAB -output mexClassRF_train  K:\randomforest1\randomforest-matlab\RF_Class_C\src\classRF.cpp K:\randomforest1\randomforest-matlab\RF_Class_C\src\classTree.cpp K:\randomforest1\randomforest-matlab\RF_Class_C\src\cokus.cpp K:\randomforest1\randomforest-matlab\RF_Class_C\precompiled_rfsub\win32\rfsub.o K:\randomforest1\randomforest-matlab\RF_Class_C\src\mex_ClassificationRF_train.cpp   K:\randomforest1\randomforest-matlab\RF_Class_C\src\rfutils.cpp 
-        mex  -DMATLAB -output mexClassRF_predict K:\randomforest1\randomforest-matlab\RF_Class_C\src\classRF.cpp K:\randomforest1\randomforest-matlab\RF_Class_C\src\classTree.cpp K:\randomforest1\randomforest-matlab\RF_Class_C\src\cokus.cpp K:\randomforest1\randomforest-matlab\RF_Class_C\precompiled_rfsub\win32\rfsub.o K:\randomforest1\randomforest-matlab\RF_Class_C\src\mex_ClassificationRF_predict.cpp K:\randomforest1\randomforest-matlab\RF_Class_C\src\rfutils.cpp         
+        mex  -DMATLAB -output mexClassRF_train   src/classRF.cpp src/classTree.cpp src/cokus.cpp precompiled_rfsub/win32/rfsub.o src/mex_ClassificationRF_train.cpp   src/rfutils.cpp 
+        mex  -DMATLAB -output mexClassRF_predict src/classRF.cpp src/classTree.cpp src/cokus.cpp precompiled_rfsub/win32/rfsub.o src/mex_ClassificationRF_predict.cpp src/rfutils.cpp 
     else
         error('Wrong script to run on this Comp architecture. I cannot detect any windows system')
     end

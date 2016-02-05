@@ -56,9 +56,9 @@ switch lower(method)
         
         if (nargout==0)
             % Show as a grid of flow vectors.
-            quiver(x, y, real(flowmap(y,x)), imag(flowmap(y,x)));
+            quiver(x, y, real(flowmap(y,x)), imag(flowmap(y,x)), 2);
         end
-        
+        axis image;
         img_out = [];
 end
     

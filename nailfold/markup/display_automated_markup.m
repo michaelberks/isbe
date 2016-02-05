@@ -31,14 +31,13 @@ args = u_packargs(varargin,... % the user's input
     {'image_names'},         ...
     'data_dir',             [nailfoldroot 'data/2_year_study/'],...
     'image_dir',            'images',...
-    'vessel_centre_dir',    'vessel_centres\',...
+    'caps_dir',             [],...
     'metrics_dir',          'apex_metrics',...
     'candidates_dir',       'apex_maps\local_maxima',...
     'selected_dir',         'selected_apexes',...
-    'selected_features', [],...
+    'im_type',              '.mat',...
     'plot_distal',        1,...
     'plot_nondistal',     1, ...
-    'um_per_pix',       1.25,...
     'aam_thresh',       -2e4,...
     'plot_rejected',    1,...
     'plot_r', 3,...
@@ -48,10 +47,10 @@ args = u_packargs(varargin,... % the user's input
 clear varargin;
 
 image_dir = [args.data_dir '/' args.image_dir '/'];
-%vessel_centre_dir = [args.data_dir '/' args.vessel_centre_dir '/'];
 metrics_dir = [args.data_dir '/' args.metrics_dir '/'];
 selected_dir = [args.data_dir '/' args.selected_dir '/'];
 candidates_dir = [args.data_dir '/' args.candidates_dir '/'];
+caps_dir = [args.data_dir '/' args.caps_dir '/'];
 
 num_images = length(args.image_names);
 
@@ -79,9 +78,26 @@ for i_im = 1:num_images
     
     if isempty(im_name); continue; end
     
-    nailfold = u_load([image_dir im_name '.mat']);
-    apex_measures = u_load([metrics_dir im_name '_am.mat']);
+    switch args.image_type
+        case '.mat'
+            nailfold = u_load([image_dir im_name args.image_type]);
+            
+        case {'.png', '.bmp', 'jpg'}
+            nailfold = imread([image_dir im_name args.image_type]);
+            
+        otherwise
+            error('Image type not recognised');
+    end
     
+    if isempty(args.caps_dir)
+        apex_measures = u_load([metrics_dir im_name '_am.mat']);
+    else
+        load([caps_dir im_name '_caps.mat'], 'apex_measures', 'resize_factor');
+    end
+    
+    if exist('resize_factor', 'var')
+        nailfold = imresize(nailfold, resize_factor, 'lanczos2');
+    end
     
     imgray(nailfold);
     title([im_name ': '...
@@ -93,7 +109,7 @@ for i_im = 1:num_images
         if ~do_capillary_type(i_type); continue; end
     
         num_cans = size(apex_measures.(capillary_type{i_type}).median_width,1);
-        colors = lines(num_cans);
+        colors = hsv(num_cans);
 
         max_width = 0; 
         max_width_id = 0;
@@ -140,7 +156,7 @@ for i_im = 1:num_images
             if i_type == 1
                 plot(apex_width_x, apex_width_y, 'o', 'MarkerEdgeColor', colors(i_can,:), 'MarkerSize', 4, 'MarkerFaceColor', colors(i_can,:));
             else
-                plot(apex_width_x, apex_width_y, 'o', 'MarkerEdgeColor', colors(i_can,:), 'MarkerSize', 4);
+                %plot(apex_width_x, apex_width_y, 'o', 'MarkerEdgeColor', colors(i_can,:), 'MarkerSize', 4);
             end
         end
         
@@ -152,10 +168,16 @@ for i_im = 1:num_images
         end
     end
     if args.plot_rejected
-        load([candidates_dir im_name '_candidates.mat'],...
-            'candidate_xy');
-        load([selected_dir im_name '_sel'],...
-            'selected_distal', 'selected_non_distal', 'candidate_class_probs');
+        if isempty(args.caps_dir)
+            load([candidates_dir im_name '_candidates.mat'],...
+                'candidate_xy');
+            load([selected_dir im_name '_sel'],...
+                'selected_distal', 'selected_non_distal', 'candidate_class_probs');
+        else
+            load([caps_dir im_name '_caps.mat'], ...
+                'candidate_xy', 'selected_distal', 'selected_non_distal', 'candidate_class_probs');
+        end
+        
         rejected = ~selected_distal & ~selected_non_distal;
         rejected_xy = candidate_xy(rejected,:);
         plot(rejected_xy(:,1), rejected_xy(:,2), 'r.', 'markersize', 2);

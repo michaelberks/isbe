@@ -1,4 +1,5 @@
-function [co_occurrence detected_widths missed_widths a_b_widths a_c_widths b_c_widths] = miccai_results_cooc_fun(varargin)
+function [co_occurrence detected_widths missed_widths...
+    a_b_widths a_c_widths b_c_widths a_u_widths b_u_widths] = miccai_results_cooc_fun(varargin)
 %
 %--------------------------------------------------------------------------
 %--------------------------------------------------------------------------
@@ -16,13 +17,14 @@ args = u_packargs(varargin,... % the user's input
     'width_fudge',          0,...
     'do_distal',            1,...
     'do_nondistal',         1,...
+    'use_post_processing',  1,...
     'plot', 0);
 
 %Build up the co-occurence matrix for the observers
 load('C:\isbe\nailfold\data\rsa_study\data_lists\image_id_data.mat');
 load('C:\isbe\nailfold\data\rsa_study\data_lists\miccai_lists.mat', 'miccai_selection');
 
-
+im_dir = [args.data_dir 'images/'];
 prob_dir = [args.data_dir 'predictions/detection/' args.prob_dir '/'];
 cluster_dir = [args.data_dir '/' args.cluster_dir '/'];
 candidates_dir = [args.data_dir '/' args.candidates_dir '/'];
@@ -46,8 +48,20 @@ co_occurrence = zeros(3,3,3, num_images);
 a_b_widths = cell(num_images,1);
 a_c_widths = cell(num_images,1);
 b_c_widths = cell(num_images,1);
+a_u_widths = cell(num_images,1);
+b_u_widths = cell(num_images,1);
 detected_widths = zeros(0,1);
 missed_widths = zeros(0,1);
+
+
+decomposition_args.decomp_type = {'g2dia', 'h2dia'}; %Downsampling/Interpolating form of Gaussian derivatives
+decomposition_args.win_size = 3;            %Window size about pixel to sample features
+decomposition_args.sigma_range = [2 5];     %Finest scale Gaussian sigma and number of levels
+decomposition_args.num_angles = 6;
+decomposition_args.do_max = 0;              %Keep all 6 sub-bands (0) or only keep the maximum (1)
+decomposition_args.rotate = 0;              %Try and make rotation invariant (best left switched off)
+decomposition_args.normalise = 0;
+rf = u_load('C:\isbe\nailfold\models\vessel\width\rf_regression\uniform_log_width2\predictor01.mat');
 
 for i_im = 1:num_images
         
@@ -58,20 +72,32 @@ for i_im = 1:num_images
     load([selected_dir im_name '_sel.mat']);
     load([candidates_dir im_name '_candidates.mat']', 'candidate_xy');
     
-    selected_distal = true(size(candidate_xy,1),1);
-    selected_non_distal = false(size(candidate_xy,1),1);
+    if ~args.use_post_processing
+        selected_distal = round(candidate_class) == 1;
+        selected_non_distal = round(candidate_class) == 2;
+    end
+    
+    %selected_distal = true(size(candidate_xy,1),1);
+    %selected_non_distal = false(size(candidate_xy,1),1);
     
     if exist('metrics_dir', 'var')
         load([metrics_dir im_name '_am.mat'], 'apex_measures');
     end
     
+    vessel_im = u_load([im_dir im_name '.mat']);
     vessel_prob = u_load([prob_dir im_name '_pred.mat']);
     vessel_prob = conv2(g', g, vessel_prob, 'same');
+    
+    [responses] = compute_filter_responses(vessel_im, decomposition_args);
+    gf = sample_image_features(responses,...
+        candidate_xy(selected_distal,2), candidate_xy(selected_distal,1),...
+        decomposition_args); %#ok  
+    uniform_widths = exp(random_forest_reg_predict(rf, gf, 0));
 
     %Decide if these are hits or no
     [~, d_hits, d_cans] =...
         evaluate_apex_candidates(vessels.cluster_centres/2, candidate_xy(selected_distal,:),... 
-        vessels.cluster_radius/2, vessel_prob, [], [], 0); %#ok    
+        vessels.cluster_radius/2, vessel_prob, [], [], 0);  
     [~, nd_hits nd_cans] =...
         evaluate_apex_candidates(vessels.cluster_centres/2, candidate_xy(selected_non_distal,:),...
         vessels.cluster_radius/2, vessel_prob, [], [], 0);
@@ -129,6 +155,8 @@ for i_im = 1:num_images
                 else
                     width_c = 0;
                 end
+                width_u = uniform_widths(d_hits(i_ve));
+                
             elseif nd_hits(i_ve)
                 q_i = 3;
             else
@@ -143,7 +171,10 @@ for i_im = 1:num_images
                         a_b_widths{i_im} = [a_b_widths{i_im}; width1 width2];
                         a_c_widths{i_im} = [a_c_widths{i_im}; width1 width_c];
                         b_c_widths{i_im} = [b_c_widths{i_im}; width2 width_c];
-                        detected_widths = [detected_widths; (width1 + width2)/2]; %#ok
+                        
+                        a_u_widths{i_im} = [a_u_widths{i_im}; width1 width_u];
+                        b_u_widths{i_im} = [b_u_widths{i_im}; width2 width_u];
+
                     else
                         missed_widths = [missed_widths; (width1 + width2)/2]; %#ok
                     end
@@ -208,10 +239,14 @@ if exist('metrics_dir', 'var')
     a_b_widths_all = zeros(0,2);
     a_c_widths_all = zeros(0,2);
     b_c_widths_all = zeros(0,2);
+    a_u_widths_all = zeros(0,2);
+    b_u_widths_all = zeros(0,2);
     for i_im = 1:num_images
         a_b_widths_all = [a_b_widths_all; a_b_widths{i_im}]; %#ok
         a_c_widths_all = [a_c_widths_all; a_c_widths{i_im}]; %#ok
         b_c_widths_all = [b_c_widths_all; b_c_widths{i_im}]; %#ok
+        a_u_widths_all = [a_u_widths_all; a_u_widths{i_im}]; %#ok
+        b_u_widths_all = [b_u_widths_all; b_u_widths{i_im}]; %#ok
     end
 
     figure; 
@@ -236,6 +271,40 @@ if exist('metrics_dir', 'var')
     axis([-20 20 0 1]);
     plot([0 0], [0 1], 'k--');
     plot([-20 20], [0.5 0.5], 'k--');
+    
+    figure; 
+    subplot(1,2,1); hold all;
+    plot(sort(abs(diff(a_b_widths_all,1,2))), linspace(0,1,size(a_b_widths_all,1)), 'linewidth', 2);
+    plot(sort(abs(diff(a_u_widths_all,1,2)-2)), linspace(0,1,size(a_u_widths_all,1)), 'linewidth', 2);
+    plot(sort(abs(diff(b_u_widths_all,1,2)-2)), linspace(0,1,size(b_u_widths_all,1)), 'linewidth', 2);
+    title(['CDF of absolute differences in width prediction (' feature_str ')']);
+    legend({'|B - A|', '|C - A|', '|C - B|'}, 'location', 'southeast');
+    xlabel('Absolute width difference');
+    ylabel('% of data');
+    axis([0 20 0 1]);
+
+    subplot(1,2,2); hold all;
+    plot(sort(diff(a_b_widths_all,1,2)), linspace(0,1,size(a_b_widths_all,1)), 'linewidth', 2);
+    plot(sort(diff(a_u_widths_all,1,2)-2), linspace(0,1,size(a_u_widths_all,1)), 'linewidth', 2);
+    plot(sort(diff(b_u_widths_all,1,2)-2), linspace(0,1,size(b_u_widths_all,1)), 'linewidth', 2);
+    title(['CDF of signed differences in width prediction (' feature_str ')']);
+    legend({'B - A', 'C - A', 'C - B'}, 'location', 'southeast');
+    xlabel('Width difference');
+    ylabel('% of data');
+    axis([-20 20 0 1]);
+    plot([0 0], [0 1], 'k--');
+    plot([-20 20], [0.5 0.5], 'k--');
+
+    figure; 
+    subplot(1,2,1); hold all;
+    plot(sort(abs(diff(a_b_widths_all,1,2)) ./ mean(a_b_widths_all,2)), linspace(0,1,size(a_b_widths_all,1)), 'linewidth', 2);
+    plot(sort(abs(diff(a_u_widths_all,1,2)) ./ mean(a_b_widths_all,2)), linspace(0,1,size(a_u_widths_all,1)), 'linewidth', 2);
+    plot(sort(abs(diff(b_u_widths_all,1,2)) ./ mean(a_b_widths_all,2)), linspace(0,1,size(b_u_widths_all,1)), 'linewidth', 2);
+    title(['CDF of absolute differences in width prediction (' feature_str ')']);
+    legend({'|B - A|', '|C - A|', '|C - B|'}, 'location', 'southeast');
+    xlabel('Absolute width difference');
+    ylabel('% of data');
+    axis([0 20 0 1]);
 
     figure; hold all;
     plot(mean(a_b_widths_all,2), diff(a_b_widths_all,1,2), 'x');
@@ -271,6 +340,43 @@ if exist('metrics_dir', 'var')
     plot(x, y, 'y--');
     a3 = gca;
     
+    linkaxes([a1 a2 a3]);
+    axis([0 80 -40 40]);
+    
+    figure; hold all;
+    plot(mean(a_b_widths_all,2), diff(a_b_widths_all,1,2), 'x');
+    title(['Bland-altman plot for capillary widths, A v B (' feature_str ')']);
+    xlabel('Mean width of A and B'); ylabel('B - A');
+    plot([0 80], [0 0], 'k--');
+
+    [~,m,b] = regression(mean(a_b_widths_all,2), diff(a_b_widths_all,1,2), 'one');
+    x = [0 80];
+    y = m*x + b;
+    plot(x, y, 'y--');
+    a1 = gca;
+
+    figure; hold all;
+    plot(mean(a_b_widths_all,2), diff(a_u_widths_all,1,2), 'x');
+    title(['Bland-altman plot for capillary widths, A v U (' feature_str ')']);
+    xlabel('Mean width of A and B'); ylabel('U - A');
+    plot([0 80], [0 0], 'k--');
+    [~,m,b] = regression(mean(a_u_widths_all,2), diff(a_u_widths_all,1,2), 'one');
+    x = [0 80];
+    y = m*x + b;
+    plot(x, y, 'y--');
+    a2 = gca;
+
+    figure; hold all;
+    plot(mean(a_b_widths_all,2), diff(b_u_widths_all,1,2), 'x');
+    title(['Bland-altman plot for capillary widths, B v U (' feature_str ')']);
+    xlabel('Mean width of A and B'); ylabel('U - B');
+    plot([0 80], [0 0], 'k--');
+    [~,m,b] = regression(mean(b_u_widths_all,2), diff(b_u_widths_all,1,2), 'one');
+    x = [0 80];
+    y = m*x + b;
+    plot(x, y, 'y--');
+    a3 = gca;
+
     linkaxes([a1 a2 a3]);
     axis([0 80 -40 40]);
 end

@@ -29,7 +29,14 @@ switch args_in.output_type
         args_out.ori_dir = [];
         args_out.width_dir = ...
             prettypath([args_in.image_root '/' args_in.width_dir]);
-
+        
+    case {'class_label'}
+        args_out.bg_ratio = args_in.bg_ratio;
+        args_out.ori_dir = [];
+        args_out.width_dir = [];
+        args_out.class_label_dir = ...
+            prettypath([args_in.image_root '/' args_in.class_label_dir]);
+        
     otherwise
         error(['Unknown prediction type:', args_in.output_type]);
 end

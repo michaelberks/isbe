@@ -94,6 +94,7 @@ for i_pt = 1:num_pts
     vyc = args.vessel_centre.y(i_pt);
     ori_c = angle(args.vessel_centre.ori(i_pt))/2;
     width_c = args.vessel_centre.width(i_pt);
+    %prob_c = args.vessel_centre.prob(i_pt);
 
     %Get scale relative to base width a make rotation matrix
     rot = [cos(ori_c) -sin(ori_c); sin(ori_c) cos(ori_c)];

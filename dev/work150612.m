@@ -1,5 +1,5 @@
-%s = load('C:\isbe\nailfold\test_analysis.mat');
-i_seg = 14;
+s = load('C:\isbe\nailfold\data\wellcome_study\detected_capillaries_cxx\035wellcome_R2_mosaic_caps.mat');
+i_seg = 7;
 segment_start_x = segment_transforms(1,3,i_seg);
 segment_start_y = segment_transforms(2,3,i_seg);
 
@@ -42,11 +42,11 @@ for i_b = 1:sum(in_segment)
     br_x = bounding_boxes(4,1,i_b);
     br_y = bounding_boxes(4,2,i_b);
     
-    plot([tl_x tr_x br_x bl_x tl_x], [tl_y tr_y br_y bl_y tl_y]);
-    plot(tl_x, tl_y, 'x');
-    plot(tr_x, tr_y, '+');
-    plot(bl_x, bl_y, 's');
-    plot(br_x, br_y, 'o');
+    plot([tl_x tr_x br_x bl_x tl_x], [tl_y tr_y br_y bl_y tl_y], 'linewidth', 2);
+%     plot(tl_x, tl_y, 'x');
+%     plot(tr_x, tr_y, '+');
+%     plot(bl_x, bl_y, 's');
+%     plot(br_x, br_y, 'o');
 end
 %%
 figure; imgray(segment_frames(:,:,i_seg));
@@ -84,11 +84,11 @@ mosaic_vessels = interp2(s.vessel_predictions(:,:,1), sx, sy, '*linear', 0);
 
 offset_yx = (size(segment_mosaics{i_seg}) - size(segment_frames(:,:,1)))/2;
 
-frame_dir = 'N:\Nailfold Capillaroscopy\camera_capture\wellcome_nailfold_study\002wellcome\2015_02_27\L4_11_00_04\registered07\';
+frame_dir = 'N:\Nailfold Capillaroscopy\camera_capture\wellcome_nailfold_study\035wellcome\2015_03_23\R2_12_24_58\registered07\';
 frame_list = dir([frame_dir 'frame*.png']);
 num_frames = length(frame_list);
 %%
-for i_b = 2:sum(in_segment)
+for i_b = 1:sum(in_segment)
     tl_x = bounding_boxes(1,1,i_b);
     tl_y = bounding_boxes(1,2,i_b);
 
@@ -147,7 +147,7 @@ for i_b = 2:sum(in_segment)
     
     for i_f = 1:num_frames
         vessel_patch = vessel_patches(:,:,i_f);
-        vessel_patch(vessel_bg_mask) = vessel_bg;
+        %vessel_patch(vessel_bg_mask) = vessel_bg;
         imwrite(uint8(vessel_patch), [vessel_dir frame_list(i_f).name]);
     end   
 

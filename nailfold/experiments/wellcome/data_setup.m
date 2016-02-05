@@ -2,7 +2,9 @@
 %local machine
 local_dir = 'C:\isbe\nailfold\data\wellcome_study\full_mosaics\';
 study_dir = 'N:\Nailfold Capillaroscopy\camera_capture\wellcome_nailfold_study\';
-subject_dirs = dir([study_dir '0*']);
+subject_dirs = [
+    dir([study_dir '0*'])
+    dir([study_dir '1*'])];
 
 num_subs = length(subject_dirs);
 recruitment_dates = zeros(num_subs,1);

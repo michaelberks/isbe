@@ -27,6 +27,11 @@ for i_cat = 1:4
 end
 cat_names = {'HC', 'PR', 'SSc',  'UD'};%, 'dSSc', 'lSSc', 
 cat_colors = 'rgby';
+%%
+full_cat_idx = false(length(people_stats.category),5);
+for i_cat = 1:5
+    full_cat_idx(:,i_cat) = people_stats.super_category == i_cat & valid_subjects;%(people_stats.category == i_cat)
+end
 %%    
 selected_features = {...
     'mean_weighted_width',...

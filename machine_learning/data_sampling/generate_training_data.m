@@ -97,16 +97,25 @@ get_next_image('reset');
 % Sample data from every image
 n_sampled_so_far = 0;
 
+indices_precomputed = false;
+if isfield(sampling_args, 'precompute_indices') && ~isempty(sampling_args.precompute_indices)
+    indices_precomputed = true;
+    [all_fg_indices all_bg_indices] = precompute_indices(sampling_args.precompute_indices);
+end
+
 
 if ~args.quiet; tb = timebar('limit', n_samples, 'title', 'Sampling data'); end
 for img_index = 1:n_images
-    % Work out the number of samples to take
-    N = n_samples - n_sampled_so_far;
-    p = 1 / (n_images - img_index + 1);
-    samples_per_image = sample_from_binomial(N, p, 1);
     
-    if (samples_per_image == 0)
-        continue;
+    if ~indices_precomputed
+        % Work out the number of samples to take
+        N = n_samples - n_sampled_so_far;
+        p = 1 / (n_images - img_index + 1);
+        samples_per_image = sample_from_binomial(N, p, 1);
+
+        if (samples_per_image == 0)
+            continue;
+        end
     end
     
     % NB: We could put the resampling code here
@@ -123,14 +132,21 @@ for img_index = 1:n_images
             % First one - make n_images copies that will be overwritten.
             parameters(1:n_images) = synth_params;
         else
-            parameters(img_index) = synth_params;
+            parameters(img_index) = synth_params; %#ok
         end
     end
 
-    % Choose sample locations in foreground and background - this function
-    % now checks we have enough samples and returns the best it can
-    [fg_indices, bg_indices] = ...
-        sample_from_maps(fg_map, bg_map, samples_per_image, sampling_args);
+    if indices_precomputed        
+        %just need to copy over the indices we computed earlier
+        fg_indices = all_fg_indices{img_index};
+        bg_indices = all_bg_indices{img_index};
+        
+    else
+        % Choose sample locations in foreground and background - this function
+        % now checks we have enough samples and returns the best it can
+        [fg_indices, bg_indices] = ...
+            sample_from_maps(fg_map, bg_map, samples_per_image, sampling_args);
+    end
     
     samples_per_image = numel(fg_indices) + numel(bg_indices);
     display(['Samples in image ' num2str(img_index) ': ', ...
@@ -150,7 +166,7 @@ for img_index = 1:n_images
     switch sampling_args.output_type
         case {'detection', 'centre_detection', ...
               'junction_detection', 'junction_centre_detection',...
-              'orientation', 'centre_orientation', 'width'}
+              'orientation', 'centre_orientation', 'width', 'class_label'}
             % Sample labels from label image
             labels = [img_label(fg_indices); img_label(bg_indices)];
             

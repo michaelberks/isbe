@@ -112,12 +112,16 @@ fprintf(fid, '%s \n', '%');
 fprintf(fid, '%s \n', 'Observers		& \multicolumn{3}{c}{Capillary detection} 	& \multicolumn{2}{c}{Distal v Non-distal}	\\');
 fprintf(fid, '%s \n', '			& Precision    		& Recall		& $F$-measure		& Accuracy		& Cohen''s $\kappa$ 	\\');
 for ii = 1:4
-    fprintf(fid, '%s', o_txt{ii});
-    fprintf(fid, '& %3.1f $\\pm$ %2.1f ', pr_ab_m(ii,1), pr_ab_s(ii,1));
-    fprintf(fid, '& %3.1f $\\pm$ %2.1f ', re_ab_m(ii,1), re_ab_s(ii,1));
-    fprintf(fid, '& %3.1f $\\pm$ %2.1f ', fa_ab_m(ii,1), fa_ab_s(ii,1));
-    fprintf(fid, '& %3.1f $\\pm$ %2.1f ', ac_ab_m(ii,2), ac_ab_s(ii,2));
-    fprintf(fid, '& %4.3f $\\pm$ %3.3f ', ka_ab_m(ii,2), ka_ab_s(ii,2));
+    if ii == 4
+        fprintf(fid, '%s       ', o_txt{ii});
+    else
+        fprintf(fid, '%s           ', o_txt{ii});
+    end
+    fprintf(fid, '& %3.1f $\\pm$ %2.1f        ', pr_ab_m(ii,1), pr_ab_s(ii,1));
+    fprintf(fid, '& %3.1f $\\pm$ %2.1f        ', re_ab_m(ii,1), re_ab_s(ii,1));
+    fprintf(fid, '& %3.1f $\\pm$ %2.1f        ', fa_ab_m(ii,1), fa_ab_s(ii,1));
+    fprintf(fid, '& %3.1f $\\pm$ %2.1f        ', ac_ab_m(ii,2), ac_ab_s(ii,2));
+    fprintf(fid, '& %4.3f $\\pm$ %3.3f        ', ka_ab_m(ii,2), ka_ab_s(ii,2));
     fprintf(fid, '%s \n', '\\');
 end
 

@@ -36,7 +36,7 @@ args = u_packargs(varargin, '0',...
     'hog_class_forest_path',    'apex\classification\set12g_half_296655\rf.mat',...
     'hog_off_x_forest_path',    'apex\offset_x\set12g_half_296655\rf.mat',...
     'hog_off_y_forest_path',    'apex\offset_y\set12g_half_296655\rf.mat',...
-    'hog_rescore_forest_path',  'apex\rescoring\corrected_miccai_all\rf.mat',...
+    'hog_rescore_forest_path',  'apex\rescoring\miccai_all\rf.mat',...
     'class_map_path',           'apex\final_MAP\miccai_class_MAP\class_map.mat',...
     'border_width',             32,...
     'max_size',                 1000,...
@@ -355,13 +355,23 @@ if ismember(5, steps)
         yy = (1:args.grid_spacing:nrows)';
         grid_x = repmat(xx, length(yy), 1);
         grid_y = repmat(yy, 1, length(xx));
+        
+        cxy = candidate_xy(valid_candidates,:);
+        cr = candidate_rescores(valid_candidates,:);
+        
+        max_candidates = 20;
+        [cr, cidx] = sort(cr, 'descend');
+        
+        cxy = cxy(cidx,:);
+        cxy(max_candidates+1:end,:) = [];
+        cr(max_candidates+1:end) = [];
 
         %Compute weighted kernel estimates of the spatial distribution of
         %candidates over this grid
         [location_distribution] = build_2d_kernel_distribution(...
-           candidate_xy(valid_candidates,:),...
+           cxy,...
            [grid_x(:) grid_y(:)],...
-           candidate_rescores(valid_candidates,:), 1);
+           cr, 1);
 
         location_distribution.D_f = reshape(location_distribution.D_f, size(grid_x));
 
@@ -418,7 +428,7 @@ if ismember(6, steps)
         status = 0; %#ok
         class_map = u_load([args.model_root args.class_map_path]);
         candidate_class = interp2(class_map.x, class_map.y, class_map.post_class,...
-            candidate_rescores, candidate_displacements, 'linear', 0);
+            candidate_rescores, candidate_displacements, 'nearest', 0);
         candidate_class_probs = interp2(class_map.x, class_map.y, class_map.post_probs,...
             candidate_rescores, candidate_displacements, 'linear', 0);
 
@@ -427,8 +437,11 @@ if ismember(6, steps)
 
         if args.do_post_merge
 
-            [merged_with] = post_merge_candidates(candidate_xy, candidate_rescores, candidate_widths, ...
-                 vessel_predictions(:,:,1), args.merge_dist_thresh, args.merge_connect_thresh, args.merge_n_pts, 0);
+            %[merged_with] = post_merge_candidates(candidate_xy, candidate_rescores, candidate_widths, ...
+            %     vessel_predictions(:,:,1), args.merge_dist_thresh, args.merge_connect_thresh, args.merge_n_pts, 0);
+             
+            [merged_with] = post_merge_candidates_c(candidate_xy, candidate_rescores, candidate_widths, ...
+                 vessel_predictions(:,:,1), 4, args.merge_connect_thresh, args.merge_n_pts, 0);
 
             for i_can = 1:length(merged_with)
 
@@ -475,7 +488,8 @@ if ismember(6, steps)
                     end
                 end
             end
-
+        else
+            merged_with = []; %#ok
         end
 
         fell_at_the_last = false(size(candidate_rescores));
@@ -495,7 +509,7 @@ if ismember(6, steps)
 
                 %
                 selected_distal(fell_at_the_last) = 0;
-                selected_non_distal(fell_at_the_last) = 1;
+                selected_non_distal(fell_at_the_last & candidate_displacements > 0) = 1;
             end
         end
     else
@@ -506,13 +520,14 @@ if ismember(6, steps)
         candidate_class = []; %#ok
         candidate_class_probs = [];
         fell_at_the_last = []; %#ok
+        merged_with = []; %#ok
         status = -1; %#ok
     end
 
     if do_save
         save(args.save_path,...
             'selected_distal', 'selected_non_distal', 'candidate_class_probs',...
-            'candidate_class', 'status', '-append');    
+            'candidate_class', 'merged_with', 'fell_at_the_last', 'status', '-append');    
     end
 end
 
@@ -553,7 +568,7 @@ if ismember(7, steps)
             selected_idx = selected_non_distal;
         end
 
-        [measures_struc] = extract_apex_measures_new(...
+        [measures_struc] = extract_apex_measures_newest(...
             vessel_predictions(:,:,1), vessel_predictions(:,:,2), vessel_predictions(:,:,3),...
             nailfold_image, candidate_xy(selected_idx,:),... 
             'prob_sigma',           0,... %Already smoothed

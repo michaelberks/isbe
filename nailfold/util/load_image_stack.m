@@ -7,7 +7,7 @@ if ~exist('t_range', 'var'), t_range = []; end
 if ~exist('x_range', 'var'), x_range = []; end
 if ~exist('y_range', 'var'), y_range = []; end
 
-d = dir(fullfile(imgroot, 'frame_*.png'));
+d = dir(fullfile(imgroot, 'frame*.png'));
 if isempty(d)
     error(['Directory ', imgroot, ' does not exist or is empty.']);
     return; 

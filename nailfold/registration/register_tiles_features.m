@@ -42,6 +42,7 @@ args = u_packargs(varargin,... % the user's input
     'tile_masks', [],...
     'sigma', [2],...
     'feature_type', 'g1d',...
+    'region', 'centre',...
     'offset_lim', [],...
     'theta_range', [],...
     'max_pts', inf,...
@@ -168,7 +169,15 @@ while (it < max_iterations)
        
         % Compute line points in reference tile as the initial target
         [x_tgt, y_tgt] = get_line_points(tile0, args.sigma, ...
-                                         args.tile_masks(:,:,1), args.feature_type);
+                                         args.tile_masks(:,:,1), args.feature_type, args.region);
+                                     
+        if isempty(x_tgt)
+            %If the tile we're matching to has no points may as well give
+            %up now!
+            if strcmpi(args.ref_type, 'mosaic')
+                return;
+            end
+        end
         x_tgt = x_tgt - cx - offset_centres(1,1);
         y_tgt = y_tgt - cy - offset_centres(1,2);
         
@@ -202,45 +211,50 @@ while (it < max_iterations)
             
             
             [x_src, y_src] = get_line_points(tile_curr, args.sigma, ...
-                                             args.tile_masks(:,:,i_tile), args.feature_type);
-            x_src = x_src - cx;
-            y_src = y_src - cy;
+                                             args.tile_masks(:,:,i_tile), args.feature_type, args.region);
+                                         
+            if isempty(x_src)
+                transform = eye(3);
+            else
+                x_src = x_src - cx;
+                y_src = y_src - cy;
 
-            if strcmp(args.ref_type,'mosaic')
-                % Transform to reference tile frame
-                pts = compound_transforms(:,:,i_tile) * ...
-                      [x_src(:)'; y_src(:)'; ones(1,numel(x_src))];
-                x_src = pts(1,:)';
-                y_src = pts(2,:)';
-            end
-
-            max_count = -inf;
-            for th = 1:theta_sz
-                theta = theta_range(th);
-                [offset, count] = get_best_offset(theta, ...
-                                                  [x_src y_src], [x_tgt y_tgt], ...
-                                                  offset_lim, args.max_pts);
-
-                % If this vote count is larger than the existing maximum record the
-                % vote count and corresponding transformation
-                if count > max_count
-                    max_count = count;
-                    
-                    transform = [ cos(theta) -sin(theta) 0;
-                                  sin(theta)  cos(theta) 0;
-                                  0           0          1 ];
-                              
-                    offset_t = [cx cy] - (transform(1:2, 1:2)*[cx; cy])';
-                          
-                    if strcmp(args.ref_type,'mosaic')
-                        transform(1,3) = offset(1) + offset_t(1);
-                        transform(2,3) = offset(2) + offset_t(2);
-                    else
-                        transform(1,3) = offset(1) + offset_t(1) + offset_centres(i_tile-1,1);
-                        transform(2,3) = offset(2) + offset_t(2) + offset_centres(i_tile-1,2);
-                    end
+                if strcmp(args.ref_type,'mosaic')
+                    % Transform to reference tile frame
+                    pts = compound_transforms(:,:,i_tile) * ...
+                          [x_src(:)'; y_src(:)'; ones(1,numel(x_src))];
+                    x_src = pts(1,:)';
+                    y_src = pts(2,:)';
                 end
-                match_counts(i_tile) = max_count;
+
+                max_count = -inf;
+                for th = 1:theta_sz
+                    theta = theta_range(th);
+                    [offset, count] = get_best_offset(theta, ...
+                                                      [x_src y_src], [x_tgt y_tgt], ...
+                                                      offset_lim, args.max_pts);
+
+                    % If this vote count is larger than the existing maximum record the
+                    % vote count and corresponding transformation
+                    if count > max_count
+                        max_count = count;
+
+                        transform = [ cos(theta) -sin(theta) 0;
+                                      sin(theta)  cos(theta) 0;
+                                      0           0          1 ];
+
+                        offset_t = [cx cy] - (transform(1:2, 1:2)*[cx; cy])';
+
+                        if strcmp(args.ref_type,'mosaic')
+                            transform(1,3) = offset(1) + offset_t(1);
+                            transform(2,3) = offset(2) + offset_t(2);
+                        else
+                            transform(1,3) = offset(1) + offset_t(1) + offset_centres(i_tile-1,1);
+                            transform(2,3) = offset(2) + offset_t(2) + offset_centres(i_tile-1,2);
+                        end
+                    end
+                    match_counts(i_tile) = max_count;
+                end
             end
 
             transform_diff = transform - eye(3);
@@ -282,7 +296,7 @@ while (it < max_iterations)
                                           compound_transforms(:,:,i_tile);
         end            
 
-        if args.debug
+        if args.debug && ~isempty(x_src)
             
             if strcmp(args.ref_type, 'previous') 
                 if i_tile == 2
@@ -293,19 +307,19 @@ while (it < max_iterations)
                 % frame
                 xy_src_t = (compound_transforms(:,:,i_tile) * ...
                               [x_src y_src ones(size(x_src,1),1)]')';
-                plot(all_vessels, xy_src_t(:,1), xy_src_t(:,2), '.', 'markersize', 4);
+                plot(all_vessels, xy_src_t(:,1), xy_src_t(:,2), '.', 'markersize', 8);
 
                 % Display the two tile and the vessel points found on each
                 figure(2); clf; colormap(gray(256));
                 subplot(1,2,2);
                     imagesc(tile_curr); axis image; hold on;
-                    plot(cx+x_src, cy+y_src, 'g.', 'markersize', 2);
+                    plot(cx+x_src, cy+y_src, 'g.', 'markersize', 8);
                 subplot(1,2,1);
                     imagesc(tile_prev); axis image; hold on;
-                    plot(cx+x_tgt, cy+y_tgt, 'r.', 'markersize', 2);
+                    plot(cx+x_tgt, cy+y_tgt, 'r.', 'markersize', 8);
                     % Display the vessel points from the src tile on the target tile
                     xy_src_t = (transform * [x_src y_src ones(size(x_src,1),1)]')';
-                    plot(cx+xy_src_t(:,1), cy+xy_src_t(:,2), 'g.', 'markersize', 2);
+                    plot(cx+xy_src_t(:,1), cy+xy_src_t(:,2), 'g.', 'markersize', 8);
 
                 display(transform);
             
@@ -318,23 +332,26 @@ while (it < max_iterations)
                 xy_src_t = (transform * [x_src y_src ones(size(x_src,1),1)]')';
                 xy_src_o = (compound_transforms(:,:,i_tile) \ [xy_src_t(:,1:2) ones(size(x_src,1),1)]')';
                 
+                plot(all_vessels, xy_src_t(:,1), xy_src_t(:,2), '.', 'markersize', 8);
+                
                 figure(2); clf;
                 subplot(1,2,1);
                     imgray(tile_curr);
-                    plot(cx+xy_src_o(:,1), cy+xy_src_o(:,2), 'g.', 'markersize', 2);
+                    plot(cx+xy_src_o(:,1), cy+xy_src_o(:,2), 'g.', 'markersize', 8);
                     
                 subplot(1,2,2); hold on;
-                    plot(x_tgt, y_tgt, 'r.', 'markersize', 2);
-                    plot(xy_src_t(:,1), xy_src_t(:,2), 'g.', 'markersize', 2); 
-                    axis equal ij;
-                    axis([min(xy_src_t(:,1)) max(xy_src_t(:,1)) min(xy_src_t(:,2)) max(xy_src_t(:,2))]);
+                    imagesc(tile0); axis image; hold on;
+                    plot(cx+x_tgt, cy+y_tgt, 'r.', 'markersize', 8);
+                    % Display the vessel points from the src tile on the target tile
+                    xy_src_t = (transform * [x_src y_src ones(size(x_src,1),1)]')';
+                    plot(cx+xy_src_t(:,1), cy+xy_src_t(:,2), 'g.', 'markersize', 8);
                   
             end
                 
         end
 
         % Update target points if we are to match consecutive frames
-        if strcmp(args.ref_type, 'previous')
+        if strcmp(args.ref_type, 'previous') && ~isempty(x_src)
             x_tgt = x_src - offset_centres(i_tile,1);
             y_tgt = y_src - offset_centres(i_tile,2);
         end
@@ -379,7 +396,7 @@ end
 
 %% Find line structures in the image
 function [x, y] = ...
-    get_line_points(tile, sigma, tile_mask, feature_type)
+    get_line_points(tile, sigma, tile_mask, feature_type, region)
 
 switch feature_type
     case {'g2d'},
@@ -400,7 +417,30 @@ if ~isempty(tile_mask)
 end
 
 %Apply hysterisis to select suitable lines from the NMS map
-[line_mask] = hysterisis(line_nms);
+switch region
+    case 'centre'
+        [r c] = size(tile);
+        rows = round(r/4):round(3*r/4);
+        cols = round(c/4):round(3*c/4);
+        centre_roi = line_nms(rows, cols);
+        thresh_hi = prctile(centre_roi(:), 99);
+    case 'all'
+        thresh_hi = prctile(line_nms(:), 99);
+        
+    otherwise
+        error(['Region type ',region,' not recognized']);
+end
+
+if ~thresh_hi
+    y = [];
+    x = [];
+    return;
+end
+
+%thresh_hi = prctile(line_nms(:), 99);
+thresh_lo = 0.7*thresh_hi;
+thresh = [thresh_lo thresh_hi] / max(line_nms(:));
+line_mask = hysterisis(line_nms, thresh);
 
 %Extract (x,y) coordinates of the remaining lines
 [y x] = find(line_mask);

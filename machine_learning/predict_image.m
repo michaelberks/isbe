@@ -42,6 +42,9 @@ clear varargin;
 
 %Get arguments needed to decompose image into the required feature vectors
 decomposition_args = args.decomposition_args;
+if ~isfield(decomposition_args, 'rgb_channel')
+    decomposition_args.rgb_channel = 'rgb';
+end
 
 %Get size of image;
 [ROW COL im_chs] = size(args.image_in);

@@ -94,6 +94,11 @@ switch(args_in.image_type)
         else
             args_out.probability_dir = [];
         end
+        if isfield(args_in, 'precompute_indices')
+            args_out.precompute_indices = args_in.precompute_indices;
+        else
+            args_out.precompute_indices = [];
+        end
         
     case {'line', 'grain'}
         % Create synthetic images on the fly

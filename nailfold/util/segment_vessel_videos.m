@@ -1,4 +1,11 @@
-function segment_vessel_videos(i_seg, s, v, frame_dir)
+function segment_vessel_videos(i_seg, s, v, frame_dir, delete_frames, do_masked)
+
+if ~exist('delete_frames', 'var')
+    delete_frames = true;
+end
+if ~exist('do_masked', 'var')
+    delete_frames = true;
+end
 
 segment_start_x = s.segment_transforms(1,3,i_seg);
 segment_start_y = s.segment_transforms(2,3,i_seg);
@@ -80,8 +87,15 @@ for i_b = 2:sum(in_segment)
         imwrite(uint8(vessel_patch), [vessel_dir frame_list(i_f).name]);
     end
     cmd = ['ffmpeg -y -r 120 -i "' vessel_dir 'frame%04d.png" -c:v libx264 -preset slow -crf 18 -an "' vessel_dir 'movie.mp4"'];
-    system(cmd);
-    delete([vessel_dir 'frame*.png']);
+    %system(cmd);
+    
+    if delete_frames
+        delete([vessel_dir 'frame*.png']);
+    end
+    
+    if ~do_masked
+        continue;
+    end
     
     vessel_mosaic = mean(vessel_patches,3);
     vessel_bg = vessel_mosaic(vessel_bg_mask);
@@ -96,10 +110,13 @@ for i_b = 2:sum(in_segment)
         imwrite(uint8(vessel_patch), [vessel_dir frame_list(i_f).name]);
     end   
 
+    
     cmd = ['ffmpeg -y -r 120 -i "' vessel_dir 'frame%04d.png" -c:v libx264 -preset slow -crf 18 -an "' vessel_dir 'movie_masked.mp4"'];
     system(cmd);
 
-    delete([vessel_dir 'frame*.png']);
+    if delete_frames
+        delete([vessel_dir 'frame*.png']);
+    end
 end
 
     

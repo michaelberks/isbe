@@ -127,7 +127,7 @@ rho_function = 'quadratic';
 % Ignore defined bounds (debug)
 lbound = []; ubound = [];
 
-fprintf('Getting derivative patterns...');
+%fprintf('Getting derivative patterns...');
     % Clear the persistents first
     error_vec([],[],[],[], true);
     [res, de, se, Jrows,Jcols] = ...
@@ -137,10 +137,10 @@ fprintf('Getting derivative patterns...');
     nr = length(res);
 
     jacobianPattern = sparse(Jrows,Jcols, 1, nr,nv);
-fprintf('done\n');
+%fprintf('done\n');
 
 % Show sum of squared error
-disp(res'*res);
+%disp(res'*res);
 
 % Minimize error via nonlinear optimization:
 fmin_name = 'lsqnonlin';
@@ -148,13 +148,13 @@ fmin_name = 'lsqnonlin';
 
 opts = optimset(fmin_name);
 opts = optimset(opts, ...
-                'display', 'iter', ...
+                'display', 'off', ...'iter'
                 'TolFun', 1e-2, ...
                 'TolX', 1e-2, ...
                 'MaxIter', 5, ...
                 'DiffMaxChange', 1e0, ...
                 'DiffMinChange', 1e-3, ...
-                'PlotFcn', @(x, optimValues, state) plotfcn(x, optimValues, state, sz_vec, observations, gt.flow, base_flow), ...
+                'PlotFcn', [], ...@(x, optimValues, state) plotfcn(x, optimValues, state, sz_vec, observations, gt.flow, base_flow)
                 'JacobPattern', double(jacobianPattern));
 clear('jacobianPattern');
 
@@ -210,14 +210,14 @@ end
 
 if f_save_results
     % Generate the final flowmaps and save
-    [v, sz_vec] = ncm_pack(p_opt);
-    [ignore, flowim] = ...
-        plotfcn(v, [], [], sz_vec, observations, gt.flow, base_flow);
-
-    imsz = size(flowim);
-    flowim_rgb = show_flow_as('rgb', flowim(:,:));
-    imwrite(flowim_rgb(:,(1:imsz(2)),:), fullfile(outpath,'flowmap_gt.png'));
-    imwrite(flowim_rgb(:,(1:imsz(2))+imsz(2),:), fullfile(outpath,'flowmap_est.png'));
+%     [v, sz_vec] = ncm_pack(p_opt);
+%     [ignore, flowim] = ...
+%         plotfcn(v, [], [], sz_vec, observations, gt.flow, base_flow);
+% 
+%     imsz = size(flowim);
+%     flowim_rgb = show_flow_as('rgb', flowim(:,:));
+%     imwrite(flowim_rgb(:,(1:imsz(2)),:), fullfile(outpath,'flowmap_gt.png'));
+%     imwrite(flowim_rgb(:,(1:imsz(2))+imsz(2),:), fullfile(outpath,'flowmap_est.png'));
 
     % Save the results
     observations_to_remove = {'imgStack', 'imgStackWarped'};

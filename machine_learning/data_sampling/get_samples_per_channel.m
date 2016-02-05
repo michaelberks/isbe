@@ -10,7 +10,7 @@ function samples_per_channel = get_samples_per_channel(decomposition_args)
 % NB: This does not use the do_max argument to reduce the n_levels to 1
 
 % If PCA is used then just return the number of modes and we're done
-if ~isempty(decomposition_args.pca)
+if isfield(decomposition_args, 'pca') && ~isempty(decomposition_args.pca)
     samples_per_channel = size(decomposition_args.pca,2);
     return;
 end

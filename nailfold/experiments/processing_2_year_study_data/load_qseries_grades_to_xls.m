@@ -59,6 +59,7 @@ if do_headings
     headings1 = {
         'Subject ID' ...
         'Top image' ...
+        'Gradeable',...
         'Images show disease' ...
         'Progression'};
     
@@ -108,18 +109,29 @@ for i_g = 1:num_grades
         top_image = 'V1';
     else
         top_image = 'V6';
-    end   
+    end
+    if ~strcmpi(top_image, grade_name(V_idx+(0:1)))
+        error('Top order doesn''t match grade name order');
+    end
+    
     xls_data{curr_row, curr_col} = top_image;
     curr_col = curr_col+1;
     %-------------------
     
+    %3: Were the images gradeable
+    xls_data{curr_row, curr_col} = double(grade.images_gradeable);
+    curr_col = curr_col+1;
+    %-------------------
+    
     %3: Were the images normal
-    xls_data{curr_row, curr_col} = double(grade.images_abnormal);
+    if grade.images_gradeable
+        xls_data{curr_row, curr_col} = double(grade.images_abnormal);
+    end
     curr_col = curr_col+1;
     %-------------------
     
     %4: If the images were abnormal, write progression
-    if grade.images_abnormal
+    if grade.images_gradeable && grade.images_abnormal
         %If top image was V1, make progression negative
         if top_older(s_idx)
             grade.progression = -1*grade.progression;
@@ -131,7 +143,7 @@ for i_g = 1:num_grades
     
     %5: If progression, mark the reasons
     for i_r = 1:num_reasons
-        if grade.images_abnormal && grade.progression            
+        if grade.images_gradeable && grade.images_abnormal && grade.progression            
             xls_data{curr_row, curr_col} = double(grade.reasons(i_r));
         end
         curr_col = curr_col+1;

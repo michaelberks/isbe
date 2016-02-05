@@ -11,6 +11,14 @@ if f_debug, test_script(); return; end
 function features = func(responses, rows, cols, d_args)
 
 features = [];
+
+%Deal with old cases where the decomp type was just a character string,
+%rather than a cell
+if ischar(d_args.decomp_type)
+    d_args.decomp_type = {d_args.decomp_type};
+end
+
+%Now we can switch on the decomp type
 for ii = 1:length(d_args.decomp_type)
     switch d_args.decomp_type{ii}
         
@@ -66,7 +74,7 @@ for ii = 1:length(d_args.decomp_type)
     features = [features decomp_features]; %#ok
 end
 
-if ~isempty(d_args.pca)
+if isfield(d_args, 'pca') && ~isempty(d_args.pca)
     %Transform sample using PCA modes
     features = bsxfun(@minus, features, d_args.pca.mean)*d_args.pca.modes;
 end

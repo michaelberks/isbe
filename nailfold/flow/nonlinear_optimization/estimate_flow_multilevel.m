@@ -10,6 +10,7 @@ if (nargin==0 && nargout==0), test(); return; end
 if isnumeric(imageRoot)
     imgStack = imageRoot;
     nFrames = size(imgStack, 3);
+    imageRoot = [];
 else
     imgStack = load_image_stack(imageRoot, nFrames);
 end
@@ -25,9 +26,14 @@ level = nPyramidLevels;
 % p_init is the initial parameter vector
 % confidence is a confidence map based on the Hessian at every pixel
 gt = load_ground_truth(imageRoot, nPyramidLevels, level, nFrames);
-outputPath = fullfile(outroot, sprintf('level_%02d', level));
+save_output = ~isempty(outroot);
+if save_output
+    outputPath = fullfile(outroot, sprintf('level_%02d', level));
+else
+    outputPath = [];
+end
 [p_opt, p_init, confidence] = ...
-    estimate_flow(imgPyramid{level}, outputPath, gt, []);
+    estimate_flow(imgPyramid{level}, outputPath, gt, [], save_output);
 
 flowPyramidEst{level} = complex(p_opt.uu, p_opt.vv);
 flowConfidence{level} = confidence.uu .* confidence.vv;
@@ -46,9 +52,11 @@ for level = levels(end-1:-1:1)
     % Estimate update to flow
     % p_est is the estimated flow at the current level.
     gt = load_ground_truth(imageRoot, nPyramidLevels, level, nFrames);
-    outputPath = fullfile(outroot, sprintf('level_%02d', level));
+    if save_output
+        outputPath = fullfile(outroot, sprintf('level_%02d', level));
+    end
     [p_opt, p_init, confidence] = ...
-        estimate_flow(imgPyramid{level}, outputPath, gt, p_est);
+        estimate_flow(imgPyramid{level}, outputPath, gt, p_est, save_output);
 
     flowPyramidEst{level} = p_est.flow + complex(p_opt.uu, p_opt.vv);
     flowConfidence{level} = confidence.uu .* confidence.vv;

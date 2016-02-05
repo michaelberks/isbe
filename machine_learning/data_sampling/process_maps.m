@@ -53,7 +53,7 @@ end
 
 % compute final foreground and background masks
 switch output_type
-    case {'detection', 'width'}
+    case {'detection', 'width', 'class_label'}
         fg_map = line_map;
         bg_map = nonline_map;
 

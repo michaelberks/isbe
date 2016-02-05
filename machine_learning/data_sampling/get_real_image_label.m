@@ -9,6 +9,9 @@ switch output_type
         img_label = u_load(images.fg_mask);
         img_label = bwmorph(img_label, 'thin', 'inf');
         
+    case {'class_label'}
+        img_label = u_load(images.class_label);
+        
     case {'orientation', 'centre_orientation'}
         img_label = u_load(images.ori);
         
