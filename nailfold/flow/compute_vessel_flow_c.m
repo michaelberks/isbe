@@ -60,28 +60,41 @@ for i_ve = 1:length(vessels_list)
     x_start = floor(x_min + find(any(~edge_mask,1),1) - (dx + 1));
     y_start = floor(y_min + find(any(~edge_mask,2),1) - (dy + 1));
     
-    cropped_rows = y_start+(1:size(flow_results.flowPyramidEst{1},1));
-    cropped_cols = x_start+(1:size(flow_results.flowPyramidEst{1},2));
+    [flow_h flow_w] = size(flow_results.flowPyramidEst{1});
+    cropped_rows = y_start+(1:flow_h);
+    cropped_cols = x_start+(1:flow_w);
+    
+    valid_rows = cropped_rows >= 1 & cropped_rows <= frame_h; 
+    valid_cols = cropped_cols >= 1 & cropped_cols <= frame_w; 
     
     %Project the flow results in to the segment
-    segment_flow.sum(cropped_rows, cropped_cols) = ...
-        segment_flow.sum(cropped_rows, cropped_cols) + flow_results.flowPyramidEst{1};
+    segment_flow.sum(cropped_rows(valid_rows), cropped_cols(valid_cols)) = ...
+        segment_flow.sum(cropped_rows(valid_rows), cropped_cols(valid_cols))...
+        + flow_results.flowPyramidEst{1}(valid_rows,valid_cols);
     
-    segment_flow.max(cropped_rows, cropped_cols) = ...
-        max(segment_flow.max(cropped_rows, cropped_cols), flow_results.flowPyramidEst{1});
+    segment_flow.max(cropped_rows(valid_rows), cropped_cols(valid_cols)) = ...
+        max(segment_flow.max(cropped_rows(valid_rows), cropped_cols(valid_cols)),...
+        flow_results.flowPyramidEst{1}(valid_rows,valid_cols));
     
-    segment_flow.count(cropped_rows, cropped_cols) = ...
-        segment_flow.count(cropped_rows, cropped_cols) + 1;
+    segment_flow.count(cropped_rows(valid_rows), cropped_cols(valid_cols)) = ...
+        segment_flow.count(cropped_rows(valid_rows), cropped_cols(valid_cols)) + 1;
     
     %Now compute information about these frames - first get vessel and
     %orientation patches for the correctly translated bundign box
-    frame_ori = vessel_ori(...
-        cropped_rows+floor(frames_offset(2)),...
-        cropped_cols+floor(frames_offset(1)),:);
+    pred_rows = cropped_rows+floor(frames_offset(2));
+    pred_cols = cropped_cols+floor(frames_offset(1));
+    valid_pred_rows = pred_rows >= 1 & pred_rows <= size(vessel_ori,1);
+    valid_pred_cols = pred_cols >= 1 & pred_cols <= size(vessel_ori,2);
+    
+    frame_ori = zeros(flow_h, flow_w, 3);
+    frame_ori(valid_pred_rows, valid_pred_cols, :) = vessel_ori(...
+        pred_rows(valid_pred_rows),...
+        pred_cols(valid_pred_cols),:);
     frame_ori = rgb2complex(frame_ori, [], 1, [], 0);
-    frame_pred = double(vessel_pred(...
-        cropped_rows+floor(frames_offset(2)),...
-        cropped_cols+floor(frames_offset(1)),:)) / 100;
+    frame_pred = zeros(flow_h, flow_w);
+    frame_pred(valid_pred_rows, valid_pred_cols) = double(vessel_pred(...
+        pred_rows(valid_pred_rows),...
+        pred_cols(valid_pred_cols))) / 100;
     
     %Make a frame mask from the vessel predictions, selected pixels
     %connected to the vessel apex
@@ -93,8 +106,9 @@ for i_ve = 1:length(vessels_list)
     frame_apex_mask = bwselect(frame_vessels_mask, ax, ay, 4);
     
     %Project the frame mask into the segment mask
-    segment_flow.mask(cropped_rows, cropped_cols) = ...
-        segment_flow.mask(cropped_rows, cropped_cols) | frame_vessels_mask; 
+    segment_flow.mask(cropped_rows(valid_rows), cropped_cols(valid_cols)) = ...
+        segment_flow.mask(cropped_rows(valid_rows), cropped_cols(valid_cols)) |...
+        frame_vessels_mask(valid_rows,valid_cols); 
     
     %Compute average  flow rates inside and outside the predicted vessel.
     %If these are the same flow probably hasn't worked

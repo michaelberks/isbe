@@ -298,7 +298,7 @@ for i_seq = 1:numel(sequence_names)
     end
 end
 %%
-flow_data_dir = 'N:\Nailfold Capillaroscopy\Wellcome\flow_data.old\';
+flow_data_dir = 'N:\Nailfold Capillaroscopy\Wellcome\flow_data\';
 flow_results_dir = 'N:\Nailfold Capillaroscopy\Wellcome\flow_results\';
 flow_mosaic_dir = 'N:\Nailfold Capillaroscopy\Wellcome\flow_mosaics\';
 capillary_data_dir = 'C:\isbe\nailfold\data\wellcome_study\capillary_data\';
@@ -308,7 +308,8 @@ create_folder(flow_mosaic_dir);
 load('C:\isbe\nailfold\data\wellcome_study\sequence_names.mat');
 sequence_names2 = sequence_names';
 %%
-for i_seq = 1%72:numel(sequence_names)
+warning('off', 'images:bwselect:outOfRange');
+for i_seq = 1:numel(sequence_names)
     
     if isempty(sequence_names2{i_seq})
         continue;
@@ -325,7 +326,7 @@ for i_seq = 1%72:numel(sequence_names)
     save_path = [flow_mosaic_dir seq_name '_flow_mosaic.mat'];
     [mosaic_flow] = ...
          compute_mosaic_flow_c(seq_dir, capillary_data_dir, flow_data_dir, flow_results_dir,...
-         flow_metrics_dir, seq_name, 'plot', 2);
+         flow_metrics_dir, seq_name, 'plot', 0);
      save(save_path, 'mosaic_flow');
     
 end

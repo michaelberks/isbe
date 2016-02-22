@@ -1,4 +1,4 @@
-function [vessel_mask vessel_centre_mask width_map ori_map] =...
+function [vessel_mask vessel_centre_mask width_map ori_map ori_map_3d] =...
     make_mask_from_contour(outer_edge, inner_edge, rows, cols)
 %MAKE_MASK_FROM_CONTOUR *Insert a one line summary here*
 %   [vessel_mask] = make_mask_from_contour(outer_edge, inner_edge, rows, cols)
@@ -45,8 +45,13 @@ for i_pt = 1:num_pts-1
         patch_size(2), patch_size(1));
     vessel_mask = vessel_mask | segment_mask;
     
-    if nargout > 2 && i_pt == halfway
-        vessel_mask1 = vessel_mask;
+    if nargout > 2 
+        if i_pt == halfway
+            vessel_mask1 = vessel_mask;
+            vessel_mask2 = false(patch_size(2), patch_size(1));
+        elseif i_pt > halfway
+            vessel_mask2 = vessel_mask2 | segment_mask;
+        end
     end        
 end
 
@@ -66,8 +71,10 @@ if nargout > 1
     end
 end
 
+halfway = floor(size(vessel_centre,1)/2);
 if nargout > 2
-    ori_map = exp(2i*rand(patch_size(2), patch_size(1))*pi);
+    ori_map1 = exp(2i*rand(patch_size(2), patch_size(1))*pi);
+    ori_map2 = exp(2i*rand(patch_size(2), patch_size(1))*pi);
     width_map = zeros(patch_size(2), patch_size(1));
     
     
@@ -76,24 +83,44 @@ if nargout > 2
     vessel_norms = compute_spline_normals(vessel_centre);
     vessel_oris = complex(vessel_norms(:,2), vessel_norms(:,1)).^2;
     
-    vessel_centre_idx = sub2ind([patch_size(2) patch_size(1)], ...
-        round(vessel_centre(:,2)), round(vessel_centre(:,1)));
-    seg_idx1 = vessel_mask1(vessel_centre_idx);    
+%     vessel_centre_idx = sub2ind([patch_size(2) patch_size(1)], ...
+%         round(vessel_centre(:,2)), round(vessel_centre(:,1)));
+%     seg_idx1 = vessel_mask1(vessel_centre_idx);    
     [yi1 xi1] = find(vessel_mask1);
     
-    width_map(vessel_mask1) = griddata(vessel_centre(seg_idx1,1), vessel_centre(seg_idx1,2), vessel_widths(seg_idx1),...
+%     width_map(vessel_mask1) = griddata(vessel_centre(seg_idx1,1), vessel_centre(seg_idx1,2), vessel_widths(seg_idx1),...
+%         xi1, yi1, 'nearest');       
+%     ori_map(vessel_mask1) = griddata(vessel_centre(seg_idx1,1), vessel_centre(seg_idx1,2), vessel_oris(seg_idx1),...
+%         xi1, yi1, 'nearest');   
+    
+    width_map(vessel_mask1) = griddata(vessel_centre(1:halfway,1), vessel_centre(1:halfway,2), vessel_widths(1:halfway),...
         xi1, yi1, 'nearest');       
-    ori_map(vessel_mask1) = griddata(vessel_centre(seg_idx1,1), vessel_centre(seg_idx1,2), vessel_oris(seg_idx1),...
+    ori_map1(vessel_mask1) = griddata(vessel_centre(1:halfway,1), vessel_centre(1:halfway,2), vessel_oris(1:halfway),...
         xi1, yi1, 'nearest');   
     
-    seg_idx2 = ~seg_idx1;
-    vessel_mask2 = vessel_mask & ~vessel_mask1;
+%     seg_idx2 = ~seg_idx1;
+%     vessel_mask2 = vessel_mask & ~vessel_mask1;
     [yi2 xi2] = find(vessel_mask2);
     
-    width_map(vessel_mask2) = griddata(vessel_centre(seg_idx2,1), vessel_centre(seg_idx2,2), vessel_widths(seg_idx2),...
+%     width_map(vessel_mask2) = griddata(vessel_centre(seg_idx2,1), vessel_centre(seg_idx2,2), vessel_widths(seg_idx2),...
+%         xi2, yi2, 'nearest');   
+%     ori_map(vessel_mask2) = griddata(vessel_centre(seg_idx2,1), vessel_centre(seg_idx2,2), vessel_oris(seg_idx2),...
+%         xi2, yi2, 'nearest');
+
+    width_map(vessel_mask2) = griddata(vessel_centre(halfway+1:end,1), vessel_centre(halfway+1:end,2), vessel_widths(halfway+1:end),...
         xi2, yi2, 'nearest');   
-    ori_map(vessel_mask2) = griddata(vessel_centre(seg_idx2,1), vessel_centre(seg_idx2,2), vessel_oris(seg_idx2),...
+    ori_map2(vessel_mask2) = griddata(vessel_centre(halfway+1:end,1), vessel_centre(halfway+1:end,2), vessel_oris(halfway+1:end),...
         xi2, yi2, 'nearest');
+    
+    vessel_mask12 = vessel_mask1 & ~vessel_mask2;
+    vessel_mask21 = ~vessel_mask1 & vessel_mask2;
+    ori_map1(vessel_mask21) = ori_map2(vessel_mask21);
+    ori_map2(vessel_mask12) = ori_map1(vessel_mask12);
+    
+    ori_map = ori_map1;
+    ori_map_3d = cat(3, ori_map1, ori_map2);
+    
+    
     
 end
     

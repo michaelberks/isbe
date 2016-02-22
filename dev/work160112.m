@@ -494,15 +494,16 @@ mean_weighted_errors = zeros(num_vessels,1);
 weighted_flow_rates = zeros(num_vessels,1);
 total_vessel_probs = zeros(num_vessels,1);
 mean_vessel_widths = zeros(num_vessels,1);
+flow_ratios = zeros(num_vessels,1);
 %
 for i_ve = 1:num_vessels
-    f = load([flow_metrics_dir flow_list(i_ve).name],...
-        'mean_error', 'mean_weighted_error', 'weighted_flow_rate', 'total_vessel_prob', 'weighted_width');
+    f = load([flow_metrics_dir flow_list(i_ve).name]);
     mean_errors(i_ve,1) = f.mean_error;
     mean_weighted_errors(i_ve,1) = f.mean_weighted_error;
     weighted_flow_rates(i_ve,1) = f.weighted_flow_rate;
     total_vessel_probs(i_ve,1) = f.total_vessel_prob;
     mean_vessel_widths(i_ve,1) = f.weighted_width;
+    flow_ratios(i_ve,1) = f.vessel_flow / f.background_flow;
 end
 %%
 figure;
@@ -532,6 +533,11 @@ figure;
 plot(mean_vessel_widths, weighted_flow_rates,'rx');
 xlabel('Vessel width');
 ylabel('Weighted flow rate');
+
+figure;
+plot(mean_weighted_errors, flow_ratios,'rx');
+xlabel('Weighted flow error');
+ylabel('Flow ratio');
 
 %%
 flow_data_dir = 'N:\Nailfold Capillaroscopy\wellcome\flow_data\';
@@ -619,15 +625,22 @@ for i_ve = 1:num_steps
     [~, idx] = min(abs(valid_flow - flow_steps(i_ve)));
     
     seq_name = flow_list(valid_idx(idx)).name;
-    frames = u_load([flow_data_dir seq_name]);
+    f = load([flow_data_dir seq_name], 'cropped_frames');
+    frames = f.cropped_frames;
     num_frames = size(frames,3);
     g_lims = prctile(double(frames(:)), [1 99]);
     g_range = g_lims(2) - g_lims(1);
+    frames = 255*(double(frames)-g_lims(1))/g_range;
+    
+    rr = rem(size(frames, 1),4);
+    rc = rem(size(frames, 2),4);
+    frames(1:rr,:,:) = [];
+    frames(:,1:rc,:) = [];
 
     delete([temp_frames_dir '*.bmp']);
 
     for i_fr = 1:num_frames;
-        imwrite(uint8(255*(double(frames(:,:,i_fr))-g_lims(1))/g_range ),...
+        imwrite(uint8(frames(:,:,i_fr)),...
             [temp_frames_dir 'frame' zerostr(i_fr,4) '.bmp']);
     end
     cmd = ['ffmpeg -y -r 30 -i "' temp_frames_dir 'frame%04d.bmp" -c:v libx264 -preset slow -crf 18 -an "' flow_videos_dir zerostr(i_ve,2) '_' seq_name '.mp4"'];
@@ -650,15 +663,22 @@ for i_ve = 1:num_steps
     [~, idx] = min(abs(valid_widths - width_steps(i_ve)));
     
     seq_name = flow_list(valid_idx(idx)).name;
-    frames = u_load([flow_data_dir seq_name]);
+    f = load([flow_data_dir seq_name], 'cropped_frames');
+    frames = f.cropped_frames;
     num_frames = size(frames,3);
     g_lims = prctile(double(frames(:)), [1 99]);
     g_range = g_lims(2) - g_lims(1);
+    frames = 255*(double(frames)-g_lims(1))/g_range;
+    
+    rr = rem(size(frames, 1),4);
+    rc = rem(size(frames, 2),4);
+    frames(1:rr,:,:) = [];
+    frames(:,1:rc,:) = [];
 
     delete([temp_frames_dir '*.bmp']);
 
     for i_fr = 1:num_frames;
-        imwrite(uint8(255*(double(frames(:,:,i_fr))-g_lims(1))/g_range ),...
+        imwrite(uint8(frames(:,:,i_fr)),...
             [temp_frames_dir 'frame' zerostr(i_fr,4) '.bmp']);
     end
     cmd = ['ffmpeg -y -r 30 -i "' temp_frames_dir 'frame%04d.bmp" -c:v libx264 -preset slow -crf 18 -an "' flow_videos_dir zerostr(i_ve,2) '_' seq_name '.mp4"'];
@@ -740,4 +760,104 @@ for i_fr = 1:size(f.cropped_frames,3);
 end
 cmd = ['ffmpeg -y -r 30 -i "' temp_frames_dir 'frame%04d.bmp" -c:v libx264 -preset slow -crf 18 -an "' flow_videos_dir 'cleaned_' seq_name '.mp4"'];
 system(cmd);
+%%
+flow_videos_dir = 'F:\flow_videos\width_steps\';
+vid_list = dir([flow_videos_dir '*.mp4']);
+
+for i_ve = 1:20
+    
+    seq_name = vid_list(i_ve).name(4:end-4);
+    f = load([flow_data_dir seq_name], 'cropped_frames');
+    frames = f.cropped_frames;
+    num_frames = size(frames,3);
+    g_lims = prctile(double(frames(:)), [1 99]);
+    g_range = g_lims(2) - g_lims(1);
+    frames = uint8(255*(double(frames)-g_lims(1))/g_range );
+    
+    rr = rem(size(frames, 1),4);
+    rc = rem(size(frames, 2),4);
+    frames(1:rr,:,:) = [];
+    frames(:,1:rc,:) = [];
+
+    delete([temp_frames_dir '*.bmp']);
+
+    for i_fr = 1:num_frames;
+        imwrite(frames(:,:,i_fr),...
+            [temp_frames_dir 'frame' zerostr(i_fr,4) '.bmp']);
+    end
+    cmd = ['ffmpeg -y -r 30 -i "' temp_frames_dir 'frame%04d.bmp" -c:v libx264 -preset slow -crf 18 -an "' flow_videos_dir vid_list(i_ve).name '"'];
+    system(cmd);   
+       
+end
+    
+%%
+flow_videos_dir = 'C:\isbe\nailfold\data\wellcome_study\flow_videos\width_steps\';
+vid_list = dir([flow_videos_dir '*.mp4']);
+flow_results_dir = 'N:\Nailfold Capillaroscopy\wellcome\flow_results\';
+for i_ve = 1:20
+    
+    seq_name = vid_list(i_ve).name(4:end-4);
+    if exist([flow_results_dir seq_name], 'file')
+        f = u_load([flow_results_dir seq_name]);
+    else
+        display(['Recomputing flow for ' seq_name]);
+        f = load([flow_data_dir seq_name], 'cropped_frames');
+        frames = f.cropped_frames;
+        num_frames = size(frames,3);
+        g_lims = prctile(double(frames(:)), [1 99]);
+        g_range = g_lims(2) - g_lims(1);
+        frames = 255*(double(frames)-g_lims(1))/g_range;
+        f.flowPyramidEst = estimate_flow_multilevel(frames, [], [], 1:3);
+    end
+    imwrite(complex2rgb(f.flowPyramidEst{1}, [], [], [], 1),...
+        [flow_videos_dir zerostr(i_ve,2) '_' seq_name '.png']);
+       
+end
+%%
+flow_list = dir([flow_results_dir '035*R2*S07*.mat']);
+flow_videos_dir = 'C:\isbe\nailfold\data\wellcome_study\flow_videos\misc\';
+for i_ve = 1:length(flow_list)
+    seq_name = flow_list(i_ve).name;
+    f = load([flow_data_dir seq_name], 'cropped_frames');
+    frames = f.cropped_frames;
+    num_frames = size(frames,3);
+    g_lims = prctile(double(frames(:)), [1 99]);
+    g_range = g_lims(2) - g_lims(1);
+    frames = 255*(double(frames)-g_lims(1))/g_range;
+    
+    rr = rem(size(frames, 1),4);
+    rc = rem(size(frames, 2),4);
+    frames(1:rr,:,:) = [];
+    frames(:,1:rc,:) = [];
+
+    delete([temp_frames_dir '*.bmp']);
+
+    for i_fr = 1:num_frames;
+        imwrite(uint8(frames(:,:,i_fr)),...
+            [temp_frames_dir 'frame' zerostr(i_fr,4) '.bmp']);
+    end
+    cmd = ['ffmpeg -y -r 30 -i "' temp_frames_dir 'frame%04d.bmp" -c:v libx264 -preset slow -crf 18 -an "' flow_videos_dir seq_name '.mp4"'];
+    system(cmd);   
+    
+    cmd = ['ffmpeg -i "' flow_videos_dir seq_name '.mp4" -q:v 2 "' flow_videos_dir seq_name '.wmv"'];
+    system(cmd); 
+    
+    f = u_load([flow_results_dir seq_name]);
+    
+    imwrite(complex2rgb(f.flowPyramidEst{1}, [], [], [], 1),...
+        [flow_videos_dir seq_name '.png']);
+       
+end
+%%
+for i_ve = 1:5
+    seq_name = flow_list(i_ve).name;
+    
+       
+end
+%%
+for i_ve = 1:5
+    seq_name = flow_list(i_ve).name;
+    cmd = ['ffmpeg -i "' flow_videos_dir seq_name '.mp4" -q:v 2 "' flow_videos_dir seq_name '.wmv"'];
+    system(cmd); 
+end
     

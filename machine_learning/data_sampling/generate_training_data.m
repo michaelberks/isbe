@@ -166,30 +166,31 @@ for img_index = 1:n_images
     switch sampling_args.output_type
         case {'detection', 'centre_detection', ...
               'junction_detection', 'junction_centre_detection',...
-              'orientation', 'centre_orientation', 'width', 'class_label'}
+              'orientation', 'centre_orientation', 'width', 'class_label',...
+              'mixed_orientation', 'mixed_centre_orientation'}
             % Sample labels from label image
             labels = [img_label(fg_indices); img_label(bg_indices)];
             
-        case {'mixed_orientation', 'mixed_centre_orientation'}
-            % TO DO: Needs aligning with get_*_image_label()
-            
-            % We could deal with this in get_real_image_label() so that the
-            % ground truth is a single plane image where the orientation
-            % at each pixel has already been sampled from the options.
-            % Then we could ditch the switch statement altogether.
-            
-            %now randomly select one of the mixed orientations for each
-            %point
-            	
-            %Load in orientation ground truth
-%             ori_gt = load([args.ori_dir ori_list(this_im).name]);
-            labels = zeros(num_samples_image,1);
-            for ii = 1:samples_per_image
-                mixed_oris = ...
-                    img_label.mixed_oris{img_label.mixed_idx(image_idx(ii))};
-                
-                labels(ii) = mixed_oris(ceil(rand*length(mixed_oris)));
-            end
+%         case {'mixed_orientation', 'mixed_centre_orientation'}
+%             % TO DO: Needs aligning with get_*_image_label()
+%             
+%             % We could deal with this in get_real_image_label() so that the
+%             % ground truth is a single plane image where the orientation
+%             % at each pixel has already been sampled from the options.
+%             % Then we could ditch the switch statement altogether.
+%             
+%             %now randomly select one of the mixed orientations for each
+%             %point
+%             	
+%             %Load in orientation ground truth
+% %             ori_gt = load([args.ori_dir ori_list(this_im).name]);
+%             labels = zeros(num_samples_image,1);
+%             for ii = 1:samples_per_image
+%                 mixed_oris = ...
+%                     img_label.mixed_oris{img_label.mixed_idx(image_idx(ii))};
+%                 
+%                 labels(ii) = mixed_oris(ceil(rand*length(mixed_oris)));
+%             end
             
         otherwise
             error(['Output type ', sampling_args.output_type, ' not recognized']);

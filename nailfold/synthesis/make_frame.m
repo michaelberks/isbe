@@ -63,6 +63,15 @@ img = ... % background value/image
       background - ... 
       ... % scaled vessel image
       contrast .* img; 
+  
+use_speckle_noise = true;
+if use_speckle_noise
+    g_min = min(img(:));
+    g_max = max(img(:));
+    img2 = (img - g_min) / (g_max-g_min);
+    img2 = imnoise(img2, 'speckle', 0.01);
+    img = img2*(g_max-g_min) + g_min;
+end
 
 if (nargout==1), return; end
   
