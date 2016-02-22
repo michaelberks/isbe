@@ -28,8 +28,8 @@ function [] = make_synthetic_flow_comparison_video(vessel_name, max_flow, speed_
 % Unpack the arguments:
 args = u_packargs(varargin,... % the user's input
     '0', ... % non-strict mode
-    'contour_dir',          'C:\isbe\nailfold\data\rsa_study\set12g\vessel_contours\',...
-    'video_dir',            'C:\isbe\nailfold\data\wellcome_study\flow_videos\flow_comparisons\',...
+    'contour_dir',          '\\nasr.man.ac.uk\epsrss$\snapped\replicated\MSI\flow_project\vessel_contours\',...
+    'video_dir',            '\\nasr.man.ac.uk\epsrss$\snapped\replicated\MSI\flow_project\flow_videos\synthesised\',...
     'load_saved',           false,...
     'overwrite',            true,...
     'cell_density',         10,...
@@ -47,6 +47,11 @@ args = u_packargs(varargin,... % the user's input
     'debug',                false,...
     'plot', 0);
 clear varargin;
+
+%We need this created (if not already) to save data to
+if ~exist(args.video_dir, 'dir')
+	mkdir(args.video_dir);
+end
 
 if args.load_saved
     %Load flowmap, mask, vessel_centre, widths, cell_sz and cell_positions 
@@ -286,7 +291,6 @@ for i_fr = 1:args.num_frames;
 end
 
 %Make path to save video
-create_folder(args.video_dir);
 if args.adjacent_videos
     video_path = [args.video_dir vessel_name ...
         '_f1_' num2str(scaling(1),3) '_f2_' num2str(scaling(2),3) '_adjacent.mp4'];
