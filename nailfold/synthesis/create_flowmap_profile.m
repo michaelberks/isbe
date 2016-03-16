@@ -17,8 +17,8 @@ if ~exist('map_sz', 'var') || isempty(map_sz)
         vessel_centre(:,2) = vessel_centre(:,2) - min_x + 32;
     end
     
-    max_x = max(max(outer_edge(:,1)), max(inner_edge(:,1)));
-    max_y = max(max(outer_edge(:,2)), max(inner_edge(:,2)));
+    max_x = ceil(max(max(outer_edge(:,1)), max(inner_edge(:,1))));
+    max_y = ceil(max(max(outer_edge(:,2)), max(inner_edge(:,2))));
     
     map_sz = [max_y + 4 - rem(max_y,4), max_x + 32 - rem(max_x,4)];
 end

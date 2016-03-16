@@ -1,7 +1,7 @@
 function [img, flow_img] = make_frame(cell_positions, imsz, ...
                                       blob_hw, mask, ...
                                       background, contrast, ...
-                                      n_exposed)
+                                      n_exposed, speckle_noise)
 
 if (nargin==0 && nargout==0), test_script(); return; end
                 
@@ -9,6 +9,7 @@ if ~exist('mask','var'), mask = ones(imsz); end
 if ~exist('background','var'), background = 120; end
 if ~exist('contrast','var'), contrast = 10; end
 if ~exist('n_exposed','var'), n_exposed = inf; end
+if ~exist('speckle_noise','var'), speckle_noise = 0; end
 
 n_exposed = max(min(n_exposed, size(cell_positions,3)-1), 1);
 
@@ -59,19 +60,14 @@ end
 
 img = 1-img;
 
+if speckle_noise
+    background = imnoise(background, 'gaussian', 0, speckle_noise);
+end
+
 img = ... % background value/image
       background - ... 
       ... % scaled vessel image
-      contrast .* img; 
-  
-use_speckle_noise = true;
-if use_speckle_noise
-    g_min = min(img(:));
-    g_max = max(img(:));
-    img2 = (img - g_min) / (g_max-g_min);
-    img2 = imnoise(img2, 'speckle', 0.01);
-    img = img2*(g_max-g_min) + g_min;
-end
+      contrast .* img;
 
 if (nargout==1), return; end
   

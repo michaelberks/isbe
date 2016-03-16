@@ -1,0 +1,14 @@
+\begin{tabular*}{0.95\textwidth}{@{\extracolsep{\fill} } l r r r r} 
+\toprule 
+% 
+Biomarker & \multicolumn{3}{c}{Subject group means ($95\%$ CI)} 	           & \multicolumn{1}{c}{ROC $A_z$}	\\ 
+          & \multicolumn{1}{c}{HC} & \multicolumn{1}{c}{PRP} & \multicolumn{1}{c}{SSc} & \multicolumn{1}{c}{HC,PRP $v$ SSc}  	\\ 
+\specialcell{Capillary density\\$mm^{-1}$}    & 6.73 $\pm$ 0.34        & 7.28 $\pm$ 0.54        & 5.52 $\pm$ 0.42        & 0.771 $\pm$ 0.04        \\ 
+\specialcell{Mean width\\${\mu}m$}            & 11.8 $\pm$ 0.23        & 12.7 $\pm$ 0.74        &  15 $\pm$ 0.71        & 0.874 $\pm$ 0.04        \\ 
+\specialcell{Max width\\${\mu}m$}             & 16.5 $\pm$ 0.91        & 21.4 $\pm$ 2.94        & 27.4 $\pm$ 2.38        & 0.836 $\pm$ 0.04        \\ 
+\specialcell{Shape score\\(no units)}         & 0.312 $\pm$ 0.02        & 0.325 $\pm$ 0.03        & 0.249 $\pm$ 0.01        & 0.845 $\pm$ 0.04        \\ 
+\specialcell{Derangment score\\(no units)}    & 0.649 $\pm$ 0.03        & 0.689 $\pm$ 0.05        & 0.54 $\pm$ 0.03        & 0.761 $\pm$ 0.05        \\ 
+\specialcell{Mean flow velocity\\$mms^{-1}$}  & 0.311 $\pm$ 0.05        & 0.383 $\pm$ 0.10        & 0.235 $\pm$ 0.04        & 0.726 $\pm$ 0.05        \\ 
+% 
+\bottomrule \noalign{\smallskip} 
+\end{tabular*} 

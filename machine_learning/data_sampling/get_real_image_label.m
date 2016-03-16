@@ -20,29 +20,36 @@ switch output_type
         % as the ground truth label. This would, however, make it
         % impossible to use the same image location twice with different
         % labels.
-        [nrows ncols] = size(images.fg_mask);
-        nlayers = size(images.ori);
-        img_label = images.ori(:,:,1);
+        ori_layers = u_load(images.ori);
+        rand_scale = rand(size(ori_layers));
+        img_label = max(ori_layers.*rand_scale,[],3);
+        abs_img_label = abs(img_label);
+        vessel_mask = abs_img_label > 0;
+        img_label(vessel_mask) = img_label(vessel_mask) ./ abs(img_label(vessel_mask));
+        img_label(~vessel_mask) = exp(2i*rand(sum(~vessel_mask(:)),1)*pi);
         
-        for i_r = 1:nrows
-            for i_c = 1:ncols
-                if images.fg_mask(i_r, i_c)
-                    not_valid = true;
-                    width = ceil(images.width(i_r, i_c) / 2);
-                    width2 = 2*width + 1;
-                    while not_valid
-                        offset_r = i_r + ceil(width2*rand) - width - 1;
-                        offset_c = i_c + ceil(width2*rand) - width - 1;
-                        not_valid = ...
-                            offset_r < 1 || offset_r > nrows || ...
-                            offset_c < 1 || offset_c > ncols ...
-                            || ~images.fg_mask(offset_r, offset_c);
-                    end
-                    offset_l = ceil(nlayers*rand);
-                    img_label(i_r, i_c) = images.ori(offset_r,offset_c,offset_l);
-                end
-            end
-        end
+        % [nrows ncols nlayers] = size(ori_layers);
+        % img_label = ori_layers(:,:,1);
+        % 
+        % for i_r = 1:nrows
+        %     for i_c = 1:ncols
+        %         if images.fg_mask(i_r, i_c)
+        %             not_valid = true;
+        %             width = ceil(images.width(i_r, i_c) / 2);
+        %             width2 = 2*width + 1;
+        %             while not_valid
+        %                 offset_r = i_r + ceil(width2*rand) - width - 1;
+        %                 offset_c = i_c + ceil(width2*rand) - width - 1;
+        %                 not_valid = ...
+        %                     offset_r < 1 || offset_r > nrows || ...
+        %                     offset_c < 1 || offset_c > ncols ...
+        %                     || ~images.fg_mask(offset_r, offset_c);
+        %             end
+        %             offset_l = ceil(nlayers*rand);
+        %             img_label(i_r, i_c) = images.ori(offset_r,offset_c,offset_l);
+        %         end
+        %     end
+        % end
         %img_label = u_load(images.ori);
 
     case {'width'}

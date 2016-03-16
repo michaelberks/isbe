@@ -173,6 +173,10 @@ if args.do_auto_stats
     
     auto_stats.mean_mean_flow = nan(num_subs,10);
     auto_stats.mean_median_flow = nan(num_subs,10);
+    
+    auto_stats.mean_vessel_flow = nan(num_subs,10);
+    auto_stats.mean_weighted_flow = nan(num_subs,10);
+    auto_stats.adjusted_width = nan(num_subs,10);
 
     auto_stats.total_vessel_prob = zeros(num_subs,10);
     auto_stats.mean_vessel_prob = zeros(num_subs,10);
@@ -268,6 +272,16 @@ if args.do_auto_stats
                 
                 auto_stats.mean_mean_flow(i_sub, i_digit) = naNmean(apex_measures.distal.mean_flow) * args.um_per_pix;
                 auto_stats.mean_median_flow(i_sub, i_digit) = naNmean(apex_measures.distal.median_flow) * args.um_per_pix;
+                
+                if isfield(apex_measures.distal, 'weighted_flow_rate')
+                    auto_stats.mean_vessel_flow(i_sub, i_digit) = naNmean(apex_measures.distal.vessel_flow);
+                    auto_stats.mean_weighted_flow(i_sub, i_digit) = naNmean(apex_measures.distal.weighted_flow_rate);
+
+                    auto_stats.adjusted_width(i_sub, i_digit) = naNmean(apex_measures.distal.flow_adjusted_width);
+                    if isnan(auto_stats.adjusted_width(i_sub, i_digit))
+                        auto_stats.adjusted_width(i_sub, i_digit) = auto_stats.mean_weighted_width(i_sub, i_digit);
+                    end
+                end
                 
                 auto_stats.total_vessel_prob(i_sub, i_digit) = naNsum(apex_measures.distal.total_prob);
                 auto_stats.mean_vessel_prob(i_sub, i_digit) = naNmean(apex_measures.distal.total_prob);

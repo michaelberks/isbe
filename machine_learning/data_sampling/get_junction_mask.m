@@ -27,7 +27,10 @@ count_mask(2:ws-1,2:ws-1) = 0;
 junction_mask = false(rows, cols);
 
 for ii = 1:num_pts
-    patch = centre_mask(c_y(ii) + offs, c_x(ii) + offs);
+    p_rows = min(max(c_y(ii) + offs, 1),size(centre_mask,1));
+    p_cols = min(max(c_x(ii) + offs, 1),size(centre_mask,2));
+    
+    patch = centre_mask(p_rows, p_cols);
     patch = bwselect(patch, ws2+1, ws2+1, 8) & count_mask;
     label = bwlabel(patch, 8);
 

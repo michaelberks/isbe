@@ -91,9 +91,6 @@ if max_n_images_is_valid
     n_images = min(n_images, sampling_args.max_n_images);
 end
 
-% Go back to beginning of the image lists (if they are used).
-get_next_image('reset');
-
 % Sample data from every image
 n_sampled_so_far = 0;
 
@@ -123,7 +120,7 @@ for img_index = 1:n_images
     % Retrieve the input image, its ground truth labelling and 
     % foreground/background maps.
     [img, img_label, fg_map, bg_map, synth_params] = ...
-        get_next_image(sampling_args, image_lists);
+        get_next_image(sampling_args, image_lists, img_index);
 
     % If parameters are nonzero (i.e. the parameters of a synthetic image)
     % then store them for posterity.

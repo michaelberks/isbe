@@ -488,23 +488,31 @@ match_flow_to_vessel_orientation(sequence_names2(1));
 %%
 flow_metrics_dir = 'C:\isbe\nailfold\data\wellcome_study\flow_metrics\';
 flow_list = dir([flow_metrics_dir '*.mat']);
+%%
 num_vessels = length(flow_list);
 mean_errors = zeros(num_vessels,1);
 mean_weighted_errors = zeros(num_vessels,1);
 weighted_flow_rates = zeros(num_vessels,1);
 total_vessel_probs = zeros(num_vessels,1);
-mean_vessel_widths = zeros(num_vessels,1);
-flow_ratios = zeros(num_vessels,1);
+mean_widths = zeros(num_vessels,1);
+shape_scores = zeros(num_vessels,1);
+vessel_flow_rates = zeros(num_vessels,1);
+bg_flow_rates = zeros(num_vessels,1);
 %
 for i_ve = 1:num_vessels
-    f = load([flow_metrics_dir flow_list(i_ve).name]);
+    f = u_load([flow_metrics_dir flow_list(i_ve).name]);
     mean_errors(i_ve,1) = f.mean_error;
     mean_weighted_errors(i_ve,1) = f.mean_weighted_error;
     weighted_flow_rates(i_ve,1) = f.weighted_flow_rate;
     total_vessel_probs(i_ve,1) = f.total_vessel_prob;
-    mean_vessel_widths(i_ve,1) = f.weighted_width;
-    flow_ratios(i_ve,1) = f.vessel_flow / f.background_flow;
+    mean_widths(i_ve,1) = f.mean_width;
+    shape_scores(i_ve,1) = f.shape_score;
+    vessel_flow_rates(i_ve,1) = f.vessel_flow;
+    bg_flow_rates(i_ve,1) = f.background_flow;
 end
+flow_ratios = vessel_flow_rates ./ bg_flow_rates;
+%%
+save C:\isbe\nailfold\data\wellcome_study\results\flow_metrics_data.mat
 %%
 figure;
 hist(mean_weighted_errors, 100);
@@ -519,18 +527,41 @@ hist(total_vessel_probs, 100);
 title('Histogram of total vessel probabilities');
 
 figure;
+hist(vessel_flow_rates, linspace(0,8,100));
+title('Histogram of mean flow_rates');
+
+figure;
+hist(bg_flow_rates, linspace(0,8,100));
+title('Histogram of mean background flow_rates');
+
+figure;
+hist(vessel_flow_rates ./ bg_flow_rates, linspace(0,8,100));
+title('Histogram of mean background flow_rates');
+
+figure;
 subplot(1,2,1);
 plot(mean_weighted_errors, weighted_flow_rates,'rx');
 xlabel('Weighted flow error');
 ylabel('Weighted flow rate');
 
 subplot(1,2,2);
-plot(mean_weighted_errors, total_vessel_probs,'rx');
+plot(mean_weighted_errors, shape_scores,'rx');
 xlabel('Weighted flow error');
-ylabel('Total vessel probability');
+ylabel('Shape score');
 
 figure;
-plot(mean_vessel_widths, weighted_flow_rates,'rx');
+subplot(1,2,1);
+plot(mean_weighted_errors, weighted_flow_rates,'rx');
+xlabel('Weighted flow error');
+ylabel('Weighted flow rate');
+
+subplot(1,2,2);
+plot(shape_scores, weighted_flow_rates,'rx');
+xlabel('Shape score');
+ylabel('Weighted flow rate');
+
+figure;
+plot(mean_widths, weighted_flow_rates,'rx');
 xlabel('Vessel width');
 ylabel('Weighted flow rate');
 
@@ -538,6 +569,256 @@ figure;
 plot(mean_weighted_errors, flow_ratios,'rx');
 xlabel('Weighted flow error');
 ylabel('Flow ratio');
+
+figure;
+subplot(1,2,1);
+plot(mean_weighted_errors, vessel_flow_rates,'rx');
+xlabel('Weighted flow error');
+ylabel('Vessel flow rate');
+
+subplot(1,2,2);
+plot(mean_weighted_errors, bg_flow_rates,'rx');
+xlabel('Weighted flow error');
+ylabel('Background flow');
+%%
+flow_results_dir = 'N:\Nailfold Capillaroscopy\Wellcome\flow_results\';
+%%
+%Why funny background?
+hi_bg_idx = find(bg_flow_rates > 1);
+for i_ve = 1:length(hi_bg_idx)
+    fm = u_load([flow_metrics_dir flow_list(hi_bg_idx(i_ve)).name]);
+    fr = u_load([flow_results_dir flow_list(hi_bg_idx(i_ve)).name]);
+    figure;
+    subplot(1,2,1); imgray(fm.vessel_pred);
+    title(['Vessel flow rate: ' num2str(fm.vessel_flow, 3)]);
+    subplot(1,2,2); imgray(complex2rgb(fr.flowPyramidEst{1}, [], 3));
+    title(['BG flow rate: ' num2str(fm.background_flow, 3)]);
+end
+%%
+%Why funny shape, low error?
+shape_idx = find(shape_scores < 0.3 & mean_weighted_errors < 0.5);
+for i_ve = 1:length(shape_idx)
+    fm = u_load([flow_metrics_dir flow_list(shape_idx(i_ve)).name]);
+    fr = u_load([flow_results_dir flow_list(shape_idx(i_ve)).name]);
+    figure;
+    subplot(1,2,1); imgray(fm.vessel_pred);
+    title(['Vessel flow rate: ' num2str(fm.vessel_flow, 3)]);
+    subplot(1,2,2); imgray(complex2rgb(fr.flowPyramidEst{1}, [], 3));
+    title(['BG flow rate: ' num2str(fm.background_flow, 3)]);
+end
+%%
+num_frames = size(cropped_frames,3);
+seg_length = 120;
+segs = ceil(num_frames / seg_length);    
+figure;
+for i_seg = 1:segs-1
+    frame_idx = (i_seg-1)*seg_length + (1:seg_length);
+    frame_idx(frame_idx > num_frames) = [];
+    frames = cropped_frames(:,:,frame_idx);
+    g_lims = prctile(double(frames(:)), [1 99]);
+    g_range = g_lims(2) - g_lims(1);
+    frames = 255*(frames-g_lims(1))/g_range;
+    
+    [flowPyramidEst] = ...
+        estimate_flow_multilevel(frames, [], [], 1:3);
+
+    subplot(2,3,i_seg);
+    imgray(complex2rgb(flowPyramidEst{1}));
+
+end
+    
+
+%%
+flow_names = {flow_list(:).name};
+load('C:\isbe\nailfold\data\wellcome_study\sequence_names.mat');
+load('C:\isbe\nailfold\data\wellcome_study\subject_summary.mat');
+
+flow_sequence_ids = zeros(num_vessels,3,'uint8');
+
+fields = {...
+    'total_vessels'
+    'good_vessels'
+    'mean_weighted_errors'
+    'weighted_flow_rates'
+    'total_vessel_probs'
+    'mean_widths'
+    'flow_ratios'
+    'flow_rates_error_weighted'
+    'flow_rates_error_thresh'};
+
+sequence_flow_data = [];
+for i_f = 1:length(fields)
+   sequence_flow_data.(fields{i_f}) = zeros(112,10);
+end
+
+for i_sub = 1:112
+    for i_digit = 1:10
+        seq_name = sequence_names{i_sub,i_digit};
+        
+        if isempty(seq_name)
+            continue;
+        end
+        
+        dividers = find(seq_name == '\', 3, 'last');
+        seq_name(dividers) = '_';
+        seq_name(1:dividers(1)) = [];
+        matches = strncmpi(seq_name, flow_names, length(seq_name));
+        
+        if any(matches)
+        
+            flow_sequence_ids(matches,1) = i_sub;
+            flow_sequence_ids(matches,2) = i_digit;
+            flow_sequence_ids(matches,3) = uint8(str2double(subject_summary{i_sub,3}));
+
+            mwe = mean_weighted_errors(matches);
+            wfr = weighted_flow_rates(matches);
+            tvp = total_vessel_probs(matches);
+            mvw = mean_widths(matches);
+            fr = flow_ratios(matches);
+
+            sequence_flow_data.total_vessels(i_sub,i_digit) = sum(matches);
+            sequence_flow_data.good_vessels(i_sub,i_digit) = sum(mwe < 1); 
+            sequence_flow_data.mean_weighted_errors(i_sub,i_digit) = mean(mwe);
+            sequence_flow_data.weighted_flow_rates(i_sub,i_digit) = mean(wfr);
+            sequence_flow_data.total_vessel_probs(i_sub,i_digit) = mean(tvp);
+            sequence_flow_data.mean_widths(i_sub,i_digit) = mean(mvw);
+            sequence_flow_data.flow_ratios(i_sub,i_digit) = mean(flow_ratios);
+            sequence_flow_data.flow_rates_error_weighted(i_sub,i_digit) = sum(mwe.*wfr) / sum(mwe);
+            sequence_flow_data.flow_rates_error_thresh(i_sub,i_digit) = mean(wfr(mwe < 1));
+        end
+    end
+end
+%%
+good_vessels = mean_weighted_errors < 1;
+very_good_vessels = mean_weighted_errors < 0.5;
+%%
+hc_idx = strcmp(subject_summary(:,3), '0');
+pr_idx = strcmp(subject_summary(:,3), '1');
+ls_idx = strcmp(subject_summary(:,3), '2');
+ds_idx = strcmp(subject_summary(:,3), '3');
+
+figure; 
+subplot(2,2,1); hist(reshape(sequence_flow_data.total_vessels(hc_idx,:),[],1), 1:150);
+subplot(2,2,2); hist(reshape(sequence_flow_data.total_vessels(pr_idx,:),[],1), 1:150);
+subplot(2,2,3); hist(reshape(sequence_flow_data.total_vessels(ls_idx,:),[],1), 1:150);
+subplot(2,2,4); hist(reshape(sequence_flow_data.total_vessels(ds_idx,:),[],1), 1:150);
+%%
+figure; 
+subplot(2,2,1); hist(reshape(sequence_flow_data.good_vessels(hc_idx,:),[],1), 1:80); set(gca, 'ylim', [0 25]);
+subplot(2,2,2); hist(reshape(sequence_flow_data.good_vessels(pr_idx,:),[],1), 1:80); set(gca, 'ylim', [0 25]);
+subplot(2,2,3); hist(reshape(sequence_flow_data.good_vessels(ls_idx,:),[],1), 1:80); set(gca, 'ylim', [0 25]);
+subplot(2,2,4); hist(reshape(sequence_flow_data.good_vessels(ds_idx,:),[],1), 1:80); set(gca, 'ylim', [0 25]);
+%%
+hc_vessels = flow_sequence_ids(:,3) == 0;
+pr_vessels = flow_sequence_ids(:,3) == 1;
+ls_vessels = flow_sequence_ids(:,3) == 2;
+ds_vessels = flow_sequence_ids(:,3) == 3;
+
+figure; hold all;
+plot(mean_widths(good_vessels & hc_vessels), weighted_flow_rates(good_vessels & hc_vessels), '.');
+plot(mean_widths(good_vessels & ls_vessels), weighted_flow_rates(good_vessels & ls_vessels), '.');
+plot(mean_widths(good_vessels & pr_vessels), weighted_flow_rates(good_vessels & pr_vessels), '.');
+plot(mean_widths(good_vessels & ds_vessels), weighted_flow_rates(good_vessels & ds_vessels), '.');
+%%
+figure; hold all;
+plot(mean_weighted_errors(good_vessels & hc_vessels), weighted_flow_rates(good_vessels & hc_vessels), '.');
+plot(mean_weighted_errors(good_vessels & ls_vessels), weighted_flow_rates(good_vessels & ls_vessels), '.');
+plot(mean_weighted_errors(good_vessels & pr_vessels), weighted_flow_rates(good_vessels & pr_vessels), '.');
+plot(mean_weighted_errors(good_vessels & ds_vessels), weighted_flow_rates(good_vessels & ds_vessels), '.');
+%%
+figure; 
+subplot(2,2,1); hist(mean_weighted_errors(good_vessels & hc_vessels), linspace(0, 1, 50));
+subplot(2,2,2); hist(mean_weighted_errors(good_vessels & pr_vessels), linspace(0, 1, 50));
+subplot(2,2,3); hist(mean_weighted_errors(good_vessels & ls_vessels), linspace(0, 1, 50));
+subplot(2,2,4); hist(mean_weighted_errors(good_vessels & ds_vessels), linspace(0, 1, 50));
+%%
+figure; 
+subplot(2,2,1); hist(mean_weighted_errors(very_good_vessels & hc_vessels), linspace(0, 0.5, 50));
+subplot(2,2,2); hist(mean_weighted_errors(very_good_vessels & pr_vessels), linspace(0, 0.5, 50));
+subplot(2,2,3); hist(mean_weighted_errors(very_good_vessels & ls_vessels), linspace(0, 0.5, 50));
+subplot(2,2,4); hist(mean_weighted_errors(very_good_vessels & ds_vessels), linspace(0, 0.5, 50));
+%%
+figure; 
+subplot(2,2,1); hist(mean_weighted_errors(hc_vessels), linspace(0, 2.5, 50));
+subplot(2,2,2); hist(mean_weighted_errors(pr_vessels), linspace(0, 2.5, 50));
+subplot(2,2,3); hist(mean_weighted_errors(ls_vessels), linspace(0, 2.5, 50));
+subplot(2,2,4); hist(mean_weighted_errors(ds_vessels), linspace(0, 2.5, 50));
+%%
+valid = ~isnan(weighted_flow_rates) & ~isnan(mean_weighted_errors) & good_vessels;
+figure; hold all;
+[err_centres, smoothed_flow] = ...
+    kernel_smoother(mean_weighted_errors(valid & hc_vessels),weighted_flow_rates(valid & hc_vessels));
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+ [err_centres, smoothed_flow] = ...
+    kernel_smoother(mean_weighted_errors(valid & pr_vessels),weighted_flow_rates(valid & pr_vessels));
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+ [err_centres, smoothed_flow] = ...
+    kernel_smoother(mean_weighted_errors(valid & ls_vessels),weighted_flow_rates(valid & ls_vessels));
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+ [err_centres, smoothed_flow] = ...
+    kernel_smoother(mean_weighted_errors(valid & ds_vessels),weighted_flow_rates(valid & ds_vessels));
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+%%
+valid = ~isnan(weighted_flow_rates) & ~isnan(mean_weighted_errors);
+figure; 
+subplot(1,2,1); hold all;
+[err_centres, smoothed_flow] = ...
+    kernel_smoother(mean_weighted_errors(valid & hc_vessels),weighted_flow_rates(valid & hc_vessels), 50);
+plot(err_centres, smoothed_flow, 'linewidth', 2);
+[err_centres, smoothed_flow] = ...
+    kernel_smoother(mean_weighted_errors(valid & pr_vessels),weighted_flow_rates(valid & pr_vessels), 50);
+plot(err_centres, smoothed_flow, 'linewidth', 2);
+[err_centres, smoothed_flow] = ...
+    kernel_smoother(mean_weighted_errors(valid & (ls_vessels | ds_vessels)),weighted_flow_rates(valid & (ls_vessels | ds_vessels)), 50);
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+ 
+subplot(1,2,2); hold all;
+[err_centres, smoothed_flow] = ...
+    kernel_smoother(shape_scores(valid & hc_vessels),weighted_flow_rates(valid & hc_vessels), 50);
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+ [err_centres, smoothed_flow] = ...
+    kernel_smoother(shape_scores(valid & pr_vessels),weighted_flow_rates(valid & pr_vessels), 50);
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+ [err_centres, smoothed_flow] = ...
+    kernel_smoother(shape_scores(valid & (ls_vessels | ds_vessels)),weighted_flow_rates(valid & (ls_vessels | ds_vessels)), 50);
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+ %%
+ valid = ~isnan(weighted_flow_rates) & ~isnan(mean_weighted_errors);
+ figure; hold all;
+ [err_centres, smoothed_flow] = ...
+    kernel_smoother(weighted_flow_rates(valid & hc_vessels),mean_weighted_errors(valid & hc_vessels), 50);
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+ [err_centres, smoothed_flow] = ...
+    kernel_smoother(weighted_flow_rates(valid & pr_vessels),mean_weighted_errors(valid & pr_vessels), 50);
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+ [err_centres, smoothed_flow] = ...
+    kernel_smoother(weighted_flow_rates(valid & (ls_vessels | ds_vessels)),mean_weighted_errors(valid & (ls_vessels | ds_vessels)), 50);
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+%%
+figure; hold all;
+[err_centres, smoothed_flow] = ...
+    kernel_smoother(rand(sum(valid & hc_vessels),1),weighted_flow_rates(valid & hc_vessels));
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+ [err_centres, smoothed_flow] = ...
+    kernel_smoother(rand(sum(valid & pr_vessels),1),weighted_flow_rates(valid & pr_vessels));
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+ [err_centres, smoothed_flow] = ...
+    kernel_smoother(rand(sum(valid & ls_vessels),1),weighted_flow_rates(valid & ls_vessels));
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+ [err_centres, smoothed_flow] = ...
+    kernel_smoother(rand(sum(valid & ds_vessels),1),weighted_flow_rates(valid & ds_vessels));
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+%%
+figure; hold all;
+[err_centres, smoothed_flow] = ...
+    kernel_smoother(rand(sum(valid & hc_vessels),1),weighted_flow_rates(valid & hc_vessels));
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+ [err_centres, smoothed_flow] = ...
+    kernel_smoother(rand(sum(valid & pr_vessels),1),weighted_flow_rates(valid & pr_vessels));
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
+ [err_centres, smoothed_flow] = ...
+    kernel_smoother(rand(sum(valid & (ls_vessels | ds_vessels)),1),weighted_flow_rates(valid & (ls_vessels | ds_vessels)));
+ plot(err_centres, smoothed_flow, 'linewidth', 2);
 
 %%
 flow_data_dir = 'N:\Nailfold Capillaroscopy\wellcome\flow_data\';
@@ -587,7 +868,7 @@ for i_ve = 1:10%length(fast_idx)
        
 end
 %%
-wide_idx = find(mean_weighted_errors < 0.5 & weighted_flow_rates > 0.1 & total_vessel_probs > 2e3 & mean_vessel_widths > 15 & weighted_flow_rates < 0.5);
+wide_idx = find(mean_weighted_errors < 0.5 & weighted_flow_rates > 0.1 & total_vessel_probs > 2e3 & mean_widths > 15 & weighted_flow_rates < 0.5);
 flow_videos_dir = 'C:\isbe\nailfold\data\wellcome_study\flow_videos\wide\';
 temp_frames_dir = 'C:\isbe\nailfold\data\wellcome_study\temp_frames\';
 create_folder(flow_videos_dir);
@@ -649,7 +930,7 @@ for i_ve = 1:num_steps
 end
 %%
 valid_idx = find(mean_weighted_errors < 0.5 & total_vessel_probs > 2e3 & weighted_flow_rates > 0.1);
-valid_widths = mean_vessel_widths(valid_idx);
+valid_widths = mean_widths(valid_idx);
 min_width = min(valid_widths);
 max_width = max(valid_widths);
 num_steps = 20;
@@ -661,6 +942,45 @@ create_folder(flow_videos_dir);
 
 for i_ve = 1:num_steps
     [~, idx] = min(abs(valid_widths - width_steps(i_ve)));
+    
+    seq_name = flow_list(valid_idx(idx)).name;
+    f = load([flow_data_dir seq_name], 'cropped_frames');
+    frames = f.cropped_frames;
+    num_frames = size(frames,3);
+    g_lims = prctile(double(frames(:)), [1 99]);
+    g_range = g_lims(2) - g_lims(1);
+    frames = 255*(double(frames)-g_lims(1))/g_range;
+    
+    rr = rem(size(frames, 1),4);
+    rc = rem(size(frames, 2),4);
+    frames(1:rr,:,:) = [];
+    frames(:,1:rc,:) = [];
+
+    delete([temp_frames_dir '*.bmp']);
+
+    for i_fr = 1:num_frames;
+        imwrite(uint8(frames(:,:,i_fr)),...
+            [temp_frames_dir 'frame' zerostr(i_fr,4) '.bmp']);
+    end
+    cmd = ['ffmpeg -y -r 30 -i "' temp_frames_dir 'frame%04d.bmp" -c:v libx264 -preset slow -crf 18 -an "' flow_videos_dir zerostr(i_ve,2) '_' seq_name '.mp4"'];
+    system(cmd);   
+       
+end
+%%
+%%
+valid_idx = find(weighted_flow_rates > 0.9 & weighted_flow_rates < 1.1 & total_vessel_probs > 2e3);
+valid_errs = mean_weighted_errors(valid_idx);
+min_errs = min(valid_errs);
+max_errs = max(valid_errs);
+num_steps = 20;
+err_steps = linspace(min_errs, max_errs, num_steps);
+
+flow_videos_dir = 'C:\isbe\nailfold\data\wellcome_study\flow_videos\error_steps\';
+temp_frames_dir = 'C:\isbe\nailfold\data\wellcome_study\temp_frames\';
+create_folder(flow_videos_dir);
+
+for i_ve = 1:num_steps
+    [~, idx] = min(abs(valid_errs - err_steps(i_ve)));
     
     seq_name = flow_list(valid_idx(idx)).name;
     f = load([flow_data_dir seq_name], 'cropped_frames');
@@ -813,6 +1133,7 @@ for i_ve = 1:20
         [flow_videos_dir zerostr(i_ve,2) '_' seq_name '.png']);
        
 end
+
 %%
 flow_list = dir([flow_results_dir '035*R2*S07*.mat']);
 flow_videos_dir = 'C:\isbe\nailfold\data\wellcome_study\flow_videos\misc\';
@@ -859,5 +1180,78 @@ for i_ve = 1:5
     seq_name = flow_list(i_ve).name;
     cmd = ['ffmpeg -i "' flow_videos_dir seq_name '.mp4" -q:v 2 "' flow_videos_dir seq_name '.wmv"'];
     system(cmd); 
+end
+%%
+flow_data_dir = 'N:\Nailfold Capillaroscopy\wellcome\flow_data\';
+flow_results_dir = 'N:\Nailfold Capillaroscopy\wellcome\flow_results\';
+flow_metrics_dir = 'C:\isbe\nailfold\data\wellcome_study\flow_metrics\';
+capillary_data_dir = 'C:\isbe\nailfold\data\wellcome_study\capillary_data\';
+load('C:\isbe\nailfold\data\wellcome_study\sequence_names.mat');
+sequence_names2 = sequence_names;
+%%
+for i_seq = 537:numel(sequence_names)
+    
+    if isempty(sequence_names2{i_seq})
+        continue;
+    end
+    
+    seq_dir = [sequence_names2{i_seq} '\'];%sequence_dirs{i_seq};
+    seq_name = seq_dir;
+    dividers = seq_name == '\';
+    pos = find(dividers, 4, 'last');
+    seq_name(dividers) = '_';
+    seq_name = seq_name(pos(1)+1:end-1);
+    display(['processing sequence ' num2str(i_seq) ': ' seq_name]);
+    
+    load([capillary_data_dir seq_name '_capillary_data.mat'],...
+        'apex_measures');
+    
+    if isempty(apex_measures.distal)
+       continue;
+    end
+    
+    num_caps = size(apex_measures.distal.apex_xy,1);
+    
+    if isfield(apex_measures, 'background_flow')
+        apex_measures = rmfield(apex_measures,...
+            {'background_flow', 'weighted_flow_rate', 'mean_error',...
+            'mean_weighted_flow_error', 'flow_adjusted_width'});
+    end
+    apex_measures.distal.vessel_flow = nan(num_caps,1);
+    apex_measures.distal.background_flow = nan(num_caps,1);
+    apex_measures.distal.weighted_flow_rate = nan(num_caps,1);
+    apex_measures.distal.mean_error = nan(num_caps,1);
+    apex_measures.distal.mean_weighted_flow_error = nan(num_caps,1);
+    apex_measures.distal.flow_adjusted_width = nan(num_caps,1);
+    apex_measures.distal.flow_prob = nan(num_caps,1);
+    
+    if ~isfield(apex_measures.distal, 'flow_names')
+       continue;
+    end
+        
+    for i_cap = 1:num_caps
+        
+        
+        num_flow_results = length(apex_measures.distal.flow_names{i_cap});
+        
+        for i_f = 1:num_flow_results
+            load([flow_metrics_dir seq_name '_' apex_measures.distal.flow_names{i_cap}{i_f} '.mat'],...
+                'flow_metrics');
+            if i_f == 1 || ...
+                    (flow_metrics.total_vessel_prob > apex_measures.distal.flow_prob(i_cap))
+                
+                apex_measures.distal.flow_prob(i_cap) = flow_metrics.total_vessel_prob;
+                apex_measures.distal.vessel_flow(i_cap) = flow_metrics.vessel_flow;
+                apex_measures.distal.background_flow(i_cap) = flow_metrics.background_flow;
+                apex_measures.distal.weighted_flow_rate(i_cap) = flow_metrics.weighted_flow_rate;
+                apex_measures.distal.mean_flow_error(i_cap) = flow_metrics.mean_error;
+                apex_measures.distal.mean_weighted_flow_error(i_cap) = flow_metrics.mean_weighted_error;
+                apex_measures.distal.flow_adjusted_width(i_cap) = flow_metrics.mean_width;
+            end
+        end
+    end   
+    
+    save([capillary_data_dir seq_name '_capillary_data.mat'],...
+        'apex_measures', '-append');
 end
     

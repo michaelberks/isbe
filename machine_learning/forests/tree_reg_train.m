@@ -60,6 +60,7 @@ args = u_packargs(varargin,... % the user's input
              'do_ubound', 1,...
              'impure_thresh', 1e-4,...
              'names', [],...
+             'record_node_samples', true,...
              'debug', 0);
 
 %Check X is numeric
@@ -180,6 +181,10 @@ risk = zeros(N,1);
 nodesize = zeros(N,1);
 
 if ispc && strcmp(get_username,'ptresadern')
+    args.record_node_samples = true;
+end
+
+if args.record_node_samples
 	nodesamples = cell(N,1);
 	nodeopts = zeros(N,2*args.random_m);
 end
@@ -240,12 +245,7 @@ while(tnode < nextunusednode)
     cutpoint(tnode)		= 0;
 	goodness(tnode,:)	= NaN;
     children(tnode,:)	= 0;
-		
-	if ispc && strcmp(get_username,'ptresadern')
-		nodeopts(tnode,:)	= 0;
-		nodesamples{tnode}	= y_node;
-	end
-	
+			
     % Consider splitting this node
     if (Nnode >= args.split_min) && impure % split only large impure nodes
         bestvar = 0;
@@ -418,7 +418,13 @@ while(tnode < nextunusednode)
 			if ispc && strcmp(get_username,'ptresadern')
 				nodeopts(tnode,:) = opts(:)';
 			end
-		end
+        end
+        
+    elseif args.record_node_samples
+        %Only record samples at leaf nodes
+		nodeopts(tnode,:)	= 0;
+		nodesamples{tnode}	= y_node;
+	
     end
     tnode = tnode + 1;       
 end
@@ -442,7 +448,7 @@ tree.npred     = nvars;
 tree.names     = names;
 tree.goodness  = goodness(1:topnode,:);
 
-if ispc && strcmp(get_username,'ptresadern')
+if args.record_node_samples
 	tree.outputs   = nodesamples(1:topnode);
 	tree.nodeopts  = nodeopts(1:topnode,:);
 end

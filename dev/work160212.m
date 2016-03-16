@@ -694,7 +694,7 @@ for i_ve = 1:length(vessel_list)
     t = load([vessel_dir vessel_list(i_ve).name]);
     
     [~, ~, ~, ~, ori_map_3d] =...
-        make_mask_from_contour(t.outer_edge, t.inner_edge, size(a.prediction_image,1), size(a.prediction_image,2));
+        make_mask_from_contour(t.outer_edge, t.inner_edge, size(mask,1), size(mask,2), t.apex_idx);
     
     save([ori_dir vessel_name '_ori.mat'], 'ori_map_3d');
     
@@ -834,6 +834,520 @@ delete([temp_frames_dir '\*']);
 rmdir(temp_frames_dir);
 %%
 make_synthetic_flow_comparison_video('enlargedapex0472_vessel', 3, 1.5);
+%%
+build_predictor(... % non-strict mode
+    'predictor_name',       unixenv('PREDICTOR_NAME','predictor'), ...
+    'task_id',				unixenv('SGE_TASK_ID',1), ...
+    'job_id',				unixenv('JOB_ID',['pc',datestr(now,'yyyymmddTHHMMSS')]), ...
+    ... % Folders
+    'image_root',           'C:\isbe\nailfold\data\rsa_study\set12g_half\',...
+    'model_root',           'C:\isbe\nailfold\models\vessel\', ...
+	... % Output parameters
+    'output_type',          unixenv('OUTPUT_TYPE', 'mixed_orientation'), ...
+	... % Sampling parameters
+    'num_samples',			unixenv('NUM_SAMPLES',100000), ...
+    'max_n_images',         unixenv('MAX_N_IMAGES',[]), ...
+    'shift_images',         unixenv('SHIFT_IMAGES',false), ...
+    'bg_ratio',				unixenv('BG_RATIO',1), ...
+    'replace_sample',       unixenv('REPLACE_SAMPLE', false), ...
+    'sampling_method',      unixenv('SAMPLING_METHOD','generate_training_data'), ...
+    'shrink_fov',           unixenv('SHRINK_FOV',false), ...
+    'image_type', 			unixenv('IMAGE_TYPE','real'), ...
+        ... % Image sampling parameters
+        'image_dir',            unixenv('IMAGE_DIR', 'images'),...
+        'fov_mask_dir',         unixenv('FOV_MASK_DIR', 'fov_masks'),...
+        'fg_mask_dir',          unixenv('FG_MASK_DIR', 'vessel_masks'),...
+        'prediction_dir',       unixenv('PREDICTION_DIR', 'predictions'),...
+        'probability_dir',      unixenv('PROBABILITY_DIR', ''),...
+        'class_label_dir',          unixenv('CLASS_DIR', []),...
+        'ori_dir',              unixenv('ORI_DIR', 'orientations3d'),...
+        'width_dir',            unixenv('WIDTH_DIR', 'width_maps'), ...
+        'make_resampling_maps',          unixenv('MAKE_RESAMPLING_MAPS', 0), ...
+        'precompute_indices', unixenv('PRECOMPUTE_INDICES', []),...
+        ... % Saved training data parameters
+        'save_training_data',	unixenv('SAVE_TRAINING_DATA',false), ...
+        'training_data_dir', 	unixenv('TRAINING_DATA_DIR','saved_training_data'), ...
+        'training_data',		unixenv('TRAINING_DATA',''), ... % ???
+        'training_labels',		unixenv('TRAINING_LABELS',''), ... % ???
+	... % Image feature/decomposition parameters
+    'num_levels', 			unixenv('NUM_LEVELS',1), ...
+    'rgb_channel',          unixenv('RGB_CHANNEL','rgb'), ...
+    'normalise', 			unixenv('NORMALISE',0), ...
+    'win_size',				unixenv('WIN_SIZE',1), ...
+    'pca_filename',         unixenv('PCA_FILENAME',[]), ...
+    'do_max',				unixenv('DO_MAX',false), ...
+    'rotate',				unixenv('ROTATE',false), ...
+    'decomp_type', 			unixenv('DECOMP_TYPE',{'g2dia'; 'h2dia'}), ...
+        ... % DTCWT parameters
+        'feature_shape', 		unixenv('FEATURE_SHAPE','rect'), ...
+        'feature_type',			unixenv('FEATURE_TYPE','conj'), ...
+        'sigma_range', 			unixenv('SIGMA_RANGE',[2, 5]), ...
+        'num_angles',           6,...
+    ... % Predictor parameters
+    'prediction_type',		unixenv('PREDICTION_TYPE','rf_regression'), ...
+        ... % Tree/Forest parameters
+        'n_trees',				unixenv('NUM_TREES',20), ...
+        'split_criterion_c',    unixenv('SPLIT_CRITERION_C','gdi'),...
+        'split_criterion_r',    unixenv('SPLIT_CRITERION_R','ssq'),...
+        'var_criterion_c',		unixenv('VAR_CRITERION_C','mabs'),...
+        'var_criterion_r',		unixenv('VAR_CRITERION_R','ssq'),...
+        'split_min',			unixenv('SPLIT_MIN',10), ...
+        'end_cut_min',			unixenv('END_CUT_MIN',1), ...
+        'do_ubound',			unixenv('DO_UBOUND',1), ...
+        'do_circular',			unixenv('DO_CIRCULAR',[]), ...
+        'w_prior',				unixenv('W_PRIOR',0), ...
+        'impure_thresh',		unixenv('IMPURE_THRESH',1e-4), ...
+        'minimise_size',		unixenv('MINIMIZE_TREE',0), ...
+        'd',                    unixenv('d',[]), ...
+        'quiet',                unixenv('QUIET', 0),...
+    ... % Miscellaneous parameters
+    'overwrite',			unixenv('OVERWRITE',false), ...
+    'use_nag',				unixenv('USE_NAG',false),...
+    'rand_seed',			unixenv('RAND_SEED',[]) ...
+);
+%%
+DECOMP_TYPE="{'g2dia','h2dia'}" NUM_ANGLES=6 WIN_SIZE=3 SIGMA_RANGE="[2 5]" OUTPUT_TYPE="mixed_orientation" PREDICTION_TYPE="rf_regression" NUM_TREES=10 IMAGE_TYPE="real" DATA_ROOT="scratch/nailfold/" IMAGE_ROOT="data/rsa_study/set12g_half" NUM_SAMPLES=100000 MODEL_ROOT="models/vessel" qsub -V -t 1-20 matlab_code/trunk/hydra/cuc/build_predictor.sh
+%%
+rf_ori = u_load('C:\isbe\nailfold\models\vessel\orientation\rf_regression\296621\predictor.mat');
+rf_ori.tree_root = 'C:\isbe\nailfold\models\vessel\orientation\rf_regression\';
+ori_args = u_load('C:\isbe\nailfold\models\vessel\orientation\rf_regression\296621\job_args.mat');
+
+vessel_patch = u_load('C:\isbe\nailfold\data\rsa_study\set12g_half\images\normalapex2009_vessel.mat');
+
+%%
+[patch_ori] = predict_image(...
+    'image_in', vessel_patch,...
+    'decomposition_args', ori_args.decomposition_args,...
+    'predictor', rf_ori, ...
+    'prediction_type', 'rf_regression',...
+    'output_type', 'orientation',...
+    'use_probs', 0,...
+    'mask', [],...
+    'tree_mask', [], ...
+    'num_trees', [], ...
+    'max_size', 512,...
+    'incremental_results', 0);
+%%
+DATA_ROOT="scratch/nailfold/models/" MODEL_ROOT="vessel/mixed_orientation/rf_regression" MODEL_PATH="110436" MAKE_SAMPLED_MAPS=1 qsub -V matlab_code/trunk/hydra/cuc/combine_hydra_rfs.sh
+%%
+d = dir('C:\isbe\nailfold\data\rsa_study\set12g_half\vessel_masks\*.mat');
+mask = load(['C:\isbe\nailfold\data\rsa_study\set12g_half\vessel_masks\' d(16).name]);
+figure; imgray(mask.vessel_im);
+for i_tree = 1:200
+    [y x] = find(reshape(sampled_maps(:,i_tree), size(mask.vessel_im)));
+    plot(x,y, 'x');
+end
+%%
+rf_ori = u_load('C:\isbe\nailfold\models\vessel\mixed_orientation\rf_regression\110436\predictor.mat');
+rf_ori.tree_root = 'C:\isbe\nailfold\models\vessel\mixed_orientation\rf_regression\';
+ori_args = u_load('C:\isbe\nailfold\models\vessel\mixed_orientation\rf_regression\110436\job_args.mat');
+
+vessel_patch = u_load('C:\isbe\nailfold\data\rsa_study\set12g_half\images\normalapex2009_vessel.mat');
+[patch_ori] = predict_image(...
+    'image_in', vessel_patch,...
+    'decomposition_args', ori_args.decomposition_args,...
+    'predictor', rf_ori, ...
+    'prediction_type', 'rf_regression',...
+    'output_type', 'orientation',...
+    'use_probs', 0,...
+    'mask', [],...
+    'tree_mask', [], ...
+    'num_trees', [], ...
+    'max_size', 512,...
+    'incremental_results', 0);
+%%
+
+rf_ori = u_load('C:\isbe\nailfold\models\vessel\mixed_orientation\rf_regression\pc20160224T170104\predictor01.mat');
+ori_args = u_load('C:\isbe\nailfold\models\vessel\mixed_orientation\rf_regression\pc20160224T170104\job_args.mat');
+
+vessel_patch = u_load('C:\isbe\nailfold\data\rsa_study\set12g_half\images\normalapex2009_vessel.mat');
+[patch_ori] = predict_image(...
+    'image_in', vessel_patch,...
+    'decomposition_args', ori_args.decomposition_args,...
+    'predictor', rf_ori, ...
+    'prediction_type', 'rf_regression',...
+    'output_type', 'orientation',...
+    'use_probs', 0,...
+    'mask', [],...
+    'tree_mask', [], ...
+    'num_trees', [], ...
+    'max_size', 512,...
+    'incremental_results', 0);
+%%
+d = dir('C:\isbe\nailfold\data\rsa_study\set12g_half\orientations3d\*.mat');
+
+available_pts = zeros(450,1);
+for i_im = 1:450
+    ori_map = u_load(['C:\isbe\nailfold\data\rsa_study\set12g_half\orientations3d\' d(i_im + 450).name]);
+    junction_mask = sum(abs(ori_map) > 0, 3) > 1;
+    available_pts(i_im) = sum(junction_mask(:));
+end
+%%
+tree_path = 'C:\isbe\nailfold\models\vessel\mixed_orientation\rf_regression\111912\trees\rf_tree0';
+
+load('C:\isbe\nailfold\models\vessel\mixed_orientation\rf_regression\111912\job_args.mat')
+load('C:\isbe\nailfold\data\rsa_study\set12g_half\orientations3d\enlargedapex0472_vessel_ori.mat');
+im = u_load('C:\isbe\nailfold\data\rsa_study\set12g_half\images\enlargedapex0472_vessel.mat');
+
+junction_mask = sum(abs(ori_map_3d) > 0, 3) > 1;
+[rr cc] = find(junction_mask);
+
+responses = compute_filter_responses(im, job_args.decomposition_args);
+X = sample_image_features(responses, rr, cc, job_args.decomposition_args);
+
+rr1 = rr(rr < 100);
+cc1 = cc(rr < 100);
+
+rr2 = rr(rr > 100);
+cc2 = cc(rr > 100);
+
+[xx yy] = meshgrid(1:size(im,2), 1:size(im,2));
+v_mask = (xx-75).^2 + (yy-64).^2 < 25;
+[rr3 cc3] = find(v_mask);
+Xv = sample_image_features(responses, rr3, cc3, job_args.decomposition_args);
+%%
+j1_outputs = [];
+j2_outputs = [];
+v_outputs = [];
+for i_tree = 1:200
+    tree = u_load([tree_path zerostr(i_tree,3) '.mat']);
+    [~, nodes] = tree_predict(tree, X);
+    j1_nodes = nodes(rr < 100);
+    j2_nodes = nodes(rr > 100);
+    [~, v_nodes] = tree_predict(tree, Xv);
+    
+    for i_pt = 1:length(rr1);
+        j1_outputs = [j1_outputs; tree.outputs{j1_nodes(i_pt)}];
+    end
+
+    for i_pt = 1:length(rr2);
+        j2_outputs = [j2_outputs; tree.outputs{j2_nodes(i_pt)}];
+    end
+    for i_pt = 1:length(rr3);
+        v_outputs = [v_outputs; tree.outputs{v_nodes(i_pt)}];
+    end
+end
+
+figure; hist(angle(j1_outputs) / 2, linspace(-pi/2, pi/2, 36))
+figure; hist(angle(j2_outputs) / 2, linspace(-pi/2, pi/2, 36))
+figure; hist(angle(v_outputs) / 2, linspace(-pi/2, pi/2, 36))
+%%
+im = mean(fd.cropped_frames,3)*255;
+im = rot90(im,-1);
+responses = compute_filter_responses(im, job_args.decomposition_args);
+
+[xx yy] = meshgrid(1:size(im,2), 1:size(im,1));
+
+%%
+pts = [57 119; 47 105; 66 108];
+pts = [size(im,2) - pts(:,2) + 1 pts(:,1)];
+
+f1 = figure;
+figure; a2 = gca; imgray(im);
+for i_ve = 1:3
+    v_mask = (xx-pts(i_ve,1)).^2 + (yy-pts(i_ve,2)).^2 < 36;
+    [rr cc] = find(v_mask);
+    plot(a2, cc, rr, '.');
+    
+    Xv = sample_image_features(responses, rr, cc, job_args.decomposition_args);
+
+    v_outputs = [];
+    for i_tree = 1:200
+        tree = u_load([tree_path zerostr(i_tree,3) '.mat']);
+        [~, v_nodes] = tree_predict(tree, Xv);
+
+
+        for i_pt = 1:length(rr);
+            v_outputs = [v_outputs; tree.outputs{v_nodes(i_pt)}]; %#ok
+        end
+    end
+    
+    o1 = exp(0.5i*angle(v_outputs));
+
+    figure(f1);
+    subplot(1,3,i_ve);
+    weighted_complex_rose([o1; -o1], 36);
+end
+%%
+rf_ori = u_load('C:\isbe\nailfold\models\vessel\orientation\rf_regression\296621\predictor.mat');
+rf_ori.tree_root = 'C:\isbe\nailfold\models\vessel\orientation\rf_regression\';
+ori_args = u_load('C:\isbe\nailfold\models\vessel\orientation\rf_regression\296621\job_args.mat');
+
+rf_ves = u_load('C:\isbe\nailfold\models\vessel\detection\rf_classification\296655\predictor.mat');
+rf_ves.tree_root = 'C:\isbe\nailfold\models\vessel\detection\rf_classification\';
+ves_args = u_load('C:\isbe\nailfold\models\vessel\detection\rf_classification\296655\job_args.mat');
+%%
+%im = mean(fd.frames_i,3);
+im = imread('O:\flow_project\wellcome_nailfold_study\002wellcome\2015_02_27\R4_10_32_15\sequence_data\stationary_mosaic17.png');
+im = imresize(im, 0.622, 'lanczos2');
+im = im(87:210, 115:173);
+%%
+patch = mean(fd.cropped_frames,3);
+[patch_ori] = predict_image(...
+    'image_in', 40*patch + 100,...
+    'decomposition_args', ori_args.decomposition_args,...
+    'predictor', rf_ori, ...
+    'prediction_type', 'rf_regression',...
+    'output_type', 'orientation',...
+    'use_probs', 0,...
+    'mask', [],...
+    'tree_mask', [], ...
+    'num_trees', [], ...
+    'max_size', 512,...
+    'incremental_results', 0);
+
+figure; imgray(complex2rgb(patch_ori));
+%%
+[patch_ves] = predict_image(...
+    'image_in', 40*patch + 100,...
+    'decomposition_args', ves_args.decomposition_args,...
+    'predictor', rf_ves, ...
+    'prediction_type', 'rf_classification',...
+    'output_type', 'detection',...
+    'use_probs', 0,...
+    'mask', [],...
+    'tree_mask', [], ...
+    'num_trees', [], ...
+    'max_size', 512,...
+    'incremental_results', 0);
+
+g_prob = gaussian_filters_1d(2);
+g_prob = g_prob / sum(g_prob);
+
+smooth_ves = conv2(g_prob', g_prob, patch_ves, 'same');
+
+figure; imgray(smooth_ves);
+%%
+theta_patch = angle(patch_ori) / 2;
+x1 = 75;%round(mean(apex_xy(:,1)));
+y1 = 200;%round(mean(apex_xy(:,2)));
+vx1 = cos(theta_patch(y1,x1));
+vy1 = -sin(theta_patch(y1,x1));
+
+
+%%
+[particles_x particles_y] = jetstream_rf(patch_ves, patch_ori, [], [x1 y1], [vx1 vy1], ...
+    'd', 1,...
+    'M', 100,...
+    'step_length', 1,...
+    'N', 200, ...
+    'double_angle', 1,...
+    'plot', 1);
+%%
+[particles_x particles_y] = jetstream_rf(smooth_ves, patch_ori, [], [x1 y1], -[vx1 vy1], ...
+    'd', 1,...
+    'M', 100,...
+    'step_length', 1,...
+    'N', 200, ...
+    'double_angle', 1,...
+    'plot', 1);
+%%
+patch_flow = fr.flow_results.flowPyramidEst{1};
+smooth_flow = conv2(g_prob', g_prob, patch_flow, 'same');
+x1 = 37;%round(mean(apex_xy(:,1)));
+y1 = 27;%round(mean(apex_xy(:,2)));
+vx1 = real(patch_flow(y1,x1));
+vy1 = imag(patch_flow(y1,x1));
+[particles_x particles_y] = jetstream_flow(smooth_ves, patch_flow, [], [x1 y1], [vx1 vy1], ...
+    'd', 1,...
+    'M', 100,...
+    'step_length', 5,...
+    'N', 200, ...
+    'double_angle', 0,...
+    'plot', 1);
+
+[particles_x particles_y] = jetstream_flow(smooth_ves, -patch_flow, [], [x1 y1], -[vx1 vy1], ...
+    'd', 1,...
+    'M', 100,...
+    'step_length', 5,...
+    'N', 200, ...
+    'double_angle', 0,...
+    'plot', 1);
+%%
+[rows cols] = size(smooth_ves);
+max_dist = max(rows, cols);
+vessel_mask = smooth_ves > 0.5;
+
+dist_mask_0 = false(rows, cols);
+dist_mask_0(y1, x1) = 1;
+dist_map = inf(rows, cols);
+dist_map(y1, x1) = 0;
+for i_d = 1:max_dist
+    dist_mask_1 = imdilate(dist_mask_0, strel('disk', 1)) & vessel_mask;
+    dist_map(dist_mask_1 & ~dist_mask_0) = i_d;
+    if all(dist_mask_0(:) == dist_mask_1(:))
+        break;
+    else
+        dist_mask_0 = dist_mask_1;
+    end
+end
+figure; imgray(dist_map); colorbar;
+%%
+[vy vx] = find(dist_mask_1);
+vi = sub2ind([rows cols], vy, vx);
+myf = vy + imag(smooth_flow(vi));
+mxf = vx + real(smooth_flow(vi));
+
+m_dist0 = dist_map(vi);
+m_dist1 = interp2(dist_map, mxf, myf, '*linear*');
+
+dist_map(vi) = sign(m_dist1 - m_dist0).*dist_map(vi);
+dist_map(vi) = dist_map(vi) - min(dist_map(vi));
+figure; imgray(dist_map); colorbar;
+%%
+[ymin xmin] = find(~dist_map);
+x1 = xmin(1);
+y1 = ymin(1);
+vx1 = real(patch_flow(y1,x1));
+vy1 = imag(patch_flow(y1,x1));
+
+dist_map(~dist_mask_1) = -inf;
+[ymax xmax] = find(dist_map == max(dist_map(:)));
+
+[xx yy] = meshgrid(1:cols, 1:rows);
+vessel_sink = false(rows, cols);
+for i_pt = 1:length(xmax)
+    vessel_sink = vessel_sink | ...
+        (xx-xmax(i_pt)).^2 + (yy-ymax(i_pt)).^2 < 100;
+end
+vessel_sink = vessel_sink & dist_mask_1;
+figure; imgray(vessel_sink);
+%%
+[particles_x particles_y particles_p particles_d hit_sink] =...
+    jetstream_flow(smooth_ves, patch_flow, dist_map, vessel_sink, [x1 y1], [vx1 vy1], ...
+    'd', 1,...
+    'M', 100,...
+    'normal_max_step_length', 4,...
+    'junction_max_step_length', 25,...
+    'I_jun', junction_mask,...
+    'N', 200, ...
+    'double_angle', 0,...
+    'plot', 1);
+%%
+centre_x = apex_xy(1);
+centre_y = apex_xy(2);
+x = repmat(1:cols, rows, 1);
+y = repmat((1:rows)', 1, cols);
+ 
+a = cos(theta_apex);
+b = sin(theta_apex);
+c = -((a*apex_xy(1)) + (b*apex_xy(2)));
+dx = a*x + b*y + c;
+
+label = (dx > -.5) & (dx < .5) & ( (x-apex_xy(1)).^2 + (y-apex_xy(2)).^2 < 400);
+figure; imgray(label);
+%%
+[snake_pnts,e] = mb_snake_states(round(particles_x)', round(particles_y)', 0, 0.05, smooth_ves);
+duplicates = [false; ~any(diff(snake_pnts),2)];
+snake_pnts(duplicates,:) = [];
+[snake_hi] = spline_contour(snake_pnts, [], 1);
+[vessel_centre] = spline_contour(snake_hi(1:5:end,:), [], 5);
+%%
+num_pts = size(vessel_centre,1);
+normal_xy = compute_spline_normals(vessel_centre);
+
+outer_prof_widths = [-10 10];
+norm_width = diff(outer_prof_widths)+1;
+
+normal_p = zeros(num_pts, norm_width);
+normal_x = zeros(num_pts, norm_width);
+normal_y = zeros(num_pts, norm_width);
+
+for i_n = 1:num_pts  
+    %Get normal profile
+    n_x = vessel_centre(i_n,1)+normal_xy(i_n,1)*outer_prof_widths;
+    n_y = vessel_centre(i_n,2)+normal_xy(i_n,2)*outer_prof_widths;
+     
+    [cx, cy, cp] = improfile(smooth_ves, n_x, n_y, norm_width, 'bilinear');
+    normal_p(i_n, :) = cp;
+    normal_x(i_n, :) = cx';
+    normal_y(i_n, :) = cy';
+
+end
+
+initial_edge = [zeros(num_pts,1) (1:num_pts)'];
+%%
+[snake_edge,snake_energy] = mb_snake_normal(initial_edge, ...
+    0.01, 0.01, norm_width, 1, normal_p, normal_x, normal_y);
+
+vessel_centre_snake = zeros(num_pts,2);
+for i_n = 1:num_pts
+    vessel_centre_snake(i_n,1) = normal_x(i_n, snake_edge(i_n,1));
+    vessel_centre_snake(i_n,2) = normal_y(i_n, snake_edge(i_n,1));
+end
+plot(vessel_centre_snake(:,1), vessel_centre_snake(:,2));
+%%
+medium_mask = imdilate(thin_mask, strel('disk', 2));
+[cy cx] = find(thin_mask);
+[vy vx] = find(vessel_mask);
+[my mx] = find(medium_mask);
+
+dists = (cx - apex_xy(1)).^2 + (cy - apex_xy(:,2)).^2;
+[min_d, min_i] = min(dists);
+x1 = cx(min_i);
+y1 = cy(min_i);
+
+apex_norm_mask = false(rows, cols);
+apex_norm_mask(y1, x1) = 1;
+apex_norm_mask = imdilate(apex_norm_mask, strel('disk', 2));
+
+%Make a distance map to the vessel apex
+dist_mask_0 = false(rows, cols);
+dist_mask_0(apex_norm_mask) = 1;
+dist_map = inf(rows, cols);
+dist_map(apex_norm_mask) = 0;
+for i_d = 1:max_dist
+    dist_mask_1 = imdilate(dist_mask_0, strel('disk', 1)) & medium_mask;
+    dist_map(dist_mask_1 & ~dist_mask_0) = i_d;
+    if all(dist_mask_0(:) == dist_mask_1(:))
+        break;
+    else
+        dist_mask_0 = dist_mask_1;
+    end
+end
+
+dist_map(vessel_mask) = griddata(cx, cy, dist_map(thin_mask),...
+    vx, vy, 'nearest');
+dist_map(isinf(dist_map)) = max(dist_map(~isinf(dist_map))) + 1;
+
+dist_map = conv2(g_prob', g_prob, dist_map, 'same');
+figure; imgray(dist_map); colorbar;
+
+abs_f = abs(smooth_flow(medium_mask));
+myf = my + 2*imag(smooth_flow(medium_mask))./abs_f;
+mxf = mx + 2*real(smooth_flow(medium_mask))./abs_f;
+
+m_dist0 = dist_map(medium_mask);
+m_dist1 = interp2(dist_map, mxf, myf, '*linear*');
+valid = ~isinf(m_dist1);
+
+m_directions = sign(m_dist1(valid) - m_dist0(valid));
+
+sign_map = zeros(rows,cols);
+sign_map(medium_mask) = m_directions;
+
+s = bwconncomp(sign_map == -1);
+for i_c = 1:length(s.PixelIdxList)
+    if length(s.PixelIdxList{i_c}) < 100
+        sign_map(s.PixelIdxList{i_c}) = 1;
+    end
+end
+s = bwconncomp(sign_map == 1);
+for i_c = 1:length(s.PixelIdxList)
+    if length(s.PixelIdxList{i_c}) < 100
+        sign_map(s.PixelIdxList{i_c}) = -1;
+    end
+end
+m_directions = sign_map(medium_mask);
+v_directions = griddata(mx(valid), my(valid), m_directions(valid),...
+    vx, vy, 'nearest');
+
+
+dist_map(vessel_mask) = dist_map(vessel_mask) .* v_directions;
+dist_map(~vessel_mask) = inf;
+%%
+
+
 
 
 

@@ -1,0 +1,56 @@
+function [vessel_predictions] = predict_vessel_pixels(patch, varargin)
+%PREDICT_VESSEL_PIXELS *Insert a one line summary here*
+%   [] = predict_vessel_pixels()
+%
+% Inputs:
+%
+% Outputs:
+%
+% Example:
+%
+% Notes:
+%
+% See also:
+%
+% Created: 10-Mar-2016
+% Author: Michael Berks 
+% Email : michael.berks@manchester.ac.uk 
+% Phone : +44 (0)161 275 7669 
+% Copyright: (C) University of Manchester 
+
+args = u_packargs(varargin, '0', ...
+    'vessel_name', [],...
+    'outputs',  [1 2 3],...
+    'model_root',               'C:\isbe\nailfold\models\',...
+    'rf_ori',                   'vessel/orientation/rf_regression/296621/predictor.mat',...
+    'rf_vessels',               'vessel/detection/rf_classification/296655/predictor.mat',...
+    'rf_width',                 'vessel/width/rf_regression/297037/predictor.mat',...
+    'rf_vessels_args',          'vessel/detection/rf_classification/296655/job_args.mat');
+
+%Load forests
+prediction_types = {'rf_classification', 'rf_regression', 'rf_regression'};
+output_types = {'detection', 'orientation', 'width'};
+rfs = cell(3,1);
+if ismember(1, args.outputs)
+    rfs{1} = u_load([args.model_root args.rf_vessels]);
+end
+if ismember(2, args.outputs)
+    rfs{2} = u_load([args.model_root args.rf_ori]);
+end
+if ismember(3, args.outputs)
+    rfs{3} = u_load([args.model_root args.rf_width]);
+end
+rf_args = u_load([args.model_root args.rf_vessels_args]);
+
+vessel_predictions = predict_image(... % non-strict mode
+    'image_in', patch,...
+    'decomposition_args', rf_args.decomposition_args,...
+    'predictor', rfs(args.outputs), ...
+    'prediction_type', prediction_types(args.outputs),...
+    'output_type', output_types(args.outputs),...
+    'use_probs', 0,...
+    'mask', [],...
+    'tree_mask', [], ...
+    'num_trees', [], ...
+    'max_size', 1024,...
+    'incremental_results', 0);

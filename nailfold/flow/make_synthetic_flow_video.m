@@ -1,4 +1,4 @@
-function [] = make_synthetic_flow_comparison_video(vessel_name, max_flow, speed_factor, varargin)
+function [] = make_synthetic_flow_video(vessel_name, max_flow, varargin)
 %MAKE_SYNTHETIC_FLOW_COMPARISON_VIDEO generates synthetic flow videos using real
 %capillary shapes
 %   [] = make_synthetic_flow_comparison_video('normalapex0008', 3, 1.5, 'adjacent_videos', 0)

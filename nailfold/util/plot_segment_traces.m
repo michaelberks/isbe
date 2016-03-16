@@ -82,3 +82,40 @@ ylabel('Y position', 'fontsize', 18);
 set(a1, 'fontsize', 18);
 set(a2, 'fontsize', 18);
 set(a3, 'fontsize', 18);
+%%
+figure('windowstyle', 'normal');
+hold all; axis equal; a3 = gca;
+
+plot(0,0,'b-.');
+plot(0,0,'r-');
+plot(0,0,'rx');
+legend(a3, {'Motor path', 'Stationary segment frames', 'Stationary segment centres'}, 'location', 'north');
+plot(a3, motor_x, motor_y, 'b.', 'markersize', 8);
+%
+min_x = inf;
+max_x = -inf;
+min_y = inf;
+max_y = -inf;
+for i_seg = 1:length(segments_s)
+
+    frame_idx_i = segments_s{i_seg};
+
+    seg_x = motor_x(frame_idx_i);
+    seg_y = motor_y(frame_idx_i);
+
+    cx = median(seg_x);
+    cy = median(seg_y);
+
+    plot(a3, cx, cy, 'rx');
+    plot(a3, cx+frame_rect_x, cy+frame_rect_y, 'r', 'linewidth', 2); 
+    min_x = min(min_x,min(cx+frame_rect_x));
+    max_x = max(max_x,max(cx+frame_rect_x));
+    min_y = min(min_y,min(cy+frame_rect_y));
+    max_y = max(max_y,max(cy+frame_rect_y));   
+    
+end
+axis([min_x max_x min_y max_y]);
+
+xlabel('X position', 'fontsize', 14);
+ylabel('Y position', 'fontsize', 14);
+set(a3, 'fontsize', 14);

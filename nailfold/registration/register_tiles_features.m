@@ -51,7 +51,8 @@ args = u_packargs(varargin,... % the user's input
     'compound_transforms', [], ...
     'offset_centres', [],...
     'mosaic', [],....
-    'max_iterations', 1);
+    'max_iterations', 1,...
+    'quiet', 1);
 
 clear varargin;
 
@@ -203,7 +204,9 @@ while (it < max_iterations)
             tile_curr = double(imread(tiles{i_tile}));
         end
         
-        display(['Registering tile ' num2str(i_tile-1) ' of ' num2str(length(tile_range))]);
+        if ~args.quiet
+            display(['Registering tile ' num2str(i_tile-1) ' of ' num2str(length(tile_range))]);
+        end
             
         if strcmp(registration_method, 'features')
             % Get feature-based estimate of motion between current frame and

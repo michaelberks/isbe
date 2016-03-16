@@ -102,6 +102,11 @@ for i_ve = 1:length(vessels_list)
         - (floor(frames_offset(1)) + x_start);
     ay = vessel_data.apex_measures.distal.apex_xy(apex_idx,2)/vessel_data.resize_factor ...
         - (floor(frames_offset(2)) + y_start);
+    
+    apex_xy = [ax ay]; %#ok
+    save([results_dir vessels_list(i_ve).name], 'apex_xy', '-append');
+    continue;
+    
     frame_vessels_mask = frame_pred > connect_thresh;
     frame_apex_mask = bwselect(frame_vessels_mask, ax, ay, 4);
     
