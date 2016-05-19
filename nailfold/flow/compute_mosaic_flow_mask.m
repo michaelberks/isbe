@@ -1,4 +1,5 @@
-function [mosaic_flow_mask, vessel_data] = compute_mosaic_flow_mask(mosaic_flow_mask, vessel_data, mosaic_flow, varargin)
+%OBSOLETE
+function [mosaic_flow_mask, vessel_data] = compute_mosaic_flow_mask(vessel_data, mosaic_flow, varargin)
 %COMPUTE_MOSAIC_FLOW *Insert a one line summary here*
 %   [mosaic_flow, vessel_data] = compute_mosaic_flow(sequence_dir, vessel_data)
 %

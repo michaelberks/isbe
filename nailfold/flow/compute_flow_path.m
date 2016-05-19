@@ -254,7 +254,10 @@ dist_map(vessel_mask) = griddata(cx, cy, dist_map(thin_mask),...
     vx, vy, 'nearest');
 dist_map(isinf(dist_map)) = max(dist_map(~isinf(dist_map))) + 1;
 dist_map = conv2(g_prob', g_prob, dist_map, 'same');
-figure; imgray(dist_map); colorbar;
+
+if args.plot > 1
+    figure; imgray(dist_map); colorbar;
+end
 
 %Next work out whether moving in the direction of flow increases or
 %decreases on the distance map - points moving toward the apex should
@@ -301,7 +304,6 @@ dist_map(~vessel_mask) = inf;
 vessel_mask = ~isinf(dist_map);
 medium_mask = medium_mask & vessel_mask;
 thin_mask = thin_mask & vessel_mask;
-figure; imgray(dist_map); colorbar;
 
 %
 % Locate any junctions and make junction mask - this can be conservatively
@@ -309,8 +311,11 @@ figure; imgray(dist_map); colorbar;
 % overlaps normal unidirectional vessels
 [junction_mask] =...
     get_junction_mask(vessel_mask, thin_mask,'junction_detection');
-    
-figure; imgray(junction_mask);
+
+if args.plot > 1
+    figure; imgray(dist_map); colorbar;
+    figure; imgray(junction_mask);
+end    
 
 for direction = 1:2
     
@@ -334,9 +339,12 @@ for direction = 1:2
             (xx-xsink(i_pt)).^2 + (yy-ysink(i_pt)).^2 < 25;
     end
     vessel_sink = vessel_sink & vessel_mask;
-    figure; imgray(vessel_sink);
-    plot(cx, cy, 'rx');
-    plot(x1, y1, 'go');
+    
+    if args.plot > 1
+        figure; imgray(vessel_sink);
+        plot(cx, cy, 'rx');
+        plot(x1, y1, 'go');
+    end
 
     %
     % Apply flow jetstream algorithm to get candidate path
@@ -377,9 +385,11 @@ particle_path = medfilt1([median(particles_x)' median(particles_y)']);
 particle_path(1,:) = [mean(particles_x(:,1)) mean(particles_y(:,1))];
 particle_path(end,:) = [mean(particles_x(:,end)) mean(particles_y(:,end))];
 
-figure; imgray(smooth_ves);
-plot(particles_x, particles_y, '.');
-plot(particle_path(:,1), particle_path(:,2), 'r', 'linewidth', 2);
+if args.plot > 1
+    figure; imgray(smooth_ves);
+    plot(particles_x, particles_y, '.');
+    plot(particle_path(:,1), particle_path(:,2), 'r', 'linewidth', 2);
+end
 
 %Now pick the best centre line given the particles
 
@@ -424,5 +434,7 @@ for i_n = 1:num_pts
     vessel_centre(i_n,2) = normal_y(i_n, snake_edge(i_n,1));
 end
 
-figure; imgray(smooth_ves);
-plot(vessel_centre(:,1), vessel_centre(:,2));
+if args.plot
+    figure; imgray(smooth_ves);
+    plot(vessel_centre(:,1), vessel_centre(:,2));
+end

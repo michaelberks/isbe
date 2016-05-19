@@ -32,6 +32,7 @@ args = u_packargs(varargin,... % the user's input
     'fig_dir',          [],...
     'save_dir',         'C:\isbe\nailfold\data\wellcome_study\results\',...
     'um_per_pix',       1.6077,...
+    'fps',              120,...
     'xls_wide_format',  1, ...
     'feature_display_names',    [], ...
     'xls_filename_subjects',     'subject_auto_stats.xls');
@@ -107,6 +108,7 @@ if isempty(args.selected_features)
         'num_nondistal_vessels',...
         'num_giant_vessels',...
         'num_enlarged_vessels',...
+        'num_flow_vessels',...
         'median_apex_width',...
         'mean_mean_width',...
         'mean_weighted_width',...
@@ -127,7 +129,8 @@ if isempty(args.selected_features)
         'dispersion_connected_orientation',...
         'dispersion_weighted_orientation',...
         'mean_mean_flow',...
-        'mean_median_flow',...
+        'max_mean_flow',...
+        'mean_prctile_flow',...
         'total_vessel_prob',...
         'mean_vessel_prob',...
           'total_scores',...
@@ -158,6 +161,7 @@ if args.do_auto_stats
     auto_stats.num_nondistal_vessels = zeros(num_subs,10);
     auto_stats.num_giant_vessels = zeros(num_subs,10);
     auto_stats.num_enlarged_vessels = zeros(num_subs,10);
+    auto_stats.num_flow_vessels = zeros(num_subs,10);
 
     auto_stats.median_apex_width = nan(num_subs,10);
     auto_stats.mean_mean_width = nan(num_subs,10);
@@ -171,8 +175,9 @@ if args.do_auto_stats
     auto_stats.mean_min_width = nan(num_subs,10);
     auto_stats.std_mean_width = nan(num_subs,10); 
     
-    auto_stats.mean_mean_flow = nan(num_subs,10);
-    auto_stats.mean_median_flow = nan(num_subs,10);
+    auto_stats.mean_mean_flow = nan(num_subs,10);   
+    auto_stats.max_mean_flow = nan(num_subs,10);
+    auto_stats.mean_prctile_flow = nan(num_subs,10);
     
     auto_stats.mean_vessel_flow = nan(num_subs,10);
     auto_stats.mean_weighted_flow = nan(num_subs,10);
@@ -270,18 +275,22 @@ if args.do_auto_stats
                     auto_stats.dispersion_weighted_orientation(i_sub, i_digit) = abs(naNmean(exp(1i*angle(apex_measures.distal.weighted_orientation))));
                 end
                 
-                auto_stats.mean_mean_flow(i_sub, i_digit) = naNmean(apex_measures.distal.mean_flow) * args.um_per_pix;
-                auto_stats.mean_median_flow(i_sub, i_digit) = naNmean(apex_measures.distal.median_flow) * args.um_per_pix;
-                
-                if isfield(apex_measures.distal, 'weighted_flow_rate')
-                    auto_stats.mean_vessel_flow(i_sub, i_digit) = naNmean(apex_measures.distal.vessel_flow);
-                    auto_stats.mean_weighted_flow(i_sub, i_digit) = naNmean(apex_measures.distal.weighted_flow_rate);
-
-                    auto_stats.adjusted_width(i_sub, i_digit) = naNmean(apex_measures.distal.flow_adjusted_width);
-                    if isnan(auto_stats.adjusted_width(i_sub, i_digit))
-                        auto_stats.adjusted_width(i_sub, i_digit) = auto_stats.mean_weighted_width(i_sub, i_digit);
-                    end
+                if any(apex_measures.distal.flow_measurable)
+                    auto_stats.mean_mean_flow(i_sub, i_digit) = mean(apex_measures.distal.mean_flow(apex_measures.distal.flow_measurable))*args.fps;
+                    auto_stats.max_mean_flow(i_sub, i_digit) = max(apex_measures.distal.mean_flow(apex_measures.distal.flow_measurable))*args.fps;
+                    auto_stats.mean_prctile_flow(i_sub, i_digit) = mean(apex_measures.distal.prctile_flow(apex_measures.distal.flow_measurable))*args.fps;
+                    auto_stats.num_flow_vessels(i_sub, i_digit) = sum(apex_measures.distal.flow_measurable)*args.fps;
                 end
+%                 if isfield(apex_measures.distal, 'weighted_flow_rate')
+%                     auto_stats.num_flow_vessels(i_sub, i_digit) = sum(~isnan(apex_measures.distal.vessel_flow))*args.fps;
+%                     auto_stats.mean_vessel_flow(i_sub, i_digit) = naNmean(apex_measures.distal.vessel_flow)*args.fps;
+%                     auto_stats.mean_weighted_flow(i_sub, i_digit) = naNmean(apex_measures.distal.weighted_flow_rate)*args.fps;
+% 
+%                     auto_stats.adjusted_width(i_sub, i_digit) = naNmean(apex_measures.distal.flow_adjusted_width);
+%                     if isnan(auto_stats.adjusted_width(i_sub, i_digit))
+%                         auto_stats.adjusted_width(i_sub, i_digit) = auto_stats.mean_weighted_width(i_sub, i_digit);
+%                     end
+%                 end
                 
                 auto_stats.total_vessel_prob(i_sub, i_digit) = naNsum(apex_measures.distal.total_prob);
                 auto_stats.mean_vessel_prob(i_sub, i_digit) = naNmean(apex_measures.distal.total_prob);
@@ -538,7 +547,6 @@ if args.do_people_plots
         end
             
         display(['ROC A_z: ' num2str(auc,2) ' (' num2str(auc-1.96*auc_se,2) ', ' num2str(auc+1.96*auc_se,2) ')']);
-        continue;
 
         min_val = min(max_f);
         max_val = max(max_f);

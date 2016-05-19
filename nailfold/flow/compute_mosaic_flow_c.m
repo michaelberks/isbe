@@ -1,5 +1,5 @@
-function [mosaic_flow] = compute_mosaic_flow_c(sequence_dir, ...
-    capillary_data_dir, data_dir, results_dir, flow_metrics_dir, vessels_basename, varargin)
+function [mosaic_flow] = compute_mosaic_flow_c(sequence_dir, vessel_data, ...
+    data_dir, results_dir, flow_metrics_dir, vessels_basename, varargin)
 %COMPUTE_MOSAIC_FLOW *Insert a one line summary here*
 %   [mosaic_flow, vessel_data] = compute_mosaic_flow(sequence_dir, vessel_data)
 %
@@ -30,10 +30,6 @@ args = u_packargs(varargin, '0',...
     'plot', 0);
 
 [sequence_data] = read_processed_sequence_from([sequence_dir 'sequence_data\sequence_data.dat']);
-vessel_pred = imread([sequence_dir 'capillary_data\vessels_v_pred.png']);
-vessel_ori = imread([sequence_dir 'capillary_data\vessels_o_pred.png']);
-vessel_data = load([capillary_data_dir vessels_basename '_capillary_data.mat'],...
-        'resize_factor', 'apex_measures');
 
 if ~isfield(sequence_data, 'final_mosaic_size')
     mosaic_flow = [];
@@ -42,9 +38,6 @@ end
 
 mosaic_w = sequence_data.final_mosaic_size(1);
 mosaic_h = sequence_data.final_mosaic_size(2);
-
-vessel_pred = imresize(vessel_pred, [mosaic_h mosaic_w]);
-vessel_ori = imresize(vessel_ori, [mosaic_h mosaic_w]);
 
 seg_w = sequence_data.inner_frame_dims(1);
 seg_h = sequence_data.inner_frame_dims(2);
@@ -112,15 +105,15 @@ for i_seg = 1:num_segs
     end
     
     [segment_flow] =...
-        compute_vessel_flow_c(segment_mask, vessel_pred, vessel_ori, vessel_data,...
+        compute_vessel_flow_c(segment_mask,...
         data_dir, results_dir, flow_metrics_dir, vessels_list, args.plot);
     
     %Workout where these should be saved in the main mosaic
     offset_x = round((reg_w - seg_w) / 2);
     offset_y = round((reg_h - seg_h) / 2);
     
-    reg_start_x = segment_start_x - offset_x;
-    reg_start_y = segment_start_y - offset_y;
+    reg_start_x = segment_start_x - offset_x + mosaic_flow.padding(1);
+    reg_start_y = segment_start_y - offset_y + mosaic_flow.padding(3);
     
     reg_end_x = reg_start_x + reg_w - 1;
     reg_end_y = reg_start_y + reg_h - 1;
@@ -150,7 +143,7 @@ for i_seg = 1:num_segs
         mosaic_flow.padding(3) = mosaic_flow.padding(3) + pad_val;
     end
     if reg_end_x > mosaic_w
-        mosaic_flow.padding(2) = mosaic_flow.padding(3) + reg_end_x - mosaic_w;
+        mosaic_flow.padding(2) = mosaic_flow.padding(2) + reg_end_x - mosaic_w;
         mosaic_w = reg_end_x;
         mosaic_flow.sum(mosaic_h, mosaic_w) = 0;
         mosaic_flow.count(mosaic_h, mosaic_w) = 0;
@@ -184,11 +177,21 @@ for i_seg = 1:num_segs
     end
 end
 
+%Measure the flow at each distal capillary apex
+[mosaic_flow.mean_flow, mosaic_flow.median_flow,...
+    mosaic_flow.prctile_flow, mosaic_flow.flow_measurable] = ...
+    get_flow_at_apices(vessel_data, mosaic_flow);
+
 if args.plot
     figure(f1);
     a2 = subplot(2,1,2);
-    show_flow_as('rgb', mosaic_flow.max);
+    show_flow_as('rgb', mosaic_flow.max); hold all;
     linkaxes([a1 a2]);
+    if ~isempty(vessel_data.apex_measures.distal)
+        plot(...
+            distal_xy(mosaic_flow.flow_measurable,1),...
+            distal_xy(mosaic_flow.flow_measurable,2), 'r*');
+    end
 end
 
     

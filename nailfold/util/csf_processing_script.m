@@ -301,8 +301,8 @@ end
 flow_data_dir = 'N:\Nailfold Capillaroscopy\Wellcome\flow_data\';
 flow_results_dir = 'N:\Nailfold Capillaroscopy\Wellcome\flow_results\';
 flow_mosaic_dir = 'N:\Nailfold Capillaroscopy\Wellcome\flow_mosaics\';
+flow_metrics_dir = 'N:\Nailfold Capillaroscopy\Wellcome\flow_metrics\';
 capillary_data_dir = 'C:\isbe\nailfold\data\wellcome_study\capillary_data\';
-flow_metrics_dir = 'C:\isbe\nailfold\data\wellcome_study\flow_metrics\';
 create_folder(flow_mosaic_dir);
 
 load('C:\isbe\nailfold\data\wellcome_study\sequence_names.mat');
@@ -323,19 +323,28 @@ for i_seq = 1:numel(sequence_names)
     seq_name = seq_name(pos(1)+1:end-1);
     display(['processing sequence ' num2str(i_seq) ': ' seq_name]);   
     
+    vessel_data = load([capillary_data_dir seq_name '_capillary_data.mat'],...
+        'resize_factor', 'apex_measures');
+    
     save_path = [flow_mosaic_dir seq_name '_flow_mosaic.mat'];
     [mosaic_flow] = ...
-         compute_mosaic_flow_c(seq_dir, capillary_data_dir, flow_data_dir, flow_results_dir,...
-         flow_metrics_dir, seq_name, 'plot', 0);
+         compute_mosaic_flow_c(seq_dir, vessel_data,...
+         flow_data_dir, flow_results_dir, flow_metrics_dir, seq_name,...
+         'plot', 0);
+     
+     if ~isempty(vessel_data.apex_measures.distal)
+         apex_measures = vessel_data.apex_measures;
+         apex_measures.distal.mean_flow = mosaic_flow.mean_flow;
+         apex_measures.distal.median_flow = mosaic_flow.median_flow;
+         apex_measures.distal.flow_measurable = mosaic_flow.flow_measurable;
+         save([capillary_data_dir seq_name '_capillary_data.mat'],...
+            'apex_measures', '-append');
+     end
+
      save(save_path, 'mosaic_flow');
     
 end
 %%
-capillary_data_dir = 'C:\isbe\nailfold\data\wellcome_study\capillary_data\';
-flow_mosaic_dir = 'C:\isbe\nailfold\data\wellcome_study\flow_mosaics\';
-flow_mask_dir = 'C:\isbe\nailfold\data\wellcome_study\flow_masks\';
-create_folder(flow_mask_dir);
-%%
 for i_seq = 1:numel(sequence_names)
     
     if isempty(sequence_names2{i_seq})
@@ -348,49 +357,32 @@ for i_seq = 1:numel(sequence_names)
     pos = find(dividers, 4, 'last');
     seq_name(dividers) = '_';
     seq_name = seq_name(pos(1)+1:end-1);
-    display(['processing sequence ' num2str(i_seq) ': ' seq_name]);
+    display(['processing sequence ' num2str(i_seq) ': ' seq_name]);   
     
     vessel_data = load([capillary_data_dir seq_name '_capillary_data.mat'],...
-        'resize_factor', 'apex_measures');
-    
-    if ~isempty(vessel_data.apex_measures.distal)
-        mosaic_flow = u_load([flow_mosaic_dir seq_name '_flow_mosaic.mat']);
-         [mosaic_flow_mask, vessel_data] = ...
-             compute_mosaic_flow_mask(seq_dir, vessel_data, mosaic_flow, 'plot', 0);
-         save([flow_mask_dir seq_name '_mask.mat'], 'mosaic_mask');
-         apex_measures = vessel_data.apex_measures;
-         save([capillary_data_dir seq_name '_capillary_data.mat'], 'apex_measures', '-append');
-    end
-end
-%%
-for i_seq = 1:numel(sequence_names)
-    
-    if isempty(sequence_names2{i_seq})
-        continue;
-    end
-    
-    seq_dir = [sequence_names2{i_seq} '\'];%sequence_dirs{i_seq};
-    seq_name = seq_dir;
-    dividers = seq_name == '\';
-    pos = find(dividers, 4, 'last');
-    seq_name(dividers) = '_';
-    seq_name = seq_name(pos(1)+1:end-1);
-    display(['processing sequence ' num2str(i_seq) ': ' seq_name]);
-    
-    vessel_data = load([capillary_data_dir seq_name '_capillary_data.mat'],...
-        'resize_factor', 'apex_measures');
-    
-    if ~isempty(vessel_data.apex_measures.distal)
-        mosaic_flow = u_load([flow_mosaic_dir seq_name '_flow_mosaic.mat']);
-        mosaic_flow_mask = u_load([flow_mask_dir seq_name '_mask.mat']);
-         [~, vessel_data] = ...
-             compute_mosaic_flow_mask(mosaic_flow_mask, vessel_data, mosaic_flow, 'plot', 0);
+        'resize_factor', 'apex_measures'); 
+     
+     if ~isempty(vessel_data.apex_measures.distal)
+         
+         load([flow_mosaic_dir seq_name '_flow_mosaic.mat'], 'mosaic_flow');
+         [mosaic_flow.mean_flow, mosaic_flow.median_flow,...
+            mosaic_flow.prctile_flow, mosaic_flow.flow_measurable] = ...
+             get_flow_at_apices(vessel_data, mosaic_flow);
+         save([flow_mosaic_dir seq_name '_flow_mosaic.mat'], 'mosaic_flow');
          
          apex_measures = vessel_data.apex_measures;
-         save([capillary_data_dir seq_name '_capillary_data.mat'], 'apex_measures', '-append');
-         save([flow_mask_dir seq_name '_mask.mat'], 'mosaic_flow_mask');
-    end
+         apex_measures.distal.mean_flow = mosaic_flow.mean_flow;
+         apex_measures.distal.median_flow = mosaic_flow.median_flow;
+         apex_measures.distal.prctile_flow = mosaic_flow.prctile_flow;
+         apex_measures.distal.flow_measurable = mosaic_flow.flow_measurable;
+         save([capillary_data_dir seq_name '_capillary_data.mat'],...
+            'apex_measures', '-append');
+     end
+
+     
+    
 end
+
 %%
 load('C:\isbe\nailfold\data\wellcome_study\sequence_names.mat');
 load('C:\isbe\nailfold\data\wellcome_study\subject_summary.mat');
@@ -419,8 +411,7 @@ selected_features = {...
     'max_mean_width',...
     'mean_connected_orientation_dispersion',...
     'dispersion_connected_orientation',...
-    'mean_mean_flow',...
-    'mean_median_flow'};
+    'mean_mean_flow'};
     
 feature_display_names = {...
     'Num distal caps',...
@@ -431,8 +422,7 @@ feature_display_names = {...
     'Max width',...
     'Shape score',...
     'Derangement score',...
-    'Mean flow',...
-    'Median flow'};
+    'Mean flow'}; %'90th %ile flow'
 %%
 analyse_wellcome_apex_measures(...
     'auto_stats',       auto_stats,...

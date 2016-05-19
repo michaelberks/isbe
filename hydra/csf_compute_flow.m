@@ -55,42 +55,32 @@ display(['Computing flow for ' subject_name ',' num2str(num_vessels) ' vessels t
 for i_ves = 1:num_vessels
     display(['Processing vessel ' num2str(i_ves)]);
     
-%     frames = load([flow_data_dir flow_list(i_ves).name], 'cropped_frames');
-%     if ~isfield(frames, 'cropped_frames') || ...
-%             isempty(frames.cropped_frames) || ...
-%             ~any(frames.cropped_frames(:))
-%         continue;
-%     end
-%     
-%     g_lims = prctile(double(frames.cropped_frames(:)), [1 99]);
-%     g_range = g_lims(2) - g_lims(1);
-%     
-%     flow_results = [];
-%     [flow_results.flowPyramidEst, flow_results.flowConfidence] = ...
-%         estimate_flow_multilevel(255*(frames.cropped_frames-g_lims(1))/g_range, [], [], 1:3);
-%     
-%     flow_results.g_lims = g_lims;
-%     
-%     save([flow_results_dir flow_list(i_ves).name], 'flow_results');
-
-%     [flow_metrics] =  compute_vessel_flow_rf(...
-%         'vessel_name', flow_list(i_ves).name(1:end-4),...
-%         'flow_data_dir',	flow_data_dir, ...
-%         'flow_results_dir',	flow_results_dir,...
-%         'model_root', [args.model_root '/']); %#ok
-%     save([flow_metrics_dir flow_list(i_ves).name], 'flow_metrics');
-    
-    load([flow_metrics_dir flow_list(i_ves).name], 'flow_metrics');
-    
-    if flow_metrics.mean_width > 16
-        [flow_metrics] =  compute_vessel_flow_rf(...
-            'vessel_name', flow_list(i_ves).name(1:end-4),...
-            'rescale_factor', flow_metrics.mean_width/12,...
-            'flow_data_dir',	flow_data_dir, ...
-            'flow_results_dir',	flow_results_dir,...
-            'model_root', [args.model_root '/']);
-        save([flow_metrics_dir flow_list(i_ves).name], 'flow_metrics');
-       
+    frames = load([flow_data_dir flow_list(i_ves).name], 'cropped_frames',...
+        'x_min', 'y_min', 'x_max', 'y_max', 'edge_mask', 'vessel_transforms');
+    if ~isfield(frames, 'cropped_frames') || ...
+            isempty(frames.cropped_frames) || ...
+            ~any(frames.cropped_frames(:)) || any(size(frames.cropped_frames) < 32)
+        continue;
     end
+       
+    %Contrast normalise the frames
+    g_lims = prctile(double(frames.cropped_frames(:)), [1 99]);
+    g_range = g_lims(2) - g_lims(1);
+    
+    %Compute flow results
+    flow_results = [];
+    [flow_results.flowPyramidEst, flow_results.flowConfidence] = ...
+        estimate_flow_multilevel(255*(frames.cropped_frames-g_lims(1))/g_range, [], [], 1:4);   
+    flow_results.g_lims = g_lims;   
+    save([flow_results_dir flow_list(i_ves).name], 'flow_results');
+
+    %Compute flow metrics
+    [flow_metrics] =  compute_vessel_flow_rf(...
+        'vessel_name', flow_list(i_ves).name(1:end-4),...
+        'flow_data_dir',	flow_data_dir, ...
+        'flow_results_dir',	flow_results_dir,...
+        'model_root', [args.model_root '/']); %#ok
+    save([flow_metrics_dir flow_list(i_ves).name], 'flow_metrics');
+
 
 end

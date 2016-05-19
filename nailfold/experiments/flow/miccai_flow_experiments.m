@@ -182,7 +182,7 @@ for i_f = 1:num_features
 end
 legend(label, 'location', 'southeast');
 
-title('ROC curves for individual biomarkers', 'fontsize', 18);
+title('ROC curves for individual parameters', 'fontsize', 18);
 xlabel('FPR', 'fontsize', 18);
 ylabel('TPR', 'fontsize', 18);
 set(gca, 'fontsize', 14);
@@ -190,10 +190,11 @@ exportfig([fig_dir 'individual_rocs.png']);
 %%
 ypred_orig = zeros(112,1);
 ypred_flow = zeros(112,1);
+%%
 for i_sub = 1:112
     sub_idx = [1:i_sub-1 i_sub+1:112];
     mdl_orig = stepwiseglm(all_stats(sub_idx,1:5), ss_idx(sub_idx), 'linear','Distribution','binomial','link','logit'); %stepwise
-    mdl_flow = stepwiseglm(all_stats(sub_idx,:), ss_idx(sub_idx), 'linear','Distribution','binomial','link','logit');
+    mdl_flow = stepwiseglm(all_stats(sub_idx,:), ss_idx(sub_idx), 'linear','Distribution','binomial','link','logit');%, 'interactions'
     
     ypred_orig(i_sub) = predict(mdl_orig, all_stats(i_sub,1:5));
     ypred_flow(i_sub) = predict(mdl_flow, all_stats(i_sub,:));
@@ -203,6 +204,7 @@ figure('windowstyle', 'normal'); axis equal; axis([0 1 0 1]); hold all;
 
 [roc_pts, auc, ~, ~, auc_se] = calculate_roc_curve(ypred_orig, ss_idx);
 plot(roc_pts(:,1), roc_pts(:,2), 'r-o', 'linewidth', 2);
+label = cell(2,1);
 label{1} = ['Structure: A_z = ' num2str(auc,'%3.3f') ' \pm ' num2str(auc_se,'%2.2g')];
 
 [roc_pts, auc, ~, ~, auc_se] = calculate_roc_curve(ypred_flow, ss_idx);
@@ -210,11 +212,11 @@ plot(roc_pts(:,1), roc_pts(:,2), 'b-s', 'linewidth', 2);
 label{2} = ['Structure + flow: A_z = ' num2str(auc,'%3.3f') ' \pm ' num2str(auc_se,'%2.2g')];
 legend(label, 'location', 'southeast');
 
-title('ROC curves for combined biomarkers', 'fontsize', 18);
+title('ROC curves for combined parameters', 'fontsize', 18);
 xlabel('FPR', 'fontsize', 18);
 ylabel('TPR', 'fontsize', 18);
 set(gca, 'fontsize', 14);
-exportfig([fig_dir 'combined_rocs.png']);
+%exportfig([fig_dir 'combined_rocs.png']);
 
 
 %%
@@ -245,25 +247,29 @@ end
 table_path = [paper_dir 'results_table.txt'];
 %Write a table from this
 o_txt = {...
-    '\specialcell{Capillary density\\$mm^{-1}$}   ';...
-    '\specialcell{Mean width\\${\mu}m$}           ';...
-    '\specialcell{Max width\\${\mu}m$}            ';...
-    '\specialcell{Shape score\\(no units)}        ';...
-    '\specialcell{Derangment score\\(no units)}   ';...
-    '\specialcell{Mean flow velocity\\$mms^{-1}$} '};
+    '\specialcell{Capillary density\\(mm$^{-1}$)}   ';...
+    '\specialcell{Mean width\\(${\mu}$m)}           ';...
+    '\specialcell{Max width\\(${\mu}$m)}            ';...
+    '\specialcell{Shape score\\($\in[0,1]$)}        ';...
+    '\specialcell{Derangment score\\($\in[0,1]$)}   ';...
+    '\specialcell{Mean flow velocity\\(mm s$^{-1}$)} '};
 
 fid = fopen(table_path, 'wt');
 fprintf(fid, '%s \n', '\begin{tabular*}{0.95\textwidth}{@{\extracolsep{\fill} } l r r r r}');
 fprintf(fid, '%s \n', '\toprule');
 fprintf(fid, '%s \n', '%');
 
-fprintf(fid, '%s \n', 'Biomarker & \multicolumn{3}{c}{Subject group means ($95\%$ CI)} 	           & \multicolumn{1}{c}{ROC $A_z$}	\\');
-fprintf(fid, '%s \n', '          & \multicolumn{1}{c}{HC} & \multicolumn{1}{c}{PRP} & \multicolumn{1}{c}{SSc} & \multicolumn{1}{c}{HC,PRP $v$ SSc}  	\\');
+fprintf(fid, '%s \n', '\textbf{Parameter} & \multicolumn{3}{c}{\textbf{Subject group means ($\pm$ 2 $s.e.$)}} & \multicolumn{1}{c}{\textbf{ROC $A_z$}}	\\');
+fprintf(fid, '%s \n', '          & \multicolumn{1}{c}{HC (n=50)} & \multicolumn{1}{c}{PRP (n=12)} & \multicolumn{1}{c}{SSc (n=50)} & \multicolumn{1}{c}{HC,PRP $v$ SSc}  	\\');
 for i_f = 1:6
     fprintf(fid, '%s ', o_txt{i_f});
     fprintf(fid, '& %3.3g $\\pm$ %3.2f        ', all_dist_means(1,i_f), all_dist_se(1,i_f));
-    fprintf(fid, '& %3.3g $\\pm$ %3.2f        ', all_dist_means(2,i_f), all_dist_se(2,i_f));
-    fprintf(fid, '& %3.3g $\\pm$ %3.2f        ', all_dist_means(3,i_f), all_dist_se(3,i_f));
+    if i_f == 3
+        fprintf(fid, '& %3.3g $\\pm$ %3.2f $^\\sharp$ ', all_dist_means(2,i_f), all_dist_se(2,i_f));
+    else
+        fprintf(fid, '& %3.3g $\\pm$ %3.2f        ', all_dist_means(2,i_f), all_dist_se(2,i_f));
+    end
+    fprintf(fid, '& %3.3g $\\pm$ %3.2f $^{\\dagger\\ddagger}$ ', all_dist_means(3,i_f), all_dist_se(3,i_f));
     fprintf(fid, '& %3.3g $\\pm$ %3.2f        ', all_roc_auc(i_f), all_roc_se(i_f));
     fprintf(fid, '%s \n', '\\');
 end
@@ -272,3 +278,11 @@ fprintf(fid, '%s \n', '%');
 fprintf(fid, '%s \n', '\bottomrule \noalign{\smallskip}');
 fprintf(fid, '%s \n', '\end{tabular*}');
 fclose(fid);
+%%
+% Colorwheel
+[xx yy] = meshgrid(linspace(-1, 1, 64), linspace(1, -1, 64));
+colorwheel = complex2rgb(complex(xx, -yy), [-pi pi], 1, [], 1);
+mask = xx.^2 + yy.^2 > 1;
+colorwheel(cat(3, mask, mask, mask)) = 1;
+figure; imagesc(colorwheel); axis image; colormap(gray(256));
+imwrite(colorwheel, [fig_dir 'colorwheel.png']);

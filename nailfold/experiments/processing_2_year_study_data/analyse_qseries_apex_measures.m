@@ -36,8 +36,6 @@ args = u_packargs(varargin,... % the user's input
     'xls_filename_images',     'image_auto_stats.xls',...
     'xls_filename_subjects',     'subject_auto_stats.xls');
 
-vessel_centre_dir = [args.data_dir '/' args.vessel_centre_dir '/'];
-selected_dir = [args.data_dir '/' args.selected_dir '/'];
 metrics_dir = [args.data_dir '/' args.metrics_dir '/'];
 
 if isempty(args.selected_features)
@@ -70,8 +68,7 @@ if isempty(args.selected_features)
           'total_scores',...
            'mean_scores',...
          'score_density',...
-        'vessel_density1',...
-        'vessel_density2',...
+        'vessel_density',...
         'mean_inter_capillary_distance',...
         'std_inter_capillary_distance',...
         'median_inter_capillary_distance'};
@@ -132,8 +129,7 @@ if args.do_auto_stats
     auto_stats.dispersion_connected_orientation = nan(num_images, 1);
     auto_stats.dispersion_weighted_orientation = nan(num_images, 1);
 
-    auto_stats.vessel_density1 = nan(num_images, 1);
-    auto_stats.vessel_density2 = nan(num_images, 1);
+    auto_stats.vessel_density = nan(num_images, 1);
 
     auto_stats.mean_inter_capillary_distance = nan(num_images, 1);
     auto_stats.std_inter_capillary_distance = nan(num_images, 1);
@@ -211,13 +207,16 @@ if args.do_auto_stats
         
         %load([apex_gt_dir  im_name '_gt.mat']);
         load([metrics_dir im_name '_am.mat']);
-        s = load([selected_dir im_name '_sel.mat']);
+        
+        auto_stats.gradeable(i_im) = ~isempty(apex_measures.distal); 
+        if ~auto_stats.gradeable(i_im)
+            continue;
+        end
 
-        auto_stats.gradeable(i_im) = ~isempty(s.selected_distal);
-        auto_stats.num_distal_vessels(i_im) = sum(s.selected_distal);
-        auto_stats.num_nondistal_vessels(i_im) = sum(s.selected_non_distal); 
-        auto_stats.status(i_im) = s.status;
+        auto_stats.num_distal_vessels(i_im) = sum(~isnan(apex_measures.distal.mean_weighted_width));
+        auto_stats.num_nondistal_vessels(i_im) = sum(~isnan(apex_measures.nondistal.mean_weighted_width));
 
+        auto_stats.status(i_im) = auto_stats.num_distal_vessels(i_im) < 3;
         if auto_stats.num_distal_vessels(i_im)
             auto_stats.median_apex_width(i_im) = naNmedian(apex_measures.distal.width_at_apex) * args.um_per_pix;
             auto_stats.mean_mean_width(i_im) = naNmean(apex_measures.distal.mean_width) * args.um_per_pix;
@@ -263,22 +262,19 @@ if args.do_auto_stats
             
             
             %Compute density measures
-            load([vessel_centre_dir im_name '_vc.mat'], 'ncols');
-            d1 = (ncols - 1) * args.um_per_pix / 1000;
-            
-            apex_xy = sortrows(apex_measures.distal.apex_xy);
-            
-            d2 = sqrt(sum((apex_xy(1,:)-apex_xy(end,:)).^2)) * args.um_per_pix / 1000;
-            inter_d = sqrt(sum(diff(apex_xy).^2,2)) * args.um_per_pix / 1000;
+            if auto_stats.num_distal_vessels(i_im) > 2
+                apex_xy = sortrows(apex_measures.distal.apex_xy(~isnan(apex_measures.distal.width_at_apex),:));
+                d2 = sqrt(sum((apex_xy(1,:)-apex_xy(end,:)).^2)) * args.um_per_pix / 1000;
+                auto_stats.vessel_density(i_im) = auto_stats.num_distal_vessels(i_im) / d2;
+                auto_stats.score_density(i_im) = auto_stats.total_scores(i_im) / d2;
 
-            auto_stats.vessel_density1(i_im) = auto_stats.num_distal_vessels(i_im) / d1;
-            auto_stats.vessel_density2(i_im) = auto_stats.num_distal_vessels(i_im) / d2;
+                inter_d = sqrt(sum(diff(apex_xy).^2,2)) * args.um_per_pix / 1000;
+                auto_stats.mean_inter_capillary_distance(i_im) = mean(inter_d);
+                auto_stats.std_inter_capillary_distance(i_im) = std(inter_d);
+                auto_stats.median_inter_capillary_distance(i_im) = median(inter_d);
 
-            auto_stats.mean_inter_capillary_distance(i_im) = mean(inter_d);
-            auto_stats.std_inter_capillary_distance(i_im) = std(inter_d);
-            auto_stats.median_inter_capillary_distance(i_im) = median(inter_d);
-            
-            auto_stats.score_density(i_im) = auto_stats.total_scores(i_im) / d1;
+
+            end
 
         end
     end
@@ -291,7 +287,9 @@ end
 %--------------------------------------------------------------------------
 %%
 if args.do_xls
-       
+    if ~exist('num_images', 'var')
+        num_images = length(args.image_names);
+    end
     xls_data = cell(num_images+1, length(selected_features)+1);
     xls_data{1,1} = 'Image names';
     xls_data(2:end,1) = args.image_names;
@@ -526,8 +524,7 @@ if args.do_people_plots
                       'total_scores',...
                        'mean_scores',...
                      'score_density',...
-                    'vessel_density1',...
-                    'vessel_density2',...
+                    'vessel_density',...
       'mean_inter_capillary_distance',...
        'std_inter_capillary_distance',...
     'median_inter_capillary_distance'};

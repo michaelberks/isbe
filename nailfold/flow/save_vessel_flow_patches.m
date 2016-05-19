@@ -138,9 +138,20 @@ for i_b = 1:size(bounding_boxes,3)
     cols = ~all(edge_mask);
     cropped_frames = cleaned_frames(rows, cols, :); %#ok
     
+    [~, ~, dx, dy] = ...
+        mosaic_limits([y_max-y_min x_max-x_min]+1, vessel_transforms);   
+    
+    mask_row = any(~edge_mask,1);
+    mask_col = any(~edge_mask,2);
+    x_min_cropped = floor(x_min + find(mask_row,1) - dx);
+    y_min_cropped = floor(y_min + find(mask_col,1) - dy);
+    x_max_cropped = x_min_cropped + sum(mask_row) - 1; %#ok
+    y_max_cropped = y_min_cropped + sum(mask_col) - 1; %#ok
+    
     save([save_path '_v' zerostr(i_b,2) '.mat'], 'frames_i', 'apex_idx', ...
         'vessel_transforms', 'cropped_frames', 'edge_mask',...
-        'x_min', 'x_max', 'y_min', 'y_max', 'frames_offset', 'num_frames');
+        'x_min', 'x_max', 'y_min', 'y_max', 'frames_offset', 'num_frames', ...
+        'x_min_cropped', 'x_max_cropped', 'y_min_cropped', 'y_max_cropped');
     
     
 end

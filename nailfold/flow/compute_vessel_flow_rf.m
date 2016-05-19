@@ -243,7 +243,7 @@ flow_angle_dirs = angle(flow_angle_diffs);
 flow_metrics.weighted_flow_rate = sum(frame_pred_masked(:).*flow_velocity(:)) /...
     flow_metrics.total_vessel_prob;
 
-flow_metrics.mean_error = mean(abs(flow_angle_dirs(:)));
+flow_metrics.mean_error = mean(abs(flow_angle_dirs(frame_apex_mask)));
 flow_metrics.mean_weighted_error = sum(flow_angle_weights(:) .* abs(flow_angle_dirs(:))) /...
     sum(flow_angle_weights(:));
 

@@ -1,4 +1,4 @@
-function [frames, cell_positions] = make_synthetic_flow_frames(vessel_name, max_flow, varargin)
+function [frames, cell_positions] = make_synthetic_flow_frames(vessel_name, mean_flow, varargin)
 %MAKE_SYNTHETIC_FLOW_COMPARISON_VIDEO generates synthetic flow videos using real
 %capillary shapes
 %   [] = make_synthetic_flow_comparison_video('normalapex0008', 3, 1.5, 'adjacent_videos', 0)
@@ -14,7 +14,7 @@ function [frames, cell_positions] = make_synthetic_flow_frames(vessel_name, max_
 % and apex_idx (m x 1, where vessel_centre(apex_idx(i),:) are the x,y
 % coordinates of the i'th apex). For normal 'single loop' capillaries m = 1
 %
-% - max_flow: the maximum flow (effectively the number of pixels a red
+% - mean_flow: the maximum flow (effectively the number of pixels a red
 % blood moves in a signle frame) in the synthesised flow field. Flow in the
 % rest of the vessel will be scaled to the inverse square of vessel width
 % so that a constant theoretical volumetric flow rate is maintained
@@ -36,10 +36,11 @@ args = u_packargs(varargin,... % the user's input
     'contour_dir',          'C:\isbe\nailfold\data\rsa_study\set12g\vessel_contours\',... %Where the contour data files live
     'overwrite',            true,... %If true, saves the new flow field over the top of any existing data for the contour in the video directory
     'flow_map_dir',         [],...
-    'cell_density',         10,... %Density of cells in the synthesised video - try adjusting to see how it affects the ability to perceive flow
+    'cell_density',         8,... %Density of cells in the synthesised video - try adjusting to see how it affects the ability to perceive flow
     'num_frames',           120,... %Together with frame_rate defines video length
     'vessel_contrast',      0.5,...
     'speckle_noise',        0.01,... %Changes how noisy the videos are, increasing speckle noise decreases video quality, may be worth experimenting with to see if effects how easy the task is
+    'max_jitter',           [4 2],...
     'scale_cell_width',     0,... %Can choose to scale red blood cell size to the vessel width, physiologically this doesn't make much sense, so best leave at 0
     'fixed_cell_width',     10,... %If above is 0, this defines blood cell width
     'debug',                false,...
@@ -63,7 +64,11 @@ else
         'flowmap', 'mask', 'vessel_centre', 'widths');
 end
 
-flowmap = max_flow*flowmap;
+%Flow mmap is scaled so that its max flow = 1. Scale instead so the mean
+%flow = 1, then scale by the mean_flow input parameter
+flat_map = max(flowmap, [], 3);
+flat_mask = any(mask,3);
+flowmap = mean_flow*flowmap / nanmean(abs(flat_map(flat_mask)));
 
 %Set the cell size and compute number of cells to use
 if args.scale_cell_width
@@ -89,8 +94,15 @@ cell_positions = generate_cell_positions_layers(flowmap, mask, ...
 [flow_h, flow_w, ~] = size(flowmap);
 
 %Make background texture
-cloud_add = noiseonf(max(flow_h, flow_w), 3);
-background = normim(cloud_add(1:flow_h,1:flow_w), 'stretch_fixed');
+cloud_bg = noiseonf(max(flow_h, flow_w), 3);
+background = normim(cloud_bg(1:flow_h,1:flow_w), 'stretch_fixed');
+
+if all(args.max_jitter)
+    frame_jitter = rand(args.num_frames, 2);
+    g_j = gaussian_filters_1d(4);
+    g_j = g_j(:) / sum(g_j);
+    frame_jitter = conv2(frame_jitter, g_j, 'same');
+end
 
 %--------------------------------------------------------------------------
 %Now we can make our video
@@ -99,11 +111,15 @@ frames = zeros(flow_h, flow_w, args.num_frames);
 for i_fr = 1:args.num_frames;
 
     %Make the synthetic frame
-    %cloud_mult = noiseonf(max(flow_h, flow_w), 1.5);
-    contrast = args.vessel_contrast;% * normim(cloud_mult(1:flow_h,1:flow_w), 'stretch_fixed');
+    cloud_vessel = noiseonf(max(flow_h, flow_w), 1.0);
+    contrast = args.vessel_contrast *(0.5 + 0.5*normim(cloud_vessel(1:flow_h,1:flow_w), 'stretch_fixed'));
 
-    %background = imnoise(background, 'gaussian', 0, 0.0001);
-    frame_i = make_frame(cell_positions(:,:,i_fr:i_fr+1), ...
+    cell_pos_i = cell_positions(:,:,i_fr:i_fr+1);
+    if all(args.max_jitter)
+        cell_pos_i(:,1) = cell_pos_i(:,1) + frame_jitter(i_fr,1)*args.max_jitter(1);
+        cell_pos_i(:,2) = cell_pos_i(:,2) + frame_jitter(i_fr,2)*args.max_jitter(2);
+    end
+    frame_i = make_frame(cell_pos_i, ...
                      [flow_h flow_w], cell_sz, ...
                      [], background, contrast, inf, 0); %
     frame_i = frame_i - min(frame_i(:));
