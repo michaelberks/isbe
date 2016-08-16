@@ -1,0 +1,82 @@
+function [Us, Vs, Ts] = create_spatial(imsz, imrng_x, imrng_y, ...
+                                       tau_hv, tau_d, img)
+     
+if ~exist('tau_hv','var') || isempty(tau_hv), tau_hv = 1/6; end
+if ~exist('tau_d','var') || isempty(tau_d), tau_d = 1/12; end
+if ~exist('img','var') || isempty(img), img = zeros(imsz); end
+   
+nPixels = prod(imsz);
+
+nConsSpatial = 0;
+if (tau_hv > 0)
+    nConsSpatial = nConsSpatial + nPixels * 2;
+end
+if (tau_d > 0)
+    nConsSpatial = nConsSpatial + nPixels * 2;
+end
+
+if (nConsSpatial == 0)
+    Us = []; Vs = []; Ts = [];
+    return;
+end
+
+imginds = reshape(1:nPixels, imsz);
+
+Us = spalloc(nConsSpatial, nPixels, 2*nConsSpatial);
+% Vs = spalloc(nConsSpatial, nPixels, 2*nConsSpatial);
+
+cind = 0;
+if (tau_hv > 0)
+    for x = imrng_x
+        for y = imrng_y
+            % Connect to pixel to the East
+            if (x < imrng_x(end))
+                cind = cind + 1;
+                diff = img(y,x+1) - img(y,x);
+                edge_weight = tau_hv * exp(-diff*diff);
+
+                Us(cind, imginds(y, x)) = edge_weight;
+                Us(cind, imginds(y, x+1)) = -edge_weight;
+            end
+
+            % Connect to pixel to the South
+            if (y < imrng_y(end))
+                cind = cind + 1;
+                diff = img(y+1,x) - img(y,x);
+                edge_weight = tau_hv * exp(-diff*diff);
+
+                Us(cind, imginds(y, x)) = edge_weight;
+                Us(cind, imginds(y+1, x)) = -edge_weight;
+            end
+        end
+    end
+end
+
+if (tau_d > 0)
+    for x = imrng_x(1:end-1)
+        for y = imrng_y
+            % Connect to pixel to the NorthEast
+            if (y > 1)
+                cind = cind + 1;
+                Us(cind, imginds(y, x)) = tau_d;
+                Us(cind, imginds(y-1, x+1)) = -tau_d;
+            end
+
+            % Connect to pixel to the SouthEast
+            if (y < imrng_y(end))
+                cind = cind + 1;
+                Us(cind, imginds(y, x)) = tau_d;
+                Us(cind, imginds(y+1, x+1)) = -tau_d;
+            end
+        end
+    end
+end
+
+Us = Us(1:cind,:);
+
+if (nargout > 1)
+    Vs = Us; % for now
+end
+if (nargout > 2)
+    Ts = spalloc(cind, 1, 0);
+end

@@ -1,0 +1,393 @@
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.5.30)  17 MAR 2016 13:34
+entering extended mode
+**C:/isbe/matlab_code/isbe/papers/2013embc*(synthesis)/2013embc_paper.tex
+("C:/isbe/matlab_code/isbe/papers/2013embc (synthesis)/2013embc_paper.tex"
+LaTeX2e <2011/06/27>
+Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
+abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
+croatian, czech, danish, dutch, esperanto, estonian, farsi, finnish, french, ga
+lician, german, german-x-2013-05-26, greek, gujarati, hindi, hungarian, iceland
+ic, indonesian, interlingua, irish, italian, kannada, kurmanji, latin, latvian,
+ lithuanian, malayalam, marathi, mongolian, mongolianlmc, monogreek, ngerman, n
+german-x-2013-05-26, nynorsk, oriya, panjabi, pinyin, polish, portuguese, roman
+ian, russian, sanskrit, serbian, slovak, slovenian, spanish, swedish, swissgerm
+an, tamil, telugu, turkish, turkmen, ukenglish, ukrainian, uppersorbian, usengl
+ishmax, welsh, loaded.
+("C:\isbe\matlab_code\isbe\papers\2013embc (synthesis)\ieeeconf.cls"
+Document Class: ieeeconf 2004/1/15 revision V1.6b by Pradeep Misra
+\@IEEEtrantmpdimenA=\dimen102
+\@IEEEtrantmpdimenB=\dimen103
+\@IEEEtrantmpcountA=\count79
+\@IEEEtrantmpcountB=\count80
+\@IEEEtrantmptoksA=\toks14
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 792.
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\ot1ptm.fd"
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+\@IEEEnormalsizefontbaselineskip=\skip41
+
+-- This is a 10 point document.
+\normalsizebaselineskip=\skip42
+\normaljot=\skip43
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1111.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1111.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1111.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1111.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1111.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1111.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1111.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1111.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1111.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1111.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <11> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1111.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <11> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1111.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1111.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1111.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <16> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1111.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <16> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1111.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <20> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1111.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <20> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1111.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <24> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1111.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <24> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1111.
+
+\IEEEilabelindentA=\dimen104
+\IEEEilabelindentB=\dimen105
+\IEEEilabelindent=\dimen106
+\IEEEelabelindent=\dimen107
+\IEEEdlabelindent=\dimen108
+\labelindent=\dimen109
+\IEEEiednormlabelsep=\dimen110
+\IEEEiedmathlabelsep=\dimen111
+\IEEEiedtopsep=\skip44
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@IEEEsubequation=\count85
+\abovecaptionskip=\skip45
+\belowcaptionskip=\skip46
+\c@figure=\count86
+\c@table=\count87
+\@IEEEeqnnumcols=\count88
+\@IEEEeqncolcnt=\count89
+\@IEEEtmpitemindent=\dimen112
+\c@biography=\count90
+\@IEEEtranrubishbin=\box26
+)
+** ATTENTION: Overriding command lockouts (line 5).
+** ATTENTION: Overriding IEEE standard margins (line 9).
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\graphicx.sty"
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\keyval.sty"
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks15
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\graphics.sty"
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\trig.sty"
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\00miktex\graphics.cfg"
+File: graphics.cfg 2007/01/18 v1.5 graphics configuration of teTeX/TeXLive
+)
+Package graphics Info: Driver file: pdftex.def on input line 91.
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\pdftex-def\pdftex.def"
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\infwarerr.sty"
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\generic\oberdiek\ltxcmds.sty"
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+)
+\Gread@gobject=\count91
+))
+\Gin@req@height=\dimen113
+\Gin@req@width=\dimen114
+)
+(C:\Users\momeemb2\AppData\Roaming\MiKTeX\2.9\tex\latex\placeins\placeins.sty
+Package: placeins 2005/04/18  v 2.2
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\xspace.sty"
+Package: xspace 2009/10/20 v1.13 Space after command names (DPC,MH)
+)
+\figwidth=\skip47
+\figheight=\skip48
+
+("C:\isbe\matlab_code\isbe\papers\2013embc (synthesis)\2013embc_paper.aux")
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 53.
+LaTeX Font Info:    ... okay on input line 53.
+
+(C:\Users\momeemb2\AppData\Roaming\MiKTeX\2.9\tex\context\base\supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count92
+\scratchdimen=\dimen115
+\scratchbox=\box27
+\nofMPsegments=\count93
+\nofMParguments=\count94
+\everyMPshowfont=\toks16
+\MPscratchCnt=\count95
+\MPscratchDim=\dimen116
+\MPnumerator=\count96
+\makeMPintoPDFobject=\count97
+\everyMPtoPDFconversion=\toks17
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 55.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 55.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 55.
+ ("C:\isbe\matlab_code\isbe\papers\2013embc (synthesis)\fig_example_images.tex"
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 10.
+ <./fig/real_frame.png, id=1, 642.4pt x 481.8pt>
+File: ./fig/real_frame.png Graphic file (type png)
+ <use ./fig/real_frame.png>
+Package pdftex.def Info: ./fig/real_frame.png used on input line 10.
+(pdftex.def)             Requested size: 227.99968pt x 171.0pt.
+
+<./fig/real_cap_eq.png, id=2, 144.54pt x 349.305pt>
+File: ./fig/real_cap_eq.png Graphic file (type png)
+
+<use ./fig/real_cap_eq.png>
+Package pdftex.def Info: ./fig/real_cap_eq.png used on input line 10.
+(pdftex.def)             Requested size: 70.75903pt x 171.0pt.
+
+<./fig/fake_cap_eq.png, id=3, 144.54pt x 349.305pt>
+File: ./fig/fake_cap_eq.png Graphic file (type png)
+
+<use ./fig/fake_cap_eq.png>
+Package pdftex.def Info: ./fig/fake_cap_eq.png used on input line 10.
+(pdftex.def)             Requested size: 70.75903pt x 171.0pt.
+)
+("C:\isbe\matlab_code\isbe\papers\2013embc (synthesis)\fig_image_generation.tex
+" <./fig/path_points.pdf, id=4, 128.48pt x 360.34625pt>
+File: ./fig/path_points.pdf Graphic file (type pdf)
+
+<use ./fig/path_points.pdf>
+Package pdftex.def Info: ./fig/path_points.pdf used on input line 5.
+(pdftex.def)             Requested size: 50.59209pt x 141.89807pt.
+
+<./fig/edge_points.pdf, id=5, 128.48pt x 360.34625pt>
+File: ./fig/edge_points.pdf Graphic file (type pdf)
+
+<use ./fig/edge_points.pdf>
+Package pdftex.def Info: ./fig/edge_points.pdf used on input line 6.
+(pdftex.def)             Requested size: 50.59209pt x 141.89807pt.
+ <./fig/u_gt.png, id=6, 160.6pt x 465.74pt>
+File: ./fig/u_gt.png Graphic file (type png)
+
+<use ./fig/u_gt.png>
+Package pdftex.def Info: ./fig/u_gt.png used on input line 7.
+(pdftex.def)             Requested size: 50.59209pt x 146.71597pt.
+ <./fig/v_gt.png, id=7, 160.6pt x 465.74pt>
+File: ./fig/v_gt.png Graphic file (type png)
+
+<use ./fig/v_gt.png>
+Package pdftex.def Info: ./fig/v_gt.png used on input line 8.
+(pdftex.def)             Requested size: 50.59209pt x 146.71597pt.
+ <./fig/cells_positions.pdf, id=8, 128.48pt x 360.34625pt>
+File: ./fig/cells_positions.pdf Graphic file (type pdf)
+
+<use ./fig/cells_positions.pdf>
+Package pdftex.def Info: ./fig/cells_positions.pdf used on input line 9.
+(pdftex.def)             Requested size: 50.59209pt x 141.89807pt.
+ <./fig/clean.png, id=9, 144.54pt x 349.305pt>
+File: ./fig/clean.png Graphic file (type png)
+
+<use ./fig/clean.png>
+Package pdftex.def Info: ./fig/clean.png used on input line 10.
+(pdftex.def)             Requested size: 50.59209pt x 122.2639pt.
+ <./fig/fake_cap.png, id=10, 144.54pt x 349.305pt>
+File: ./fig/fake_cap.png Graphic file (type png)
+
+<use ./fig/fake_cap.png>
+Package pdftex.def Info: ./fig/fake_cap.png used on input line 11.
+(pdftex.def)             Requested size: 50.59209pt x 122.2639pt.
+)
+Underfull \hbox (badness 3323) in paragraph at lines 92--92
+[][][]\OT1/ptm/m/n/8 Example se-quences are avail-able at the time of writ-ing 
+from
+ []
+
+
+Overfull \hbox (1.59897pt too wide) in paragraph at lines 92--92
+\OT1/ptm/m/n/8 http://personalpages.manchester.ac.uk/staff/philip.tresadern/pro
+j[]nailfold.htm| 
+ []
+
+[1{C:/Users/momeemb2/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}
+
+
+ <C:/isbe/matlab_code/isbe/papers/2013embc (synthesis)/fig/real_frame.png (PNG 
+copy)> <C:/isbe/matlab_code/isbe/papers/2013embc (synthesis)/fig/real_cap_eq.pn
+g (PNG copy)> <C:/isbe/matlab_code/isbe/papers/2013embc (synthesis)/fig/fake_ca
+p_eq.png (PNG copy)>] [2 <C:/isbe/matlab_code/isbe/papers/2013embc (synthesis)/
+fig/path_points.pdf> <C:/isbe/matlab_code/isbe/papers/2013embc (synthesis)/fig/
+edge_points.pdf> <C:/isbe/matlab_code/isbe/papers/2013embc (synthesis)/fig/u_gt
+.png> <C:/isbe/matlab_code/isbe/papers/2013embc (synthesis)/fig/v_gt.png> <C:/i
+sbe/matlab_code/isbe/papers/2013embc (synthesis)/fig/cells_positions.pdf> <C:/i
+sbe/matlab_code/isbe/papers/2013embc (synthesis)/fig/clean.png (PNG copy)> <C:/
+isbe/matlab_code/isbe/papers/2013embc (synthesis)/fig/fake_cap.png (PNG copy)>]
+
+("C:\isbe\matlab_code\isbe\papers\2013embc (synthesis)\fig_flow_results_synth.t
+ex"
+File: ./fig/u_gt.png Graphic file (type png)
+ <use ./fig/u_gt.png>
+Package pdftex.def Info: ./fig/u_gt.png used on input line 10.
+(pdftex.def)             Requested size: 61.42952pt x 178.14142pt.
+ <./fig/u_est.png, id=30, 72.27pt x 174.6525pt>
+File: ./fig/u_est.png Graphic file (type png)
+
+<use ./fig/u_est.png>
+Package pdftex.def Info: ./fig/u_est.png used on input line 10.
+(pdftex.def)             Requested size: 61.42952pt x 148.45265pt.
+File: ./fig/v_gt.png Graphic file (type png)
+ <use ./fig/v_gt.png>
+Package pdftex.def Info: ./fig/v_gt.png used on input line 10.
+(pdftex.def)             Requested size: 61.42952pt x 178.14142pt.
+
+<./fig/v_est.png, id=31, 72.27pt x 174.6525pt>
+File: ./fig/v_est.png Graphic file (type png)
+ <use ./fig/v_est.png>
+Package pdftex.def Info: ./fig/v_est.png used on input line 10.
+(pdftex.def)             Requested size: 61.42952pt x 148.45265pt.
+)
+("C:\isbe\matlab_code\isbe\papers\2013embc (synthesis)\fig_flow_results.tex"
+<./fig/real_flow/u_overlay.png, id=32, 145.54375pt x 109.40875pt>
+File: ./fig/real_flow/u_overlay.png Graphic file (type png)
+
+<use ./fig/real_flow/u_overlay.png>
+Package pdftex.def Info: ./fig/real_flow/u_overlay.png used on input line 8.
+(pdftex.def)             Requested size: 122.85905pt x 92.35846pt.
+
+<./fig/real_flow/v_overlay.png, id=33, 145.54375pt x 109.40875pt>
+File: ./fig/real_flow/v_overlay.png Graphic file (type png)
+
+<use ./fig/real_flow/v_overlay.png>
+Package pdftex.def Info: ./fig/real_flow/v_overlay.png used on input line 8.
+(pdftex.def)             Requested size: 122.85905pt x 92.35846pt.
+)
+("C:\isbe\matlab_code\isbe\papers\2013embc (synthesis)\fig_flow_graphs_synth.te
+x" <./fig/flowrate.pdf, id=34, 216.81pt x 169.63374pt>
+File: ./fig/flowrate.pdf Graphic file (type pdf)
+
+<use ./fig/flowrate.pdf>
+Package pdftex.def Info: ./fig/flowrate.pdf used on input line 12.
+(pdftex.def)             Requested size: 122.85905pt x 96.12537pt.
+ <./fig/n_cells.pdf, id=35, 213.79875pt x 169.63374pt>
+File: ./fig/n_cells.pdf Graphic file (type pdf)
+
+<use ./fig/n_cells.pdf>
+Package pdftex.def Info: ./fig/n_cells.pdf used on input line 12.
+(pdftex.def)             Requested size: 122.85905pt x 97.4791pt.
+
+<./fig/brightness_sigma.pdf, id=36, 216.81pt x 169.63374pt>
+File: ./fig/brightness_sigma.pdf Graphic file (type pdf)
+
+<use ./fig/brightness_sigma.pdf>
+Package pdftex.def Info: ./fig/brightness_sigma.pdf used on input line 12.
+(pdftex.def)             Requested size: 122.85905pt x 96.12537pt.
+
+<./fig/contrast_sigma.pdf, id=37, 219.82124pt x 169.63374pt>
+File: ./fig/contrast_sigma.pdf Graphic file (type pdf)
+
+<use ./fig/contrast_sigma.pdf>
+Package pdftex.def Info: ./fig/contrast_sigma.pdf used on input line 12.
+(pdftex.def)             Requested size: 122.85905pt x 94.80788pt.
+) [3 <C:/isbe/matlab_code/isbe/papers/2013embc (synthesis)/fig/u_est.png (PNG c
+opy)> <C:/isbe/matlab_code/isbe/papers/2013embc (synthesis)/fig/v_est.png (PNG 
+copy)> <C:/isbe/matlab_code/isbe/papers/2013embc (synthesis)/fig/real_flow/u_ov
+erlay.png (PNG copy)> <C:/isbe/matlab_code/isbe/papers/2013embc (synthesis)/fig
+/real_flow/v_overlay.png (PNG copy)>]
+Missing character: There is no ’ in font ptmr7t!
+
+Underfull \hbox (badness 1895) in paragraph at lines 263--266
+[]\OT1/ptm/m/n/8 A. Bruhn, J. We-ick-ert, and C. Schnorr, ``Lu-cas/Kanade meets
+
+ []
+
+
+** Conference Paper **
+Before submitting the final camera ready copy, remember to:
+
+ 1. Manually equalize the lengths of two columns on the last page
+ of your paper;
+
+ 2. Ensure that any PostScript and/or PDF output post-processing
+ uses only Type 1 fonts and that every step in the generation
+ process uses the US letter (8.5in X 11in) paper size.
+
+[4 <C:/isbe/matlab_code/isbe/papers/2013embc (synthesis)/fig/flowrate.pdf> <C:/
+isbe/matlab_code/isbe/papers/2013embc (synthesis)/fig/n_cells.pdf> <C:/isbe/mat
+lab_code/isbe/papers/2013embc (synthesis)/fig/brightness_sigma.pdf> <C:/isbe/ma
+tlab_code/isbe/papers/2013embc (synthesis)/fig/contrast_sigma.pdf>]
+("C:\isbe\matlab_code\isbe\papers\2013embc (synthesis)\2013embc_paper.aux") ) 
+Here is how much of TeX's memory you used:
+ 1909 strings out of 493921
+ 30646 string characters out of 3144867
+ 87769 words of memory out of 3000000
+ 5191 multiletter control sequences out of 15000+200000
+ 38658 words of font info for 72 fonts, out of 3000000 for 9000
+ 841 hyphenation exceptions out of 8191
+ 27i,12n,20p,897b,307s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C
+:/Program Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Program Fi
+les (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program File
+s (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi7.pfb><C:/Program Files (
+x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files (x86
+)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x86)/
+MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/
+fonts/type1/urw/times/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type
+1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times
+/utmri8a.pfb>
+Output written on 2013embc_paper.pdf (4 pages, 488229 bytes).
+PDF statistics:
+ 90 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 91 words of extra memory for PDF output out of 10000 (max. 10000000)
+

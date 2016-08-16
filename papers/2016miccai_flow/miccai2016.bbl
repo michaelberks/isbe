@@ -1,0 +1,67 @@
+\begin{thebibliography}{10}
+
+\bibitem{HerrickCOinR2011}
+Herrick, A.L.:
+\newblock Contemporary management of raynaud's phenomenon and digital ischaemic
+  complications.
+\newblock Current Opinion in Rheumatology: \textbf{23} (November 2011)
+  555--�561
+
+\bibitem{Cutolo_etal_BPRCR08}
+Cutolo, M., Pizzorni, C., Secchi, M.E., Sulli, A.:
+\newblock Capillaroscopy.
+\newblock Best Practice and Research Clinical Rheumatology \textbf{22}(6)
+  (2008)  1093--1108
+
+\bibitem{Murray_etal_AR09}
+Murray, A.K., Moore, T.L., Manning, J.B., Taylor, C., Griffiths, C.E.M.,
+  Herrick, A.L.:
+\newblock Noninvasive imaging techniques in the assessment of scleroderma
+  spectrum disorders.
+\newblock Arthritis Rheum \textbf{61}(8) (2009)  1103--11
+
+\bibitem{Berks_MICCAI14}
+Berks, M., Tresadern, P., Dinsdale, G., Murray, A., Moore, T., Herrick, A.,
+  Taylor, C.:
+\newblock An automated system for detecting and measuring nailfold capillaries.
+\newblock In Golland, P., Hata, N., Barillot, C., Hornegger, J., Howe, R.,
+  eds.: MICCAI 2014. Volume 6533 of Lecture Notes in Computer Science.,
+  Springer Berlin Heidelberg (2014)  658--665
+
+\bibitem{BroxECCV04}
+Brox, T., Bruhn, A., Papenberg, N., Weickert, J.:
+\newblock High Accuracy Optical Flow Estimation Based on a Theory for Warping.
+\newblock In: Computer Vision - ECCV 2004. Springer Berlin Heidelberg, Berlin,
+  Heidelberg (2004)  25--36
+
+\bibitem{Mawson_Shore_JMET98}
+Mawson, D.M., Shaw, A.C.:
+\newblock Comparison of {C}api{F}low and frame by frame analysis for the
+  assessment of capillary red blood cell velocity.
+\newblock J Medica Eng Tech \textbf{22}(2) (1998)  53--63
+
+\bibitem{Shih_etal_MR11}
+Shih, T.C., Zhang, G., Wu, C.C., Hsiao, H.D., Wu, T.H., Lin, K.P., Huang, T.C.:
+\newblock Hemodynamic analysis of capillary in finger nail-fold using
+  computational fluid dynamics and image estimation.
+\newblock Microvascular Research \textbf{81}(1) (2011)  68 -- 72
+
+\bibitem{DobbeMBEC08}
+Dobbe, J.G.G., Streekstra, G.J., Atasever, B., Zijderveld, R., Ince, C.:
+\newblock Measurement of functional microcirculatory geometry and velocity
+  distributions using automated image analysis.
+\newblock Medical \& Biological Engineering \& Computing \textbf{46}(7) (2008)
+  659--670
+
+\bibitem{Allen_etal_MICCAI99}
+Allen, P.D., Taylor, C.J., Herrick, A.L., Moore, T.:
+\newblock Image analysis of nailfold capillary patterns from video sequences.
+\newblock In Taylor, C., Colchester, A., eds.: MICCAI'99, Berlin, Heidelberg,
+  Springer Berlin Heidelberg (1999)  698--705
+
+\bibitem{Horn_Schunk_AI81}
+Horn, B.K.P., Schunk, B.G.:
+\newblock Determining optical flow.
+\newblock Artif. Intell. \textbf{17} (August 1981)  185--203
+
+\end{thebibliography}

@@ -2,7 +2,7 @@
 %image of the skin
 
 %Load in the image - make grayscale and convert to doubles
-oct_im = double(rgb2gray(imread('C:\isbe\nailfold\001_1.bmp')));
+oct_im = double(rgb2gray(imread('C:\isbe\nailfold\misc\OCT\001_1.bmp')));
 
 %Median filter the image to reduce specular noise - can play around with
 %different size smoothing windows. May make sense to have non-square
@@ -165,6 +165,40 @@ plot(1:512, max_ddg, 'g');
 subplot(1,2,2); imgray(oct_im); title('Original OCT');
 plot(1:512, min_ddg, 'r');
 plot(1:512, max_ddg, 'g');
+%%
+oct_im_mag = oct_im_dg.^2 + oct_im_ddg.^2;
+[~, max_mag] = max(oct_im_mag(1:200,:));
+
+figure; 
+subplot(1,2,1); imgray(oct_im_mag); title('Gaussian 1st/2nd combined magnitude.');
+plot(1:512, max_mag, 'g');
+subplot(1,2,2); imgray(oct_im); title('Original OCT');
+plot(1:512, max_mag, 'g');
+%%
+[im_h im_w] = size(oct_im);
+smallest_offset = min(max_mag);
+largest_offset = max(max_mag);
+
+extended_h = im_h + (largest_offset - smallest_offset);
+
+oct_reg = zeros(extended_h, im_w);
+
+r_idx = 1:im_h;
+for i_c = 1:im_w
+    offset = largest_offset - max_mag(i_c);
+    oct_reg(offset+r_idx,i_c) = oct_im(:,i_c);
+end
+
+figure; 
+subplot(1,2,1); imgray(oct_im); title('Original OCT');
+plot(1:512, max_mag, 'g');
+subplot(1,2,2); imgray(oct_reg); title('Registered OCT');
+
+
+
+
+
+
 
 
 

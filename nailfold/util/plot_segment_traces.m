@@ -86,11 +86,11 @@ set(a3, 'fontsize', 18);
 figure('windowstyle', 'normal');
 hold all; axis equal; a3 = gca;
 
-plot(0,0,'b-.');
+plot(0,0,'b:', 'linewidth', 2);
 plot(0,0,'r-');
-plot(0,0,'rx');
+plot(0,0,'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g');
 legend(a3, {'Motor path', 'Stationary segment frames', 'Stationary segment centres'}, 'location', 'north');
-plot(a3, motor_x, motor_y, 'b.', 'markersize', 8);
+plot(a3, motor_x, motor_y, 'b.', 'markersize', 4);
 %
 min_x = inf;
 max_x = -inf;
@@ -106,8 +106,8 @@ for i_seg = 1:length(segments_s)
     cx = median(seg_x);
     cy = median(seg_y);
 
-    plot(a3, cx, cy, 'rx');
-    plot(a3, cx+frame_rect_x, cy+frame_rect_y, 'r', 'linewidth', 2); 
+    plot(a3, cx, cy, 'go', 'MarkerSize', 8, 'MarkerFaceColor', 'g');
+    plot(a3, cx+frame_rect_x, cy+frame_rect_y, 'r', 'linewidth', 1.5); 
     min_x = min(min_x,min(cx+frame_rect_x));
     max_x = max(max_x,max(cx+frame_rect_x));
     min_y = min(min_y,min(cy+frame_rect_y));
@@ -116,6 +116,6 @@ for i_seg = 1:length(segments_s)
 end
 axis([min_x max_x min_y max_y]);
 
-xlabel('X position', 'fontsize', 14);
-ylabel('Y position', 'fontsize', 14);
-set(a3, 'fontsize', 14);
+xlabel('X position', 'fontsize', 10);
+ylabel('Y position', 'fontsize', 10);
+set(a3, 'fontsize', 8);
