@@ -79,6 +79,8 @@ if isempty(args.dirt_image)
     tic;
     display('Constructing dirt image');
     frame_sum = zeros(args.frame_h, args.frame_w);
+    frame_diff = zeros(args.frame_h, args.frame_w);
+    frame_prev = [];
     total_frames = 0;
     for i_seg = 1:length(segments_ns)
 
@@ -89,6 +91,12 @@ if isempty(args.dirt_image)
             frame = double(rot90(imread([args.sequence_dir 'frame' zerostr(frame_idx(i_im), 5) '.bmp']),2));
             if is_frame_ok(frame, args.bad_frame_thresh, args.lower_g_lim, args.upper_g_lim)
                 frame_sum = frame_sum + frame;
+                
+                if isempty(frame_prev)
+                    frame_prev = frame;
+                else
+                    frame_diff = frame_diff + abs(frame-frame_prev);
+                end
                 total_frames = total_frames + 1;
             end
         end

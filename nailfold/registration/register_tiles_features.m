@@ -40,7 +40,8 @@ args = u_packargs(varargin,... % the user's input
     '0', ... % non-strict mode
     'ref_type', 'previous',...
     'tile_masks', [],...
-    'sigma', [2],...
+    'dirt_image', [],...
+    'sigma', 8,...
     'feature_type', 'g1d',...
     'region', 'centre',...
     'offset_lim', [],...
@@ -78,7 +79,21 @@ end
 %--------------------------------------------------
 %Generate offset and theta ranges to be used when registering each tile
 if isempty(args.tile_masks)
-    args.tile_masks = zeros(0, 0, num_tiles);
+    
+    if ~isempty(args.dirt_image)
+        [~, ~, line_mask] = get_line_points(args.dirt_image, args.sigma, ...
+                            true(size(args.dirt_image)), args.feature_type, 'all');
+        line_mask = ~imdilate(line_mask, strel('disk', 3));
+        args.tile_masks = repmat(line_mask, 1, 1, num_tiles);
+        
+        if args.debug
+            figure;
+            subplot(1,2,1); imgray(args.dirt_image); title('Dirt image');
+            subplot(1,2,2); imgray(args.tile_masks(:,:,1)); title('Tile mask');
+        end       
+    else
+        args.tile_masks = zeros(0, 0, num_tiles);
+    end
 end
 
 % offset_lim = [ ox_min ox_max 
@@ -186,7 +201,7 @@ while (it < max_iterations)
     end
 
     if args.debug
-        figure(1); clf;
+        figure;
         all_vessels = axes; 
         set(all_vessels, ...
             'Ydir', 'reverse',...
@@ -194,6 +209,8 @@ while (it < max_iterations)
             'NextPlot', 'add');
         setappdata(all_vessels,'PlotHoldStyle',true);
         plot(all_vessels, x_tgt, y_tgt, '.', 'markersize', 4);
+        
+        f2 = figure;
     end
 
     for i_tile = tile_range
@@ -300,7 +317,7 @@ while (it < max_iterations)
         end            
 
         if args.debug && ~isempty(x_src)
-            
+            figure(f2); clf; colormap(gray(256));
             if strcmp(args.ref_type, 'previous') 
                 if i_tile == 2
                     tile_prev = tile0;
@@ -313,7 +330,6 @@ while (it < max_iterations)
                 plot(all_vessels, xy_src_t(:,1), xy_src_t(:,2), '.', 'markersize', 8);
 
                 % Display the two tile and the vessel points found on each
-                figure(2); clf; colormap(gray(256));
                 subplot(1,2,2);
                     imagesc(tile_curr); axis image; hold on;
                     plot(cx+x_src, cy+y_src, 'g.', 'markersize', 8);
@@ -336,8 +352,7 @@ while (it < max_iterations)
                 xy_src_o = (compound_transforms(:,:,i_tile) \ [xy_src_t(:,1:2) ones(size(x_src,1),1)]')';
                 
                 plot(all_vessels, xy_src_t(:,1), xy_src_t(:,2), '.', 'markersize', 8);
-                
-                figure(2); clf;
+                               
                 subplot(1,2,1);
                     imgray(tile_curr);
                     plot(cx+xy_src_o(:,1), cy+xy_src_o(:,2), 'g.', 'markersize', 8);
@@ -398,7 +413,7 @@ end
 
 
 %% Find line structures in the image
-function [x, y] = ...
+function [x, y, line_mask] = ...
     get_line_points(tile, sigma, tile_mask, feature_type, region)
 
 switch feature_type
@@ -437,6 +452,7 @@ end
 if ~thresh_hi
     y = [];
     x = [];
+    line_mask = false(size(tile));
     return;
 end
 
@@ -452,6 +468,52 @@ line_mask = hysterisis(line_nms, thresh);
 %% Determine best offset between sets of points for a given rotation
 function [best_offset_theta count_theta] = ...
     get_best_offset(theta, xy_src, xy_tgt, offset_lim, max_pts)
+
+%Generate rotation matrix for this theta
+R = [cos(theta) sin(theta); 
+     -sin(theta) cos(theta)];
+
+% Rotate line points extracted from tile 1. It is assumed that the points
+% have been normalized with respect to the centre of the image.
+xy_src = xy_src * R;
+
+%Set up hough matrix to count the votes for each offset
+offset_sz = offset_lim(:,2) - offset_lim(:,1) + 1;
+offset_counts = zeros(offset_sz(2), offset_sz(1));
+
+%Loop through each line point from tile 1 and compute the offset to all
+%points in tile 2
+for ii = 1:min(max_pts, size(xy_src,1));
+    % Compute offset and decentre
+    x_offset = round(xy_tgt(:,1) - xy_src(ii,1));
+    y_offset = round(xy_tgt(:,2) - xy_src(ii,2));
+
+    % Count only those votes less than the offset limit
+    keep = x_offset >= offset_lim(1,1) & ...
+           x_offset <= offset_lim(1,2) & ...
+           y_offset >= offset_lim(2,1) & ...
+           y_offset <= offset_lim(2,2);
+
+    %Use sparse matrix trick to counts votes
+    if any(keep)
+        offset_counts = offset_counts + ...
+            sparse(y_offset(keep)-offset_lim(2,1)+1, ...
+                   x_offset(keep)-offset_lim(1,1)+1, ...
+                   1, offset_sz(2), offset_sz(1));
+    end
+end
+
+offset_counts = imfilter(offset_counts, fspecial('gaussian', 7, 2), 'replicate');
+
+%Workout the offset with maximum vote for this theta
+[count_theta max_idx_theta] = max(offset_counts(:));
+
+%Convert the maximum offset ID
+[max_row max_col] = ind2sub([offset_sz(2) offset_sz(1)], max_idx_theta);
+best_offset_theta = [max_col max_row] + offset_lim(:,1)' - 1;
+
+function [best_offset_theta count_theta] = ...
+    get_chamfered_offset(theta, xy_src, xy_tgt, offset_lim, max_pts)
 
 %Generate rotation matrix for this theta
 R = [cos(theta) sin(theta); 

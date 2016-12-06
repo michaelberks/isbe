@@ -26,12 +26,17 @@ function [] = register_dual_camera_frames(frames_dir, camera1_transforms, camera
 % Copyright: (C) University of Manchester 
 % Unpack the arguments:
 args = u_packargs(varargin, '0', ...
+    'camera1_ext', '_C_1_',...
+    'camera2_ext', '_C_2_',...
+    'image_format', 'bmp',...
     'save_images', 1,...
     'save_dir', [], ...
     'save_name', [], ...
     'theta_range', -15:3:15,...
-    'offset_range', 100,...
-    'display_output', 1);
+    'offset_range', 240,...
+    'sigma', 8,...
+    'display_output', 1,...
+    'debug', false);
 clear varargin;
 
 if args.save_images && isempty(args.save_dir)
@@ -43,13 +48,17 @@ end
 
 %%-------------------------------------------------------------------------
 % Get list of frame names
-camera1_frame_names = dir_to_file_list([frames_dir '*_C_1_*.png']);
-camera2_frame_names = dir_to_file_list([frames_dir '*_C_2_*.png']);
+camera1_frame_names = dir_to_file_list([frames_dir '*' args.camera1_ext '*.' args.image_format]);
+camera2_frame_names = dir_to_file_list([frames_dir '*' args.camera2_ext '*.' args.image_format]);
 
 num_frames1 = length(camera1_frame_names);
 num_frames2 = length(camera2_frame_names);
 
-if num_frames1 ~= num_frames2
+if num_frames1 == 0
+    error('No frames found for camera 1');
+elseif num_frames2 == 0
+    error('No frames found for camera 1');
+elseif num_frames1 ~= num_frames2
     error('Number of frames do not match');
 end
 num_frames = num_frames1; clear num_frames1 num_frames2;
@@ -142,43 +151,67 @@ for i_rng = 1:num_ranges
         'tile_masks', tile_mask12,...
         'theta_range', args.theta_range, ...
         'offset_lim', args.offset_range, ...
-        'debug', false);
+        'sigma', args.sigma,...
+        'debug', args.debug);
     
     % Get size of the combined reference frame
     [mosaic_sz, frame_transforms] = mosaic_limits(tile_sz, frame_transforms);
     
     registered_mosaics = zeros(mosaic_sz(1), mosaic_sz(2), 2);
+    registered_masks = false(mosaic_sz(1), mosaic_sz(2), 2);
     for i_cam = 1:2
         
-        [tile_out, mask] = sample_tile_image(...
+        [tile_out] = sample_tile_image(...
             {mosaic12(:,:,i_cam)}, ones(tile_sz), ...
             inv(frame_transforms(:,:,i_cam)), ...
             mosaic_sz, []);
         
-        mask = full(mask > 0.5);
-        tile_out = full(tile_out{1});
-        tile_out(~mask) = NaN;
+        [mask_out] = sample_tile_image(...
+            {double(tile_mask12(:,:,i_cam))}, ones(tile_sz), ...
+            inv(frame_transforms(:,:,i_cam)), ...
+            mosaic_sz, []);
         
-        registered_mosaics(:,:,i_cam) = tile_out;
+        registered_masks(:,:,i_cam) = full(mask_out{1}) > 0.5;
+        registered_mosaics(:,:,i_cam) = full(tile_out{1});
 
     end
     
     registered_difference = registered_mosaics(:,:,1) - registered_mosaics(:,:,2);
+    joint_mask = registered_masks(:,:,1) & registered_masks(:,:,2);
+    registered_difference(~joint_mask) = NaN;
     
     if args.save_images
         save([args.save_dir args.save_name 'difference_image' zerostr(i_rng, 3) '.mat'],...
-            'registered_difference', 'registered_mosaics', 'include_frames1', 'include_frames2');
+            'mosaic12', 'tile_mask12', 'registered_difference', ...
+            'registered_mosaics', 'registered_masks', 'include_frames1', 'include_frames2');
     end
     
     if args.display_output
-    
+        
+        gmin = nanmin(mosaic12(tile_mask12));
+        gmax = nanmax(mosaic12(tile_mask12));
+        
+        mosaic_rgb = 1-(mosaic12 - gmin) / (gmax-gmin);
+        mosaic_rgb(~tile_mask12) = 0;
+        mosaic_rgb(:,:,3) = 0;
+        
+        gmin_r = nanmin(registered_mosaics(registered_masks));
+        gmax_r = nanmax(registered_mosaics(registered_masks));
+        reg_mosaic_rgb = 1-(registered_mosaics - gmin_r) / (gmax_r-gmin_r);
+        reg_mosaic_rgb(~registered_masks) = 0;
+        reg_mosaic_rgb(:,:,3) = 0;
+        
         figure;
-        subplot(1,3,1); imgray(registered_mosaics(:,:,1));
-        title('Registered compound frame from camera 1');
-        subplot(1,3,2); imgray(registered_mosaics(:,:,2));
-        title('Registered compound frame from camera 2');
-        subplot(1,3,3); imgray(registered_difference);
+        subplot(1,2,1); imgray(mosaic_rgb);
+        title('Non-overlapping compound frames pre-registration');
+        subplot(1,2,2); imgray(reg_mosaic_rgb);
+        title('Aligned compound frames after registration');
+        
+        figure;
+        imgray(registered_difference);
         title('Difference between compound frames (1 - 2)');
+        colormap jet;
+        colorbar;
     end
 end
                             

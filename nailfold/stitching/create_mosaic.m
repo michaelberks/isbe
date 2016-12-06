@@ -16,8 +16,8 @@ if tiles_loaded
 else
     num_tiles = length(tiles);
     im_header = imfinfo(tiles{1});
-    tile_sz(1) = im_header.Height;
-    tile_sz(2) = im_header.Width;
+    tile_sz(1) = abs(im_header.Height);
+    tile_sz(2) = abs(im_header.Width);
 end
 
 if isempty(tile_masks)
