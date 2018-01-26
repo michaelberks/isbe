@@ -1,0 +1,62 @@
+function [v] = ellipsoid_general( center, radii, e_axis )
+%
+% Convert to ellipsoid general form
+%
+%   [center, radii, x_axis, pars ] = ellipsoid_fit( X )
+%   [center, radii, x_axis, pars ] = ellipsoid_fit( [x y z] );
+%   [center, radii, x_axis, pars ] = ellipsoid_fit( X, 1 );
+%   [center, radii, x_axis, pars ] = ellipsoid_fit( X, 2, 'xz' );
+%   [center, radii, x_axis, pars ] = ellipsoid_fit( X, 3 );
+%
+% Parameters:
+% * X, [x y z]   - Cartesian data, n x 3 matrix or three n x 1 vectors
+% * flag         - '' or empty fits an arbitrary ellipsoid (default),
+%                - 'xy' fits a spheroid with x- and y- radii equal
+%                - 'xz' fits a spheroid with x- and z- radii equal
+%                - 'xyz' fits a sphere
+%                - '0' fits an ellipsoid with its axes aligned along [x y z] axes
+%                - '0xy' the same with x- and y- radii equal
+%                - '0xz' the same with x- and z- radii equal
+%
+% Output:
+% * center    -  ellispoid or other conic center coordinates [xc; yc; zc]
+% * radii     -  ellipsoid or other conic radii [a; b; c]
+% * x_axis     -  the radii directions as columns of the 3x3 matrix
+% * v         -  the 10 parameters describing the ellipsoid / conic algebraically: 
+%                Ax^2 + By^2 + Cz^2 + 2Dxy + 2Exz + 2Fyz + 2Gx + 2Hy + 2Iz + J = 0
+% * chi2      -  residual sum of squared errors (chi^2), this chi2 is in the 
+%                coordinate frame in which the ellipsoid is a unit sphere.
+%
+% Author:
+% Yury Petrov, Oculus VR
+% Date:
+% September, 2015
+%
+%Convert to ellipse general form
+
+x0 = -center(1);
+y0 = -center(2);
+z0 = -center(3);
+rx = 1 / radii(1)^2;
+ry = 1 / radii(2)^2;
+rz = 1 / radii(3)^2;
+
+R = [e_axis zeros(3,1); 0 0 0 1];
+T1 = [1 0 0 0; 0 1 0 0; 0 0 1 0; x0 y0 z0 1];
+T2 = T1';
+T2(4,4) = -1;
+
+E = T1*R*diag([rx ry rz 1])*R'*T2;
+%       a      b      c      d      e      f      g      h      i      j
+v = [E(1,1) E(2,2) E(3,3) E(1,2) E(1,3) E(2,3) E(1,4) E(2,4) E(3,4) E(4,4)]';
+
+% normalize to the more conventional form with constant term = -1
+if abs( v(end) ) > 1e-6
+    v = -v / v(end); 
+else
+    v = -sign( v(end) ) * v;
+end
+
+
+
+

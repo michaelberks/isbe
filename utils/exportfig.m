@@ -25,26 +25,26 @@ if (strcmp(e,'.fig') | strcmp(e,'.eps') | ...
 	fname = fullfile(p,n);
 end
 
-fprintf('Exporting...');
+%fprintf('Exporting...');
 
 errmsg = '';
 
 % save figure
 if any(strcmp(opts(:),'fig'))
-	fprintf('fig...');
+	%fprintf('fig...');
 	saveas(gcf,[fname '.fig']);
 end
 
 % export eps
 if any(strcmp(opts(:),'eps'))
-	fprintf('eps...');
+% 	fprintf('eps...');
 % 	print('-depsc2','-loose',[fname '.eps']);
 	print('-depsc2', [fname '.eps']);
 end
 
 % export png
 if any(strcmp(opts(:),'png'))
-	fprintf('png...');
+% 	fprintf('png...');
 	try
 		eval(['!' imageMagickPath 'convert -density 150 "',fname,'.eps" "',fname,'.png"']);
 	catch
@@ -54,7 +54,7 @@ end
 
 % convert to pdf using epstopdf
 if any(strcmp(opts(:),'pdf'))
-	fprintf('pdf...');
+% 	fprintf('pdf...');
 	try
 		if (isunix)
 			eval(['!epstopdf ' fname '.eps']);
@@ -76,5 +76,5 @@ if any(strcmp(opts(:),'pdf'))
 	end
 end
 
-fprintf('done\n');
-fprintf('%s',errmsg);
+% fprintf('done\n');
+% fprintf('%s',errmsg);

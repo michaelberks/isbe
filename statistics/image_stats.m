@@ -1,16 +1,13 @@
-function [local_sd im_mean local_sd_map] = image_stats(im_in, win_size)
+function [local_mean local_std local_x2] = image_stats(im_in, win_size)
 
     im_in = double(im_in);
     %t1 = imfilter(im_in, ones(win_size)/(win_size^2), 'symmetric');
     %t2 = imfilter(im_in.^2, ones(win_size)/(win_size^2), 'symmetric');
-    t1 = conv2(im_in, ones(win_size)/(win_size^2), 'valid');
-    t2 = conv2(im_in.^2, ones(win_size)/(win_size^2), 'valid');
-    local_sd_map = t2 - (t1.*t1);
+    local_x = conv2(im_in, ones(win_size)/(win_size^2), 'valid');
+    local_x2 = conv2(im_in.^2, ones(win_size)/(win_size^2), 'valid');
+    local_var = local_x2 - (local_x.*local_x);
    
-    local_sd = mean(local_sd_map(:));
-    im_mean = mean(im_in(:));
-    %if nargout > 2
-    %    local_sd_map = local_sd_map - min(local_sd_map(:));
-    %    local_sd_map = local_sd_map / max(local_sd_map(:));
-    %end
+    local_mean = local_x;
+    local_std = sqrt(local_var);
+    
 end

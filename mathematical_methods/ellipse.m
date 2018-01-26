@@ -30,7 +30,10 @@ if g_noise
     y_noise = g_noise*randn(1, n_pts);
 end
 
-x = (r_x*cos(pts)+x_noise)*co - (si*r_y*sin(pts)+x_noise) + x0;
-y = (r_x*cos(pts)+y_noise)*si + (co*r_y*sin(pts)+y_noise) + y0;
+x1 = r_x*cos(pts);
+y1 = r_y*sin(pts);
+
+x = (x1*co + y1*si + x0) + x_noise;
+y = (y1*co - x1*si + y0) + y_noise; 
 
 

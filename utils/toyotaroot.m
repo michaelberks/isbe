@@ -17,7 +17,7 @@ function myroot = toyotaroot(m_drive)
     else %
         switch get_username
             case {'mberks'} %Yasmina's PC
-                myroot = '/home/mberks/isbe/toyota/';
+                myroot = '/home/mberks/isbe/datasets/';
             case 'momeemb2' %CSF
                 myroot = 'scratch/toyota/';
             otherwise

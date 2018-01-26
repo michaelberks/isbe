@@ -1,7 +1,0 @@
-We also investigated the variation of mean angular error with respect to the magnitude of the orientation vector predicted by the regression forests (\fref{f:retina_graphs}d). The consistent reduction in angular error with increasing magnitude for all feature types confirms that this is indeed a measure of confidence in the forest prediction, whilst the same cannot be said of the magnitude of the analytic response.
-
-Moreover, careful examination shows that while orientation magnitude is generally high at vessels (as a classifier it achieves $A_z = 0.901$) it is lower at bifurcations and crossings where orientation is not well defined, and thus provides information in addition to the classification probabilities. 
-
-For example, where angular measurements are of direct interest (\eg~vessel tortuosity~\cite{Hart_etal_IJMI99}) the segmentation may suggest which pixels to include in the analysis with orientation confidence weighting the inputs. Thus the orientation confidence could sensibly down-weight the contribution of points where orientation is ill-defined even though vessel probability may be high.
-
-Alternatively, in further processing of vessel probabilities such as using a tracking algorithm to group connected pixels, the orientation confidence can be used to control the spread of potential paths, with a narrow focus along vessel centres and a wide spread at bifurcations where the paths necessarily diverge.

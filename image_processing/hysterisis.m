@@ -36,14 +36,11 @@ end
 if nargin < 4
     thresh_ratio = .7;
 end   
-[m n] = size(magnitudes);
 magnitudes = magnitudes / max(magnitudes(:));
 
 % Select the thresholds
     if isempty(thresh) 
-        counts = imhist(magnitudes, 64);
-        high_thresh = ...
-            find(cumsum(counts) > percent_not_edges*m*n, 1,'first') / 64;
+        high_thresh = prctile(magnitudes(:), 100*percent_not_edges);
         low_thresh = thresh_ratio*high_thresh;
 
     elseif length(thresh)==1

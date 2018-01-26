@@ -1,1 +1,0 @@
-function [pectoral_border] = pectoral_segmentation_kwok(mammogram)

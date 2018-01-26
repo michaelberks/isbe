@@ -1,0 +1,168 @@
+
+This is Lyndsey's SR code from:
+http://www.robots.ox.ac.uk/~elle/SRcode/
+
+Start by making sure you have Netlab and mex_amub.cpp, and that all mex
+files have been compiled for your machine. I also have an nrand.h to define
+gasdev.c and ran1.c from Numerical Recipes, which are used in generating
+the iid noise samples in makeLR.c.
+
+Running SR_demo for a quick intro to the simple functions.
+
+--------------------------------------------------------------------------
+
+A FEW MORE NOTES:
+
+The W produced by this code is the TRANSPOSE of the W in my papers --
+it's just easier to do it this way in Matlab. That means that W is an
+N-by-M sparse matrix, where N is the number of pixels in the
+super-resolution image, and M is the *total* number of low-resolution
+pixels. It's worth remembering :-)
+
+
+This code works with Matlab structures. The input to the "makeW"
+function consists of a K-element structure (where there are K
+low-resolution images), with fields "im" (containing the k^{th} image), H
+(the 3-by-3 homography mapping pixel locations in the corresponding
+low-resolution image into the super-resolution frame), la (the
+multiplicative photometric parameter, lambda_alpha), and lb (the
+additive photometric parameter, lambda_beta).
+
+
+It is assumed that if H for the k^{th} image is the identity, then its
+centre lines up with the centre of the super-resolution frame, and
+there is simply a scaling of "zoom" between them, where the zoom
+factor is external to the homographies in the struct representation.
+
+
+The Gaussian blur representing the PSF on each low-resolution image
+has a standard deviation that is measured in *low-resolution pixels*
+-- note that this differs from a number of super-resolution papers,
+which use the blur measured on the super-resolution image (which makes
+less sense!).
+
+--------------------------------------------------------------------------
+
+Generating Synthetic Data:
+
+IN:
+   o(k).v -- vertical size of LR image
+   o(k).h -- horizontal size of LR image
+   o(k).H -- 3x3 matrix mapping from LR image to common reference plane
+   o(k).la -- photometric prarm (multiplicative)
+   o(k).lb -- photometric prarm (additive)
+   o(k).n -- noise standard deviation
+   o(k).g -- standard deviation of Gaussian PSF (gamma)
+
+OUT:
+   o(k).im -- low-resolution image
+   o(k).noise -- noise image
+   o(k).orig -- original (no-noise) image
+
+
+--------------------------------------------------------------------------
+
+
+Generating the System Matrix, W:
+
+IN:
+   o -- includes LR images, PSF param and {geometric, photometric} registration params.
+
+OUT:
+   W -- transpose of system matrix
+   Y -- M-by-1 vector of all LR image pixels in column-major order
+   La -- M-by-1 vector of multiplicative photometric factors
+   Lb -- M-by-1 vector of additive photometric terms
+
+SR seeks the best x such that Y = diag(La)*W'*x+Lb.
+
+
+--------------------------------------------------------------------------
+
+--------------------------------------------------------------------------
+
+SUMMARY OF FILES:
+
+M-files:
+
+    SR_demo.m
+    [o,gtruth] = synthdata_demo;
+    [im,opts,flog,plog,sclog] = superres_ml(W,Y,La,Lb,avim,opts);
+    im_huber = superres_huber(W,Y,La,Lb,avim,alp,nu,opts);
+
+
+Mex files:
+
+  makeLR.c                  (see below for further description)
+  makeW.c                   (see below for further description)
+  getAvim.c                 (see below for further description)
+  elle_eval_huber.c         eout = elle_eval_huber(x,alp,bet,biv,bih);
+  elle_eval_huber_grad.c    g = elle_eval_huber_grad(x,alp,bet,biv,bih);
+
+/* [im,noise,orig] = makeLR(biv,bih,o); 
+ *
+ * INPUTS:
+ *  biv, bih: vertical and horizontal sizes for the high-res image. 
+ *  o: the super-res problem datastructure, which must be a MATLAB struct with the following entries:
+ *    o.H is a 3x3 double representing the homography taking points in the LR image into the SR image.
+ *    o.la is the multiplicative photometric parameter.
+ *    o.lb is the additive photometric parameter.
+ *    o.g is the sigma for the Gaussian PSF.
+ *    o.n is the sigma for the additive Gaussian iid noise on each pixel.
+ *    o.v vertical size for the image.
+ *    o.h horizontal size for the image.
+ *  NOTE: if o is larger than 1x1, only the first part is used (i.e. this function doens't 
+ *        currently produce a stack of images, just one at a time).
+ *
+ * OUTPUTS:
+ *  im: the generated low-resolution image, including image noise.
+ *  noise: the noise image.
+ *  orig: the low-resolution image without the added noise.
+ */
+
+
+/* [W,Y,La,Lb,M] = makeW(biv,bih,o); 
+ *
+ * INPUTS:
+ *  biv, bih: vertical and horizontal sizes for the high-res image. 
+ *  o: the super-res problem datastructure, which must be a MATLAB struct with the following entries:
+ *    o(i).H is a 3x3 double representing the homography taking points in the i^th LR image into the SR image.
+ *    o(i).la is the multiplicative photometric parameter for image i.
+ *    o(i).lb is the additive photometric parameter for image i.
+ *    o(i).g is the sigma for the Gaussian PSF associated with image i.
+ *    o(i).im is the i^th image. W doesn't depend on image pixels, but the image size is important.
+ *
+ * OUTPUTS:
+ *  W: the super-res system matrix. Note that this is the TRANSPOSE of most of my papers' "W" matrices, since it's
+ *     rather easier to compute this way.
+ *  Y: A KMx1 vector containing all the low-res pixel values, where "KM" is the total number of low-res pixels in the data.
+ *  La: a KMx1 vector of multiplicative photometric params (yes, lots of repeated values).
+ *  Lb: a KMx1 vector of additive photometric params.
+ *  M: a 10xK matrix of geometric registration values.
+ */
+
+
+/*  [avim,msk,M] = getAvim(biv,bih,o);
+ *
+ * INPUTS:
+ *  biv, bih: vertical and horizontal sizes for the average image. 
+ *  o: the super-res problem datastructure, which must be a MATLAB struct with the following entries:
+ *    o(i).H is a 3x3 double representing the homography taking points in the i^th LR image into the SR image.
+ *    o(i).la is the multiplicative photometric parameter for image i.
+ *    o(i).lb is the additive photometric parameter for image i.
+ *    o(i).g is the sigma for the Gaussian PSF associated with image i.
+ *    o(i).im is the i^th image. W doesn't depend on image pixels, but the image size is important.
+ *
+ * OUTPUTS:
+ *  avim: the average image (which will be of size biv-by-bih).
+ *  msk: a double matrix of size biv-by-bih indicating which pixels in avim were estimated.
+ *    -- average image pixels with negligible support from any of the PSFs of the low-res
+ *       image pixels are returned as zeros.
+ *  M: a 10xK matrix of geometric registration values.
+ *
+ */
+
+
+
+
+

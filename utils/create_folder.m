@@ -4,7 +4,7 @@ function path_name = create_folder(path_name)
 
 if ~isempty(path_name)
     % Tidy up the path first
-    path_name = prettypath(path_name);
+    path_name = prettypath(path_name, true);
     
     % Create the folder if it doesn't exist already
     if ~exist(path_name, 'dir')

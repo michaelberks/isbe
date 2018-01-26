@@ -1,7 +1,5 @@
 function [rand_samp] = sample_from_probs(probs, num_samples)
-% Generate a sample from binomial (Gaussian) distribution defined by N and
-% p. If normal_approx flag is set, will apply the normal approximation when
-% suitable criteria are met (Np > 10 and N(1-p) > 10)
+% Generate a sample from estimate of pdf
 probs(isnan(probs)) = 0;
 
 if any(probs(:))

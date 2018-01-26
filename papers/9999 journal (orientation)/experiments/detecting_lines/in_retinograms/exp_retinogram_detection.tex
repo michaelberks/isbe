@@ -1,9 +1,0 @@
-\label{s:exp_retinogram_detection}
-To test segmentation, we applied each classifier to determine the vessel probability at every pixel for every test image (\fref{f:retinography}c). We then computed the ROC curve and used the area under the curve, $A_z$, as a single measure of performance (\tref{t:retinopathy}). Both forest classification methods achieved an $A_z$ exceeding what is recognised as the current state-of-the-art~\cite{Staal_etal_TMI04} although, slightly surprisingly, the Gaussian derivative filter proved more successful than the \dtcwt{}.
-
-In these detection experiments, the training data were balanced such that they contained an equal number of examples from each class.
-
-\comment{Experiments using the magnitude of the orientation vector do determine vessel probability}
-
-% hydra/build_vessel_predictor
-% hydra/classify_retinas

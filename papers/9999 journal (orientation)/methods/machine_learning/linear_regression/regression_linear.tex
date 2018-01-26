@@ -1,8 +1,0 @@
-\label{s:regression_linear}
-Under a linear regressor, the predicted output is a weighed sum of the filter responses. Because the outputs are complex the regression coefficients are complex also, though this problem is equivalent to regressing over $\cos 2\theta$ and $\sin 2\theta$ independently.
-
-\comment{We may want to reintroduce a note here that there are two solutions to the orientation, and that this cannot be estimated from a linear regression alone (at least for the double angle representations)}
-
-%Under ideal conditions, applying this method to the real filters (\eg~first and second derivatives) should produce regression coefficients identical to those computed analytically.\comment{Not sure if that is entirely relevant}
-
-%Since the linear regressor minimizes the mean squared error (in $\cos 2\theta$ and $\sin 2\theta$), the uncertainty in the prediction can be represented as an axis aligned Gaussian distribution in the complex plane. If the errors are equally distributed for both $\cos 2\theta$ and $\sin 2\theta$ -- and our experience suggests that they are typically close -- then the angular error (\ie~the angle subtended by isocontours of the Gaussian) is constant for an input of given magnitude; uncertainty is proportionally lower for inputs with larger magnitude, and vice versa. Since phase is limited to the range $[-\pi,\pi)$, however, the magnitude of the feature vector is strongly correlated with the magnitude (rather than phase) of the response to the \dtcwt{}. As a result, image features with high contrast that respond strongly to the \dtcwt{} have lower relative uncertainty (an intuitive result).\comment{This could be considered as 'discussion' and may not be relevant right here}
