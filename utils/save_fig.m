@@ -1,4 +1,4 @@
-function [] = save_fig(fig_dir, fig_names, fig_ext, num_figs, close_figs)
+function [] = save_fig(fig_dir, fig_names, fig_ext, num_figs, close_figs, save_type)
 %SAVE_FIG export a set of open figures, uses exportfig
 %   [] = save_fig(fig_dir, fig_names, num_figs)
 %
@@ -44,7 +44,7 @@ if ~exist('close_figs', 'var')
     close_figs = false;
 end
 
-if exist('num_figs', 'var')
+if exist('num_figs', 'var') && ~isempty(num_figs)
     num_figs = min(length(fig_handles), num_figs);
 else
     num_figs = length(fig_handles);
@@ -52,6 +52,10 @@ end
 
 if ~exist('fig_ext', 'var') || isempty(fig_ext)
     fig_ext = '.png';
+end
+
+if ~exist('save_type', 'var') || isempty(save_type)
+    save_type = 'export';
 end
 
 fig_dir = create_folder(fig_dir);
@@ -67,10 +71,19 @@ for i_fig = 1:num_figs
     elseif ischar(fig_names)
         fig_name = fullfile(fig_dir, [fig_names sprintf('%03d', i_fig) fig_ext]);
     else
-        error(['fig_names must be a string or cell of strings']);
+        error('fig_names must be a string or cell of strings');
     end
-    figure(fig_handles(i_fig));
-    exportfig(fig_name);
+    
+    
+    switch save_type        
+        case 'export'
+            figure(fig_handles(i_fig));
+            exportfig(fig_name);
+        case 'matlab'
+            saveas(fig_handles(i_fig), fig_name);
+        otherwise
+            error('save type %s not recognised, should be export or matlab');
+    end
     display(['Saved figure to ' fig_name]);
     
     if close_figs

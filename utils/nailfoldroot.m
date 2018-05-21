@@ -9,7 +9,7 @@ function myroot = nailfoldroot(m_drive)
         else
             switch get_username
                 case {'mberks', 'Michael Berks', 'momeemb2'}
-                    myroot = 'C:\isbe\nailfold\';
+                    myroot = 'V:\isbe\nailfold\';
                 case 'ptresadern'
                     myroot = 'U:\projects\mammography\';
                 otherwise

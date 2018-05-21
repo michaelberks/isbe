@@ -42,9 +42,11 @@ if ~exist('do_opt', 'var') || isempty(do_opt)
     do_opt = 0;
 end
 
+hist_counts = hist_counts + 1e-6;
+
 %Generate random sample using empirical distribution fucntion (ie the
 %cumulative sum of the hisogram histogram counts)
-edf = cumsum(hist_counts);
+edf = cumsum(hist_counts) / sum(hist_counts);
 
 %Draw a uniformly distributed random sample then use 1d interpolation
 %against cdf to invert
